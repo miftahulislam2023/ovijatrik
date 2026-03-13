@@ -1,13 +1,18 @@
-export default async function BlogLayout({
+import { SiteFooter } from "@/components/site/site-footer"
+import { SiteHeader } from "@/components/site/site-header"
+
+export default async function PublicLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
     return (
-            <main className="min-h-screen bg-background">
-                <div className="max-w-screen-2xl mx-auto w-full">
-                    {children}
-                </div>
+        <div className="min-h-screen bg-[#fbfbf9] text-slate-900 dark:bg-[#0f1416] dark:text-slate-100">
+            <SiteHeader />
+            <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10">
+                {children}
             </main>
+            <SiteFooter />
+        </div>
     )
 }

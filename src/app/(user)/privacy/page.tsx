@@ -1,209 +1,76 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getRequestLanguage } from "@/lib/language"
 
-export default function PrivacyPolicyPage() {
+const copy = {
+    en: {
+        tag: "Privacy",
+        title: "Privacy Policy",
+        updated: "Last updated: March 13, 2026",
+        cards: [
+            {
+                title: "Information we collect",
+                body: "We collect contact details when you apply for support, volunteer, or donate. This may include your name, phone number, email address, and address information.",
+            },
+            {
+                title: "How we use your data",
+                body: "We use your data to respond to requests, verify applications, share project updates, and improve our weekly service planning. We do not sell personal information.",
+            },
+            {
+                title: "Data sharing",
+                body: "Data is shared only with verified partners who assist in distribution or verification. We require confidentiality from all volunteers.",
+            },
+            {
+                title: "Security",
+                body: "We use secure hosting and restrict access to application data. If you want your information removed, contact us and we will respond within seven working days.",
+            },
+        ],
+    },
+    bn: {
+        tag: "গোপনীয়তা",
+        title: "গোপনীয়তা নীতি",
+        updated: "সর্বশেষ হালনাগাদ: ১৩ মার্চ, ২০২৬",
+        cards: [
+            {
+                title: "আমরা কী তথ্য সংগ্রহ করি",
+                body: "সহায়তার আবেদন, স্বেচ্ছাসেবা বা দানের সময় আমরা যোগাযোগের তথ্য সংগ্রহ করি। এতে নাম, ফোন নম্বর, ইমেইল ও ঠিকানা থাকতে পারে।",
+            },
+            {
+                title: "তথ্য কীভাবে ব্যবহার করি",
+                body: "আমরা অনুরোধে সাড়া দিতে, আবেদন যাচাই করতে, প্রকল্প আপডেট শেয়ার করতে এবং সাপ্তাহিক পরিকল্পনা উন্নত করতে তথ্য ব্যবহার করি। ব্যক্তিগত তথ্য আমরা বিক্রি করি না।",
+            },
+            {
+                title: "তথ্য শেয়ারিং",
+                body: "বণ্টন বা যাচাইয়ে সহায়তাকারী যাচাইকৃত অংশীদারদের সঙ্গে সীমিত তথ্য শেয়ার করা হয়। সব স্বেচ্ছাসেবকের কাছ থেকে গোপনীয়তা প্রত্যাশিত।",
+            },
+            {
+                title: "নিরাপত্তা",
+                body: "আমরা নিরাপদ হোস্টিং ব্যবহার করি এবং আবেদন তথ্যের প্রবেশাধিকার সীমিত রাখি। আপনার তথ্য অপসারণ করতে চাইলে যোগাযোগ করুন—সাত কর্মদিবসের মধ্যে সাড়া দেওয়া হবে।",
+            },
+        ],
+    },
+}
+
+export default async function PrivacyPolicyPage() {
+    const language = await getRequestLanguage()
+    const content = copy[language]
+
     return (
-        <div className="container mx-auto px-4 py-8 md:py-12">
-            <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-8 md:mb-12">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-3">Privacy Policy</h1>
-                    <p className="text-muted-foreground">
-                        Last updated: December 31, 2025
-                    </p>
-                </div>
+        <div className="space-y-10">
+            <section className="rounded-3xl bg-white px-8 py-10 shadow-soft">
+                <p className="text-xs uppercase tracking-[0.3em] text-primary-dark">{content.tag}</p>
+                <h1 className="mt-3 text-3xl font-semibold md:text-4xl">{content.title}</h1>
+                <p className="mt-3 text-sm text-muted-foreground">{content.updated}</p>
+            </section>
 
-                <div className="prose prose-slate dark:prose-invert max-w-none space-y-6">
-                    <Card>
+            <div className="grid gap-6">
+                {content.cards.map((card) => (
+                    <Card key={card.title} className="border-none bg-white">
                         <CardHeader>
-                            <CardTitle>Introduction</CardTitle>
+                            <CardTitle>{card.title}</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 text-muted-foreground">
-                            <p>
-                                Welcome to our e-commerce platform. We respect your privacy and are committed to protecting your personal data.
-                                This privacy policy will inform you about how we look after your personal data when you visit our website
-                                and tell you about your privacy rights and how the law protects you.
-                            </p>
-                        </CardContent>
+                        <CardContent className="text-sm text-muted-foreground">{card.body}</CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Information We Collect</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <h4 className="font-semibold mb-2">Personal Information</h4>
-                                <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                                    <li>Name and contact details (email, phone number, address)</li>
-                                    <li>Account credentials (username, password)</li>
-                                    <li>Payment information (securely processed through third-party payment processors)</li>
-                                    <li>Order history and preferences</li>
-                                    <li>Communication preferences</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold mb-2">Automatically Collected Information</h4>
-                                <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                                    <li>IP address and browser type</li>
-                                    <li>Device information and operating system</li>
-                                    <li>Pages visited and time spent on our site</li>
-                                    <li>Referring website addresses</li>
-                                    <li>Cookies and similar tracking technologies</li>
-                                </ul>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>How We Use Your Information</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                                <li>To process and fulfill your orders</li>
-                                <li>To communicate with you about your orders and account</li>
-                                <li>To provide customer support and respond to your inquiries</li>
-                                <li>To send you marketing communications (with your consent)</li>
-                                <li>To improve our website, products, and services</li>
-                                <li>To detect and prevent fraud and security issues</li>
-                                <li>To comply with legal obligations</li>
-                                <li>To analyze user behavior and preferences</li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Data Sharing and Disclosure</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-muted-foreground text-sm">
-                            <p>We may share your personal information with:</p>
-                            <ul className="space-y-2 list-disc list-inside">
-                                <li><strong>Service Providers:</strong> Payment processors, shipping companies, email service providers</li>
-                                <li><strong>Business Partners:</strong> Only when necessary to provide our services</li>
-                                <li><strong>Legal Authorities:</strong> When required by law or to protect our rights</li>
-                                <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
-                            </ul>
-                            <p className="mt-4">
-                                We do not sell your personal information to third parties for their marketing purposes.
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Data Security</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-muted-foreground text-sm">
-                            <p>
-                                We implement appropriate technical and organizational measures to protect your personal data against
-                                unauthorized or unlawful processing, accidental loss, destruction, or damage. These measures include:
-                            </p>
-                            <ul className="space-y-2 list-disc list-inside">
-                                <li>SSL/TLS encryption for data transmission</li>
-                                <li>Secure password hashing</li>
-                                <li>Regular security audits and updates</li>
-                                <li>Access controls and authentication measures</li>
-                                <li>Employee training on data protection</li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Your Rights</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-muted-foreground text-sm">
-                            <p>You have the following rights regarding your personal data:</p>
-                            <ul className="space-y-2 list-disc list-inside">
-                                <li><strong>Access:</strong> Request copies of your personal data</li>
-                                <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data</li>
-                                <li><strong>Deletion:</strong> Request deletion of your personal data</li>
-                                <li><strong>Restriction:</strong> Request restriction of processing your data</li>
-                                <li><strong>Portability:</strong> Request transfer of your data to another organization</li>
-                                <li><strong>Objection:</strong> Object to processing of your data</li>
-                                <li><strong>Withdraw Consent:</strong> Withdraw consent for marketing communications</li>
-                            </ul>
-                            <p className="mt-4">
-                                To exercise any of these rights, please contact us using the information provided at the end of this policy.
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Cookies and Tracking</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-muted-foreground text-sm">
-                            <p>
-                                We use cookies and similar tracking technologies to enhance your browsing experience, analyze site traffic,
-                                and understand user preferences. You can control cookie settings through your browser preferences.
-                            </p>
-                            <div>
-                                <h4 className="font-semibold mb-2 text-foreground">Types of cookies we use:</h4>
-                                <ul className="space-y-2 list-disc list-inside">
-                                    <li><strong>Essential Cookies:</strong> Required for website functionality</li>
-                                    <li><strong>Performance Cookies:</strong> Help us understand how visitors use our site</li>
-                                    <li><strong>Functional Cookies:</strong> Remember your preferences</li>
-                                    <li><strong>Marketing Cookies:</strong> Track your browsing habits for targeted advertising</li>
-                                </ul>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Data Retention</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-muted-foreground text-sm">
-                            <p>
-                                We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy,
-                                unless a longer retention period is required by law. Account information is retained while your account is active
-                                and for a reasonable period thereafter. Order history is retained for tax and legal compliance purposes.
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Children&apos;s Privacy</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-muted-foreground text-sm">
-                            <p>
-                                Our services are not directed to individuals under the age of 18. We do not knowingly collect personal information
-                                from children. If you are a parent or guardian and believe your child has provided us with personal information,
-                                please contact us, and we will delete such information.
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Changes to This Policy</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-muted-foreground text-sm">
-                            <p>
-                                We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy
-                                on this page and updating the &quot;Last updated&quot; date. We encourage you to review this policy periodically for any changes.
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950">
-                        <CardHeader>
-                            <CardTitle>Contact Us</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm">
-                            <p className="mb-4">
-                                If you have any questions about this Privacy Policy or our data practices, please contact us:
-                            </p>
-                            <ul className="space-y-2">
-                                <li><strong>Email:</strong> privacy@example.com</li>
-                                <li><strong>Phone:</strong> +880 1234-567890</li>
-                                <li><strong>Address:</strong> 123 Main Street, Dhaka 1000, Bangladesh</li>
-                            </ul>
-                        </CardContent>
-                    </Card>
-                </div>
+                ))}
             </div>
         </div>
     )
