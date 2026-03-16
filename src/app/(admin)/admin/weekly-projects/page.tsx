@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { prisma } from "@/lib/prisma"
-import { createWeeklyProject } from "@/actions/weekly-projects"
+import { createWeeklyProject } from "@/actions/weekly-project"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"

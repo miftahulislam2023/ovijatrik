@@ -1,44 +1,167 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  password  String?
+  image     String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model WeeklyProject {
-  id            String   @id @default(cuid())
-  title         String
-  slug          String   @unique
-  summary       String?
-  description   String
+  id            String           @id @default(cuid())
+  titleBn       String
+  titleEn       String?
+  slug          String           @unique
+  descriptionBn String
+  descriptionEn String?
   targetAmount  Int
-  currentAmount Int      @default(0)
-  imageUrls     String[]
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  currentAmount Int              @default(0)
+  photos        String[]
+  status        ProjectStatus    @default(DRAFT)
+  startDate     DateTime?
+  endDate       DateTime?
+  donations     WeeklyDonation[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+}
+
+model WeeklyDonation {
+  id        String         @id @default(cuid())
+  project   WeeklyProject  @relation(fields: [projectId], references: [id])
+  projectId String
+  medium    DonationMedium
+  amount    Int
+  trxid     String?
+  comments  String?
+  phone     String?
+  donorName String?
+  date      DateTime       @default(now())
+  createdAt DateTime       @default(now())
+  deletedAt DateTime?
+}
+
+model Donation {
+  id        String         @id @default(cuid())
+  medium    DonationMedium
+  amount    Int
+  trxid     String?
+  comments  String?
+  phone     String?
+  donorName String?
+  type      DonationType   @default(GENERAL)
+  date      DateTime       @default(now())
+  createdAt DateTime       @default(now())
+  deletedAt DateTime?
 }
 
 model TubewellProject {
-  id          String    @id @default(cuid())
-  title       String
-  location    String?
-  description String
-  completedAt DateTime?
-  imageUrls   String[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String   @id @default(cuid())
+  titleBn        String
+  titleEn        String?
+  slug           String   @unique
+  location       String
+  descriptionBn  String
+  descriptionEn  String?
+  photos         String[]
+  completionDate DateTime
+  year           Int
+  impactSummary  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
 }
 
-model DonationApplication {
+model BlogPost {
   id              String   @id @default(cuid())
-  fullName        String
-  phone           String
-  email           String?
-  address         String?
-  amountRequested Int?
-  reason          String
-  status          String   @default("pending")
+  titleBn         String
+  titleEn         String?
+  slug            String   @unique
+  markdownBn      String
+  markdownEn      String?
+  coverImage      String?
+  published       Boolean  @default(false)
+  featured        Boolean  @default(false)
+  readingTime     Int?
+  metaTitle       String?
+  metaDescription String?
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  titleBn   String?
+  titleEn   String?
+  imageUrl  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  body      String
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+  deletedAt DateTime?
+}
+
+model Application {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  email       String?
+  address     String?
+  reason      String   // why they are applying for donation
+  details     String?  // extra info, documents description, etc.
+  status      AppStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  reviewedAt  DateTime?
+  deletedAt   DateTime?
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DonationMedium {
+  BKASH
+  NAGAD
+  ROCKET
+  BANK
+  OTHER
+}
+
+enum DonationType {
+  GENERAL
+  ZAKAT
+  SADAQAH
+  EMERGENCY
+  RAMADAN
+  OTHER
+}
+
+enum AppStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

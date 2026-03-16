@@ -1,78 +1,48 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getRequestLanguage } from "@/lib/language"
+// src/app/(public)/terms/page.tsx
 
-const copy = {
-    en: {
-        tag: "Terms",
-        title: "Terms of Service",
-        updated: "Last updated: March 13, 2026",
-        cards: [
-            {
-                title: "Using Ovijatrik services",
-                body: "Ovijatrik provides charitable services and weekly community support. By using this website, you agree to use the information responsibly and avoid any misuse of forms or content.",
-            },
-            {
-                title: "Donations and support",
-                body: "Donations are voluntary and help fund weekly relief projects. We share updates and impact reports, but outcomes can vary based on community needs and partner availability.",
-            },
-            {
-                title: "Volunteer participation",
-                body: "Volunteers are expected to respect community guidelines and maintain confidentiality when assisting families.",
-            },
-            {
-                title: "Content and updates",
-                body: "Photos, stories, and reports remain the property of Ovijatrik and may not be reused without permission.",
-            },
-        ],
-    },
-    bn: {
-        tag: "শর্তাবলি",
-        title: "সেবার শর্তাবলি",
-        updated: "সর্বশেষ হালনাগাদ: ১৩ মার্চ, ২০২৬",
-        cards: [
-            {
-                title: "অভিযাত্রীক সেবা ব্যবহার",
-                body: "অভিযাত্রীক দাতব্য সেবা ও সাপ্তাহিক কমিউনিটি সহায়তা প্রদান করে। এই ওয়েবসাইট ব্যবহার করলে আপনি তথ্য দায়িত্বশীলভাবে ব্যবহারের ও ফর্ম/কনটেন্ট অপব্যবহার না করার সম্মতি দেন।",
-            },
-            {
-                title: "দান ও সহায়তা",
-                body: "দান স্বেচ্ছামূলক এবং সাপ্তাহিক সহায়তা প্রকল্পে ব্যয় হয়। আমরা আপডেট ও প্রভাব প্রতিবেদন শেয়ার করি, তবে ফলাফল কমিউনিটি চাহিদা ও অংশীদারতার ওপর নির্ভর করতে পারে।",
-            },
-            {
-                title: "স্বেচ্ছাসেবক অংশগ্রহণ",
-                body: "স্বেচ্ছাসেবকদের কমিউনিটি নির্দেশিকা মানা এবং পরিবারগুলোর তথ্য গোপনীয় রাখা প্রত্যাশিত।",
-            },
-            {
-                title: "কনটেন্ট ও আপডেট",
-                body: "ছবি, গল্প ও প্রতিবেদন অভিযাত্রীকের সম্পত্তি এবং অনুমতি ছাড়া পুনঃব্যবহার করা যাবে না।",
-            },
-        ],
-    },
-}
+export default function TermsPage() {
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <section className="mx-auto max-w-4xl px-4 py-12">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">শর্তাবলী</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          এই পৃষ্ঠাটি অভিযাত্রিক ফাউন্ডেশন প্ল্যাটফর্ম ব্যবহারের শর্তাবলী ব্যাখ্যা করে।
+        </p>
 
+        <div className="mt-8 space-y-6 text-sm leading-relaxed text-muted-foreground">
+          <section>
+            <h2 className="text-base font-semibold text-foreground">১. প্ল্যাটফর্ম ব্যবহার</h2>
+            <p className="mt-2">
+              এই ওয়েবসাইটটি শুধুমাত্র সামাজিক কল্যাণমূলক কার্যক্রম, তথ্য প্রদর্শন এবং অনুদান সংগ্রহের উদ্দেশ্যে
+              ব্যবহৃত হয়। কোনো ধরনের অবৈধ, ক্ষতিকর বা বিভ্রান্তিকর কার্যক্রমের জন্য এই প্ল্যাটফর্ম ব্যবহার করা যাবে না।
+            </p>
+          </section>
 
-export default async function TermsOfServicePage() {
-    const language = await getRequestLanguage()
-    const content = copy[language]
+          <section>
+            <h2 className="text-base font-semibold text-foreground">২. অনুদান</h2>
+            <p className="mt-2">
+              আপনার প্রদত্ত অনুদান আমাদের বিভিন্ন প্রজেক্টে স্বচ্ছতার সাথে ব্যবহার করা হয়। অনুদান একবার প্রদান করার
+              পর সাধারণত তা ফেরতযোগ্য নয়, তবে বিশেষ পরিস্থিতিতে সংগঠনের সিদ্ধান্ত অনুযায়ী ব্যবস্থা নেওয়া হতে পারে।
+            </p>
+          </section>
 
-    return (
-        <div className="space-y-10">
-            <section className="rounded-3xl bg-white px-8 py-10 shadow-soft">
-                <p className="text-xs uppercase tracking-[0.3em] text-primary-dark">{content.tag}</p>
-                <h1 className="mt-3 text-3xl font-semibold md:text-4xl">{content.title}</h1>
-                <p className="mt-3 text-sm text-muted-foreground">{content.updated}</p>
-            </section>
+          <section>
+            <h2 className="text-base font-semibold text-foreground">৩. তথ্যের সঠিকতা</h2>
+            <p className="mt-2">
+              আমরা আমাদের প্রজেক্ট, কার্যক্রম এবং আর্থিক তথ্য যথাসম্ভব সঠিকভাবে উপস্থাপন করার চেষ্টা করি। তবুও কোনো
+              ভুল বা ত্রুটি থাকলে তা সংশোধনের অধিকার আমাদের রয়েছে।
+            </p>
+          </section>
 
-            <div className="grid gap-6">
-                {content.cards.map((card) => (
-                    <Card key={card.title} className="border-none bg-white">
-                        <CardHeader>
-                            <CardTitle>{card.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm text-muted-foreground">{card.body}</CardContent>
-                    </Card>
-                ))}
-            </div>
+          <section>
+            <h2 className="text-base font-semibold text-foreground">৪. পরিবর্তন</h2>
+            <p className="mt-2">
+              প্রয়োজন অনুযায়ী এই শর্তাবলী সময়ে সময়ে পরিবর্তন করা হতে পারে। পরিবর্তিত শর্তাবলী এই পৃষ্ঠায়
+              আপডেট করা হবে এবং তা প্রকাশের পর থেকেই কার্যকর হবে।
+            </p>
+          </section>
         </div>
-    )
+      </section>
+    </main>
+  );
 }

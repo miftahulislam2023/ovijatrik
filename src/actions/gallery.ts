@@ -1,0 +1,84 @@
+"use server";
+
+import {prisma} from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
+export async function getGalleryItems() {
+  return prisma.galleryItem.findMany({
+    where: { deletedAt: null },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+  });
+}
+
+export async function getGalleryItemById(id: string) {
+  return prisma.galleryItem.findUnique({
+    where: { id },
+  });
+}
+
+export async function createGalleryItem(data: {
+  titleBn?: string;
+  titleEn?: string;
+  imageUrl: string;
+  sortOrder?: number;
+}) {
+  const item = await prisma.galleryItem.create({
+    data: {
+      titleBn: data.titleBn ?? null,
+      titleEn: data.titleEn ?? null,
+      imageUrl: data.imageUrl,
+      sortOrder: data.sortOrder ?? 0,
+    },
+  });
+
+  revalidatePath("/admin/gallery");
+  revalidatePath("/gallery");
+  return item;
+}
+
+export async function updateGalleryItem(
+  id: string,
+  data: Partial<{
+    titleBn?: string;
+    titleEn?: string;
+    imageUrl: string;
+    sortOrder: number;
+  }>
+) {
+  const item = await prisma.galleryItem.update({
+    where: { id },
+    data,
+  });
+
+  revalidatePath("/admin/gallery");
+  revalidatePath("/gallery");
+  return item;
+}
+
+export async function softDeleteGalleryItem(id: string) {
+  const item = await prisma.galleryItem.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/gallery");
+  revalidatePath("/gallery");
+  return item;
+}
+
+export async function duplicateGalleryItem(id: string) {
+  const original = await prisma.galleryItem.findUnique({ where: { id } });
+  if (!original) return null;
+
+  const copy = await prisma.galleryItem.create({
+    data: {
+      titleBn: original.titleBn ? original.titleBn + " (কপি)" : null,
+      titleEn: original.titleEn ? original.titleEn + " (Copy)" : null,
+      imageUrl: original.imageUrl,
+      sortOrder: original.sortOrder,
+    },
+  });
+
+  revalidatePath("/admin/gallery");
+  return copy;
+}

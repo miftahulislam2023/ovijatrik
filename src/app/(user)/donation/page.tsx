@@ -1,75 +1,73 @@
-import Link from "next/link"
-import { HeartHandshake, Wallet } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getRequestLanguage } from "@/lib/language"
+// src/app/(public)/donation/page.tsx
 
-const copy = {
-    en: {
-        tag: "Donation",
-        title: "Fuel weekly relief and lasting impact.",
-        body:
-            "Donations go directly to weekly projects, emergency response, and community partnerships. Tubewell projects are documented separately and do not collect donations here.",
-        apply: "Apply for donation support",
-        waysTitle: "Ways to give",
-        transparencyTitle: "Transparency promise",
-        transparencyBody:
-            "Weekly reports are shared with donors, including photos, beneficiary counts, and receipts for large purchases.",
-    },
-    bn: {
-        tag: "দান",
-        title: "সাপ্তাহিক সহায়তা ও দীর্ঘমেয়াদি প্রভাবকে শক্তি দিন।",
-        body:
-            "দান সরাসরি সাপ্তাহিক প্রকল্প, জরুরি সহায়তা ও কমিউনিটি অংশীদারিত্বে যায়। টিউবওয়েল প্রকল্প আলাদা ভাবে নথিভুক্ত হয় এবং এখানে দান সংগ্রহ করা হয় না।",
-        apply: "সহায়তার জন্য আবেদন করুন",
-        waysTitle: "দান করার উপায়",
-        transparencyTitle: "স্বচ্ছতার প্রতিশ্রুতি",
-        transparencyBody:
-            "সাপ্তাহিক প্রতিবেদন দাতাদের সঙ্গে শেয়ার করা হয়, যেখানে ছবি, উপকারভোগীর সংখ্যা ও বড় ব্যয়ের রসিদ থাকে।",
-    },
-}
+export default function DonationPage() {
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <section className="mx-auto max-w-4xl px-4 py-12">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">অনুদান করুন</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          আপনার অনুদান আমাদের শিক্ষা, স্বাস্থ্য ও জীবিকা ভিত্তিক প্রজেক্টগুলোকে এগিয়ে নিতে সাহায্য করে।
+        </p>
 
-export default async function DonationPage() {
-    const language = await getRequestLanguage()
-    const content = copy[language]
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <h2 className="text-base font-semibold">বিকাশ / নগদ / সেলফিন</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              প্রজেক্টের অনুদান এবং আবেদন পাঠাতে যোগাযোগ / বিকাশ / নগদ / হোয়াটসঅ্যাপ:
+              <br />
+              <span className="font-semibold text-foreground">01717 017 645</span>
+              <br />
+              <span className="font-semibold text-foreground">01720 803 305</span>
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">বিকাশ পেমেন্ট:</span>
+              <br />
+              01886 946 826
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">নগদ / বিকাশ / সেলফিন:</span>
+              <br />
+              01720 803 305
+              <br />
+              Name: Romisa Romisa (Send Money)
+            </p>
+          </div>
 
-    return (
-        <div className="space-y-10">
-            <section className="rounded-3xl bg-white px-8 py-10 shadow-soft">
-                <p className="text-xs uppercase tracking-[0.3em] text-primary-dark">{content.tag}</p>
-                <h1 className="mt-3 text-3xl font-semibold md:text-4xl">{content.title}</h1>
-                <p className="mt-4 text-base text-muted-foreground">{content.body}</p>
-                <Button asChild className="mt-6 bg-primary-dark text-white hover:bg-primary-brand">
-                    <Link href="/apply-for-donation">{content.apply}</Link>
-                </Button>
-            </section>
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <h2 className="text-base font-semibold">ব্যাংক ট্রান্সফার</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              A/C No: 2050 1380 1005 57502
+              <br />
+              Name: Ovijatrik Shomaj Kollyan Sangstha
+              <br />
+              Bank: Islami Bank Bangladesh PLC
+              <br />
+              Branch: Dinajpur
+              <br />
+              Routing No: 125280671
+              <br />
+              Swift code: IBBLBDDH138
+            </p>
 
-            <section className="grid gap-6 md:grid-cols-2">
-                <Card className="border-none bg-[#0f2f33] text-white">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Wallet className="h-5 w-5" />
-                            {content.waysTitle}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm text-white/80">
-                        <p>bKash: 01XXXXXXXXX</p>
-                        <p>Nagad: 01XXXXXXXXX</p>
-                        <p>Bank transfer: Ovijatrik Foundation, Account #XXXXXXXX</p>
-                    </CardContent>
-                </Card>
-                <Card className="border-none bg-white">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <HeartHandshake className="h-5 w-5 text-primary-dark" />
-                            {content.transparencyTitle}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-sm text-muted-foreground">
-                        {content.transparencyBody}
-                    </CardContent>
-                </Card>
-            </section>
+            <div className="mt-4 rounded-lg bg-muted p-3 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">যাকাতের জন্য নির্দিষ্ট অ্যাকাউন্ট:</span>
+              <br />
+              Current A/C No: 0751 02000 8256
+              <br />
+              Bank: Al-Arafah Islami Bank Ltd, Dinajpur
+              <br />
+              Routing No: 015280673
+              <br />
+              যাকাত পাঠিয়ে WHATSAPP এ জানিয়ে দিন:{" "}
+              <span className="font-semibold text-foreground">01717 017 645</span>
+            </div>
+          </div>
         </div>
-    )
+
+        <p className="mt-8 text-sm text-muted-foreground">
+          আপনার প্রতিটি অনুদান স্বচ্ছতার সাথে রেকর্ড করা হয় এবং প্রজেক্ট ভিত্তিকভাবে ব্যবহার করা হয়।
+        </p>
+      </section>
+    </main>
+  );
 }
