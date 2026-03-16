@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 // src/app/(public)/about/page.tsx
 
 export default function AboutPage() {
@@ -18,6 +20,20 @@ export default function AboutPage() {
               প্রচেষ্টার মাধ্যমেই একটি উন্নত ও সমতাপূর্ণ সমাজ গঠন করা সম্ভব। গত দুই দশকে আমরা হাজার হাজার পরিবারকে
               সহায়তা প্রদান করেছি এবং তাদের জীবনে ইতিবাচক পরিবর্তন এনেছি।
             </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href="/projects"
+                className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              >
+                আমাদের প্রজেক্টসমূহ দেখুন
+              </Link>
+              <Link
+                href="/donation"
+                className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+              >
+                এখনই ডোনেট করুন
+              </Link>
+            </div>
           </section>
 
           <section>

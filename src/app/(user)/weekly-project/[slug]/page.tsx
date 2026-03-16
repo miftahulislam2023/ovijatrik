@@ -11,9 +11,10 @@ function maskPhone(phone?: string | null) {
 export default async function WeeklyProjectDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const project = await getWeeklyProjectBySlug(params.slug);
+  const { slug } = await params;
+  const project = await getWeeklyProjectBySlug(slug);
 
   if (!project || project.deletedAt) {
     notFound();

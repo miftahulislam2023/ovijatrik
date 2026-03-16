@@ -1,8 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { Hind_Siliguri, Manrope } from "next/font/google";
+import { Hind_Siliguri, Inter } from "next/font/google";
+import { AppProviders } from "@/components/providers/app-providers";
 
 const hind = Hind_Siliguri({
   subsets: ["latin"],
@@ -10,10 +9,10 @@ const hind = Hind_Siliguri({
   variable: "--font-hind",
 });
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -30,13 +29,9 @@ export default function RootLayout({
   return (
     <html lang="bn" suppressHydrationWarning>
       <body
-        className={`${hind.variable} ${manrope.variable} bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${hind.variable} ${inter.variable} bg-background text-foreground min-h-screen`}
       >
-        <Header />
-
-        <main className="flex-1">{children}</main>
-
-        <Footer />
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

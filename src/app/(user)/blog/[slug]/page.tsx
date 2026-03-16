@@ -5,9 +5,10 @@ import ReactMarkdown from "react-markdown";
 export default async function BlogPostPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const post = await getBlogPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug);
 
   if (!post || post.deletedAt || !post.published) {
     notFound();

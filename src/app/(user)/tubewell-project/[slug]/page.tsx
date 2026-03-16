@@ -4,9 +4,10 @@ import { getTubewellProjectBySlug } from "@/actions/tubewell-project";
 export default async function TubewellProjectDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const project = await getTubewellProjectBySlug(params.slug);
+  const { slug } = await params;
+  const project = await getTubewellProjectBySlug(slug);
 
   if (!project || project.deletedAt) {
     notFound();

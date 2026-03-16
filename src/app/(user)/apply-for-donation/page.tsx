@@ -1,3 +1,5 @@
+"use client";
+
 // src/app/(public)/apply-for-donation/page.tsx
 
 import { submitApplication } from "@/actions/applications";

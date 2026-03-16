@@ -1,13 +1,29 @@
 import Link from "next/link"
-import { Droplets, LayoutDashboard, ListChecks } from "lucide-react"
+import {
+    Droplets,
+    FileImage,
+    HandCoins,
+    LayoutDashboard,
+    ListChecks,
+    Mail,
+    Newspaper,
+    ScrollText,
+} from "lucide-react"
 import { LanguageToggle } from "@/components/site/language-toggle"
 import { ThemeToggle } from "@/components/site/theme-toggle"
 import { getRequestLanguage } from "@/lib/language"
 
+export const dynamic = "force-dynamic"
+
 const navItems = [
-    { key: "dashboard", href: "/admin", icon: LayoutDashboard },
+    { key: "dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { key: "weekly", href: "/admin/weekly-projects", icon: ListChecks },
     { key: "tubewell", href: "/admin/tubewell-projects", icon: Droplets },
+    { key: "blog", href: "/admin/blog", icon: Newspaper },
+    { key: "gallery", href: "/admin/gallery", icon: FileImage },
+    { key: "donations", href: "/admin/donations", icon: HandCoins },
+    { key: "applications", href: "/admin/applications", icon: ScrollText },
+    { key: "messages", href: "/admin/messages", icon: Mail },
 ]
 
 const copy = {
@@ -19,6 +35,11 @@ const copy = {
             dashboard: "Dashboard",
             weekly: "Weekly Projects",
             tubewell: "Tubewell Projects",
+            blog: "Blog",
+            gallery: "Gallery",
+            donations: "Global Donations",
+            applications: "Applications",
+            messages: "Messages",
         },
     },
     bn: {
@@ -29,6 +50,11 @@ const copy = {
             dashboard: "ড্যাশবোর্ড",
             weekly: "সাপ্তাহিক প্রকল্প",
             tubewell: "টিউবওয়েল প্রকল্প",
+            blog: "ব্লগ",
+            gallery: "গ্যালারি",
+            donations: "সাধারণ অনুদান",
+            applications: "আবেদনসমূহ",
+            messages: "বার্তাসমূহ",
         },
     },
 }

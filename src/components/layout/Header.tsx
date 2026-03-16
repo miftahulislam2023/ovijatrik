@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { LanguageToggle } from "@/components/site/language-toggle";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 
 export default function Header() {
   const pathname = usePathname();
@@ -33,22 +35,24 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === item.href ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors hover:text-primary ${pathname === item.href ? "text-primary" : "text-muted-foreground"
+                }`}
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        {/* CTA */}
-        <Link
-          href="/donation"
-          className="hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 md:block"
-        >
-          ডোনেট করুন
-        </Link>
+        <div className="hidden items-center gap-2 md:flex">
+          <LanguageToggle />
+          <ThemeToggle />
+          <Link
+            href="/donation"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+          >
+            ডোনেট করুন
+          </Link>
+        </div>
 
         {/* Mobile Menu Button */}
         <button
@@ -68,14 +72,17 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className={`rounded-md px-3 py-2 text-sm font-medium hover:bg-muted ${
-                  pathname === item.href ? "text-primary" : "text-muted-foreground"
-                }`}
+                className={`rounded-md px-3 py-2 text-sm font-medium hover:bg-muted ${pathname === item.href ? "text-primary" : "text-muted-foreground"
+                  }`}
               >
                 {item.label}
               </Link>
             ))}
 
+            <div className="mt-3 flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
             <Link
               href="/donation"
               onClick={() => setOpen(false)}
