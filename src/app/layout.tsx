@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Hind_Siliguri, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { getRequestLanguage } from "@/lib/language";
-import '@/app/globals.css'
+import "./globals.css";
 
 const hind = Hind_Siliguri({
   subsets: ["latin"],
