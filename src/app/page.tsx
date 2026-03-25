@@ -230,8 +230,8 @@ export default async function HomePage() {
       <main>
         <section className="relative overflow-hidden border-b border-border/60">
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute left-1/2 top-[-160px] h-[340px] w-[340px] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute right-[-120px] top-[120px] h-[280px] w-[280px] rounded-full bg-secondary/60 blur-3xl" />
+            <div className="absolute left-1/2 -top-40 h-[340px] w-[340px] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
+            <div className="absolute right-[-120px] top-30 h-[280px] w-[280px] rounded-full bg-secondary/60 blur-3xl" />
           </div>
           <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-20">
             <div className="flex-1 space-y-6">
