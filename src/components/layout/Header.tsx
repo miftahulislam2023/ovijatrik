@@ -1,11 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Menu } from "lucide-react";
 import { LanguageToggle } from "@/components/site/language-toggle";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { useLanguage } from "@/components/providers/language-provider";
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const pathname = usePathname();
@@ -57,53 +60,69 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-        {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-primary">
-          {content.brand}
-        </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/75 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
+        <div className="flex items-center">
+          <Link
+            href="/"
+            className="flex items-center space-x-2 text-[#124170] font-bold logo-link"
+          >
+            <div className="relative h-12 w-30 m-2">
+              <Image
+                src="/logo.png"
+                alt="Ovijatrik Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </Link>
+        </div>
 
-        {/* Desktop Nav */}
-        <nav className="hidden gap-6 md:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === item.href
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="hidden items-center rounded-full border border-border bg-muted/40 p-1 md:flex">
+          {navItems.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={
+                  "rounded-full px-3 py-2 text-sm font-medium transition-colors " +
+                  (active
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-background/60 hover:text-foreground")
+                }
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
           <LanguageToggle />
           <ThemeToggle />
-          <Link
-            href="/donation"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
-          >
-            {content.donate}
-          </Link>
+          <Button asChild size="sm" className="shadow-sm">
+            <Link href="/donation">{content.donate}</Link>
+          </Button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
           onClick={() => setOpen(!open)}
-          className="block rounded-md border border-border p-2 md:hidden"
+          className="md:hidden"
+          aria-label="Toggle menu"
+          aria-expanded={open}
         >
-          <span className="material-symbols-outlined">menu</span>
-        </button>
+          <Menu className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Mobile Menu */}
       {open && (
-        <div className="border-t border-border bg-background md:hidden">
+        <div className="border-t border-border bg-background/95 backdrop-blur md:hidden">
           <nav className="flex flex-col px-4 py-4">
             {navItems.map((item) => (
               <Link
@@ -112,7 +131,7 @@ export default function Header() {
                 onClick={() => setOpen(false)}
                 className={`rounded-md px-3 py-2 text-sm font-medium hover:bg-muted ${
                   pathname === item.href
-                    ? "text-primary"
+                    ? "bg-muted text-foreground"
                     : "text-muted-foreground"
                 }`}
               >
@@ -124,13 +143,9 @@ export default function Header() {
               <LanguageToggle />
               <ThemeToggle />
             </div>
-            <Link
-              href="/donation"
-              onClick={() => setOpen(false)}
-              className="mt-3 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
-            >
-              {content.donate}
-            </Link>
+            <Button asChild className="mt-3" onClick={() => setOpen(false)}>
+              <Link href="/donation">{content.donate}</Link>
+            </Button>
           </nav>
         </div>
       )}

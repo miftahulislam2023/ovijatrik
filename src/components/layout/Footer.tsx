@@ -52,7 +52,7 @@ export default function Footer() {
   const content = copy[language];
 
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-border bg-gradient-to-b from-muted/20 to-background">
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="grid gap-10 md:grid-cols-4">
           {/* Brand */}
@@ -70,22 +70,34 @@ export default function Footer() {
             </h3>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/about" className="hover:text-primary">
+                <Link
+                  href="/about"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.about}
                 </Link>
               </li>
               <li>
-                <Link href="/projects" className="hover:text-primary">
+                <Link
+                  href="/projects"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.projects}
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-primary">
+                <Link
+                  href="/blog"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.blog}
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="hover:text-primary">
+                <Link
+                  href="/gallery"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.gallery}
                 </Link>
               </li>
@@ -99,17 +111,26 @@ export default function Footer() {
             </h3>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/donation" className="hover:text-primary">
+                <Link
+                  href="/donation"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.donation}
                 </Link>
               </li>
               <li>
-                <Link href="/apply-for-donation" className="hover:text-primary">
+                <Link
+                  href="/apply-for-donation"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.apply}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-primary">
+                <Link
+                  href="/contact"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.contact}
                 </Link>
               </li>
@@ -123,12 +144,18 @@ export default function Footer() {
             </h3>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/terms" className="hover:text-primary">
+                <Link
+                  href="/terms"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.terms}
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="hover:text-primary">
+                <Link
+                  href="/privacy-policy"
+                  className="transition-colors hover:text-primary"
+                >
                   {content.links.privacy}
                 </Link>
               </li>

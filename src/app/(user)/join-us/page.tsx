@@ -49,7 +49,7 @@ export default async function JoinUsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen">
       <section className="mx-auto grid max-w-5xl gap-8 px-4 py-12 md:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-4">
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">

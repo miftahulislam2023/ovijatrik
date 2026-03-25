@@ -26,7 +26,7 @@ export default async function WeeklyProjectsPage() {
   const content = copy[language];
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen">
       <section className="mx-auto max-w-5xl px-4 py-12">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           {content.title}

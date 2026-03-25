@@ -57,7 +57,7 @@ export default async function WeeklyProjectDetailPage({
     : 0;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen">
       <section className="mx-auto max-w-4xl px-4 py-12">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           {title}
