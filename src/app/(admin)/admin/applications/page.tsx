@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { softDeleteApplication } from "@/actions/applications";
-import { AppStatus } from "@prisma/client";
+import { AppStatus } from "@/generated/prisma/enums";
 
 export default async function AdminApplicationsPage({
     searchParams,

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { duplicateWeeklyProject, softDeleteWeeklyProject } from "@/actions/weekly-project";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus } from "@/generated/prisma/enums";
 
 const statusClass: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
     DRAFT: "outline",

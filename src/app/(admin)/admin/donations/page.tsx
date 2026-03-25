@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { duplicateDonation, softDeleteDonation } from "@/actions/donations";
-import { DonationMedium, DonationType } from "@prisma/client";
+import { DonationMedium, DonationType } from "@/generated/prisma/enums";
 
 export default async function AdminDonationsPage({
     searchParams,
