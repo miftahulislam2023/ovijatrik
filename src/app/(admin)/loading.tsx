@@ -1,5 +1,5 @@
-import FoundationLoading from "@/components/site/foundation-loading";
+import AdminLoading from "@/components/site/admin-loading";
 
 export default function Loading() {
-  return <FoundationLoading />;
+  return <AdminLoading />;
 }
