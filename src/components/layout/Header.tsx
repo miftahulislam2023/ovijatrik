@@ -5,20 +5,55 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { LanguageToggle } from "@/components/site/language-toggle";
 import { ThemeToggle } from "@/components/site/theme-toggle";
+import { useLanguage } from "@/components/providers/language-provider";
 
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { language } = useLanguage();
+
+  const copy = {
+    en: {
+      brand: "Ovijatrik",
+      donate: "Donate",
+      nav: {
+        home: "Home",
+        about: "About",
+        projects: "Projects",
+        weekly: "Weekly Projects",
+        tubewell: "Tubewell Projects",
+        blog: "Blog",
+        gallery: "Gallery",
+        contact: "Contact",
+      },
+    },
+    bn: {
+      brand: "অভিযাত্রিক",
+      donate: "ডোনেট করুন",
+      nav: {
+        home: "হোম",
+        about: "আমাদের সম্পর্কে",
+        projects: "প্রজেক্টসমূহ",
+        weekly: "সাপ্তাহিক প্রজেক্ট",
+        tubewell: "টিউবওয়েল প্রজেক্ট",
+        blog: "ব্লগ",
+        gallery: "গ্যালারি",
+        contact: "যোগাযোগ",
+      },
+    },
+  } as const;
+
+  const content = copy[language];
 
   const navItems = [
-    { href: "/", label: "হোম" },
-    { href: "/about", label: "আমাদের সম্পর্কে" },
-    { href: "/projects", label: "প্রজেক্টসমূহ" },
-    { href: "/weekly-projects", label: "সাপ্তাহিক প্রজেক্ট" },
-    { href: "/tubewell-projects", label: "টিউবওয়েল প্রজেক্ট" },
-    { href: "/blog", label: "ব্লগ" },
-    { href: "/gallery", label: "গ্যালারি" },
-    { href: "/contact", label: "যোগাযোগ" },
+    { href: "/", label: content.nav.home },
+    { href: "/about", label: content.nav.about },
+    { href: "/projects", label: content.nav.projects },
+    { href: "/weekly-projects", label: content.nav.weekly },
+    { href: "/tubewell-projects", label: content.nav.tubewell },
+    { href: "/blog", label: content.nav.blog },
+    { href: "/gallery", label: content.nav.gallery },
+    { href: "/contact", label: content.nav.contact },
   ];
 
   return (
@@ -26,7 +61,7 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-primary">
-          অভিযাত্রিক
+          {content.brand}
         </Link>
 
         {/* Desktop Nav */}
@@ -35,8 +70,11 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${pathname === item.href ? "text-primary" : "text-muted-foreground"
-                }`}
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                pathname === item.href
+                  ? "text-primary"
+                  : "text-muted-foreground"
+              }`}
             >
               {item.label}
             </Link>
@@ -50,7 +88,7 @@ export default function Header() {
             href="/donation"
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
           >
-            ডোনেট করুন
+            {content.donate}
           </Link>
         </div>
 
@@ -72,8 +110,11 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className={`rounded-md px-3 py-2 text-sm font-medium hover:bg-muted ${pathname === item.href ? "text-primary" : "text-muted-foreground"
-                  }`}
+                className={`rounded-md px-3 py-2 text-sm font-medium hover:bg-muted ${
+                  pathname === item.href
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               >
                 {item.label}
               </Link>
@@ -88,7 +129,7 @@ export default function Header() {
               onClick={() => setOpen(false)}
               className="mt-3 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
             >
-              ডোনেট করুন
+              {content.donate}
             </Link>
           </nav>
         </div>
