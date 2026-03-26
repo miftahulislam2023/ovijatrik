@@ -3,58 +3,109 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
-import { softDeleteApplication, updateApplication } from "@/actions/applications";
+import {
+  softDeleteApplication,
+  updateApplication,
+} from "@/actions/applications";
 
-export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const application = await prisma.application.findFirst({ where: { id, deletedAt: null } });
+export default async function ApplicationDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const application = await prisma.application.findFirst({
+    where: { id, deletedAt: null },
+  });
 
-    if (!application) {
-        notFound();
-    }
+  if (!application) {
+    notFound();
+  }
 
-    async function updateAction(formData: FormData) {
-        "use server";
-        await updateApplication(id, {
-            name: String(formData.get("name") || "").trim(),
-            phone: String(formData.get("phone") || "").trim(),
-            email: String(formData.get("email") || "").trim() || null,
-            address: String(formData.get("address") || "").trim() || null,
-            reason: String(formData.get("reason") || "").trim(),
-            details: String(formData.get("details") || "").trim() || null,
-            status: String(formData.get("status") || "PENDING") as "PENDING" | "APPROVED" | "REJECTED",
-        });
-        redirect("/admin/applications");
-    }
+  async function updateAction(formData: FormData) {
+    "use server";
+    await updateApplication(id, {
+      name: String(formData.get("name") || "").trim(),
+      phone: String(formData.get("phone") || "").trim(),
+      email: String(formData.get("email") || "").trim() || null,
+      address: String(formData.get("address") || "").trim() || null,
+      reason: String(formData.get("reason") || "").trim(),
+      details: String(formData.get("details") || "").trim() || null,
+      status: String(formData.get("status") || "PENDING") as
+        | "PENDING"
+        | "APPROVED"
+        | "REJECTED",
+    });
+    redirect("/admin/applications");
+  }
 
-    async function deleteAction() {
-        "use server";
-        await softDeleteApplication(id);
-        redirect("/admin/applications");
-    }
+  async function deleteAction() {
+    "use server";
+    await softDeleteApplication(id);
+    redirect("/admin/applications");
+  }
 
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{application.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <form action={updateAction} className="grid gap-4 md:grid-cols-2">
-                    <input name="name" defaultValue={application.name} className="rounded-md border border-input px-3 py-2" required />
-                    <input name="phone" defaultValue={application.phone} className="rounded-md border border-input px-3 py-2" required />
-                    <input name="email" defaultValue={application.email ?? ""} className="rounded-md border border-input px-3 py-2" />
-                    <input name="address" defaultValue={application.address ?? ""} className="rounded-md border border-input px-3 py-2" />
-                    <select name="status" defaultValue={application.status} className="rounded-md border border-input px-3 py-2 md:col-span-2">
-                        <option value="PENDING">PENDING</option>
-                        <option value="APPROVED">APPROVED</option>
-                        <option value="REJECTED">REJECTED</option>
-                    </select>
-                    <textarea name="reason" rows={3} defaultValue={application.reason} className="rounded-md border border-input px-3 py-2 md:col-span-2" required />
-                    <textarea name="details" rows={4} defaultValue={application.details ?? ""} className="rounded-md border border-input px-3 py-2 md:col-span-2" />
-                    <Button type="submit" className="md:col-span-2 w-fit">Save Changes</Button>
-                </form>
-                <form action={deleteAction}><Button type="submit" variant="destructive">Archive Application</Button></form>
-            </CardContent>
-        </Card>
-    );
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{application.name}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <form action={updateAction} className="grid gap-4 md:grid-cols-2">
+          <input
+            name="name"
+            defaultValue={application.name}
+            className="rounded-md border border-input px-3 py-2"
+            required
+          />
+          <input
+            name="phone"
+            defaultValue={application.phone}
+            className="rounded-md border border-input px-3 py-2"
+            required
+          />
+          <input
+            name="email"
+            defaultValue={application.email ?? ""}
+            className="rounded-md border border-input px-3 py-2"
+          />
+          <input
+            name="address"
+            defaultValue={application.address ?? ""}
+            className="rounded-md border border-input px-3 py-2"
+          />
+          <select
+            name="status"
+            defaultValue={application.status}
+            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+          >
+            <option value="PENDING">PENDING</option>
+            <option value="APPROVED">APPROVED</option>
+            <option value="REJECTED">REJECTED</option>
+          </select>
+          <textarea
+            name="reason"
+            rows={3}
+            defaultValue={application.reason}
+            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            required
+          />
+          <textarea
+            name="details"
+            rows={4}
+            defaultValue={application.details ?? ""}
+            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+          />
+          <Button type="submit" className="w-full md:col-span-2 md:w-fit">
+            Save Changes
+          </Button>
+        </form>
+        <form action={deleteAction}>
+          <Button type="submit" variant="destructive">
+            Archive Application
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
 }

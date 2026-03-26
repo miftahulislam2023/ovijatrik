@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { LanguageToggle } from "@/components/site/language-toggle";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { useLanguage } from "@/components/providers/language-provider";
@@ -18,6 +19,10 @@ export default function Header() {
   const copy = {
     en: {
       brand: "Ovijatrik",
+      login: "Login",
+      signup: "Sign Up",
+      profile: "Profile",
+      logout: "Logout",
       donate: "Donate",
       nav: {
         home: "Home",
@@ -32,6 +37,10 @@ export default function Header() {
     },
     bn: {
       brand: "অভিযাত্রিক",
+      login: "লগইন",
+      signup: "সাইন আপ",
+      profile: "প্রোফাইল",
+      logout: "লগআউট",
       donate: "ডোনেট করুন",
       nav: {
         home: "হোম",
@@ -47,6 +56,8 @@ export default function Header() {
   } as const;
 
   const content = copy[language];
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   const navItems = [
     { href: "/", label: content.nav.home },
@@ -102,6 +113,32 @@ export default function Header() {
         <div className="hidden items-center gap-2 md:flex">
           <LanguageToggle />
           <ThemeToggle />
+          {!isAuthenticated && (
+            <>
+              <Button asChild variant="outline" size="sm" className="shadow-sm">
+                <Link href="/join-us">{content.login}</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="shadow-sm">
+                <Link href="/create-admin">{content.signup}</Link>
+              </Button>
+            </>
+          )}
+          {isAuthenticated && (
+            <>
+              <Button asChild variant="outline" size="sm" className="shadow-sm">
+                <Link href="/profile">{content.profile}</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="shadow-sm"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                {content.logout}
+              </Button>
+            </>
+          )}
           <Button asChild size="sm" className="shadow-sm">
             <Link href="/donation">{content.donate}</Link>
           </Button>
@@ -143,6 +180,34 @@ export default function Header() {
               <LanguageToggle />
               <ThemeToggle />
             </div>
+            {!isAuthenticated && (
+              <>
+                <Button asChild variant="outline" className="mt-3" onClick={() => setOpen(false)}>
+                  <Link href="/join-us">{content.login}</Link>
+                </Button>
+                <Button asChild variant="outline" className="mt-3" onClick={() => setOpen(false)}>
+                  <Link href="/create-admin">{content.signup}</Link>
+                </Button>
+              </>
+            )}
+            {isAuthenticated && (
+              <>
+                <Button asChild variant="outline" className="mt-3" onClick={() => setOpen(false)}>
+                  <Link href="/profile">{content.profile}</Link>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-3"
+                  onClick={() => {
+                    setOpen(false);
+                    signOut({ callbackUrl: "/" });
+                  }}
+                >
+                  {content.logout}
+                </Button>
+              </>
+            )}
             <Button asChild className="mt-3" onClick={() => setOpen(false)}>
               <Link href="/donation">{content.donate}</Link>
             </Button>
