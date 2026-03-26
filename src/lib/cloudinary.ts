@@ -35,12 +35,23 @@ export async function uploadImage(file: File, folder: string) {
 
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
-    const base64 = buffer.toString("base64")
-    const dataUri = `data:${file.type};base64,${base64}`
 
-    const result = await cloudinary.uploader.upload(dataUri, {
-        folder,
-        resource_type: "image",
+    const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder,
+                resource_type: "image",
+            },
+            (error, uploadResult) => {
+                if (error || !uploadResult) {
+                    reject(error ?? new Error("Cloudinary upload failed"))
+                    return
+                }
+                resolve(uploadResult)
+            },
+        )
+
+        stream.end(buffer)
     })
 
     return {

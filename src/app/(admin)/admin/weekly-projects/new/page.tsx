@@ -22,18 +22,12 @@ export default function NewWeeklyProjectPage() {
       | "ARCHIVED";
     const startDateStr = String(formData.get("startDate") || "").trim();
     const endDateStr = String(formData.get("endDate") || "").trim();
-    const photoUrlsRaw = String(formData.get("photoUrls") || "").trim();
 
     if (!titleBn || !descriptionBn || !targetAmount) {
       throw new Error("Title, description, and target amount are required");
     }
 
-    const urls = photoUrlsRaw
-      ? photoUrlsRaw
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean)
-      : [];
+    const urls: string[] = [];
 
     const photoFiles = formData
       .getAll("photoFiles")
@@ -126,12 +120,6 @@ export default function NewWeeklyProjectPage() {
             name="descriptionEn"
             placeholder="Description (English)"
             rows={6}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <textarea
-            name="photoUrls"
-            placeholder="Photo URLs (one URL per line)"
-            rows={4}
             className="w-full rounded-md border border-input px-3 py-2"
           />
           <input

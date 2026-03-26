@@ -29,11 +29,10 @@ export default async function EditGalleryItemPage({
     "use server";
     const titleBn = String(formData.get("titleBn") || "").trim();
     const titleEn = String(formData.get("titleEn") || "").trim();
-    const imageUrlInput = String(formData.get("imageUrl") || "").trim();
     const sortOrder = Number(formData.get("sortOrder") || 0);
     const imageFile = formData.get("imageFile");
 
-    let imageUrl = imageUrlInput;
+    let imageUrl = item.imageUrl;
     if (imageFile instanceof File && imageFile.size > 0) {
       const uploaded = await uploadImage(imageFile, "ovijatrik/gallery");
       imageUrl = uploaded.url;
@@ -42,7 +41,7 @@ export default async function EditGalleryItemPage({
     await updateGalleryItem(id, {
       titleBn: titleBn || undefined,
       titleEn: titleEn || undefined,
-      imageUrl: imageUrl || item.imageUrl,
+      imageUrl,
       sortOrder,
     });
 
@@ -84,11 +83,6 @@ export default async function EditGalleryItemPage({
           <input
             name="titleEn"
             defaultValue={item.titleEn ?? ""}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <input
-            name="imageUrl"
-            defaultValue={item.imageUrl}
             className="w-full rounded-md border border-input px-3 py-2"
           />
           <input

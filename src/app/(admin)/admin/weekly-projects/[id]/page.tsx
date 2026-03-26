@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   addWeeklyDonation,
+  deleteWeeklyProjectPermanently,
   duplicateWeeklyProject,
+  softDeleteWeeklyDonation,
   softDeleteWeeklyProject,
   updateWeeklyProject,
 } from "@/actions/weekly-project";
@@ -46,14 +49,8 @@ export default async function EditWeeklyProjectPage({
       | "ARCHIVED";
     const startDateStr = String(formData.get("startDate") || "").trim();
     const endDateStr = String(formData.get("endDate") || "").trim();
-    const photoUrlsRaw = String(formData.get("photoUrls") || "").trim();
 
-    const urls = photoUrlsRaw
-      ? photoUrlsRaw
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean)
-      : [];
+    const urls = [...project.photos];
 
     const photoFiles = formData
       .getAll("photoFiles")
@@ -83,6 +80,12 @@ export default async function EditWeeklyProjectPage({
   async function deleteAction() {
     "use server";
     await softDeleteWeeklyProject(id);
+    redirect("/admin/weekly-projects");
+  }
+
+  async function permanentDeleteAction() {
+    "use server";
+    await deleteWeeklyProjectPermanently(id);
     redirect("/admin/weekly-projects");
   }
 
@@ -190,12 +193,6 @@ export default async function EditWeeklyProjectPage({
               rows={6}
               className="w-full rounded-md border border-input px-3 py-2"
             />
-            <textarea
-              name="photoUrls"
-              defaultValue={project.photos.join("\n")}
-              rows={4}
-              className="w-full rounded-md border border-input px-3 py-2"
-            />
             <input
               name="photoFiles"
               type="file"
@@ -216,6 +213,11 @@ export default async function EditWeeklyProjectPage({
             <form action={deleteAction}>
               <Button type="submit" variant="destructive">
                 Archive
+              </Button>
+            </form>
+            <form action={permanentDeleteAction}>
+              <Button type="submit" variant="destructive">
+                Delete Permanently
               </Button>
             </form>
           </div>
@@ -277,10 +279,31 @@ export default async function EditWeeklyProjectPage({
             {project.donations.map((donation) => (
               <div
                 key={donation.id}
-                className="rounded-md border border-border px-3 py-2"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border px-3 py-2"
               >
-                {donation.amount} BDT - {donation.medium} -{" "}
-                {donation.donorName || "Anonymous"}
+                <p>
+                  {donation.amount} BDT - {donation.medium} -{" "}
+                  {donation.donorName || "Anonymous"}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button asChild size="sm" variant="outline">
+                    <Link
+                      href={`/admin/weekly-projects/${id}/donations/${donation.id}`}
+                    >
+                      Edit
+                    </Link>
+                  </Button>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await softDeleteWeeklyDonation(donation.id);
+                    }}
+                  >
+                    <Button type="submit" size="sm" variant="destructive">
+                      Archive
+                    </Button>
+                  </form>
+                </div>
               </div>
             ))}
           </div>

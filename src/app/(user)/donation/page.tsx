@@ -1,5 +1,6 @@
 // src/app/(public)/donation/page.tsx
 
+import Link from "next/link";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function DonationPage() {
@@ -19,6 +20,7 @@ export default async function DonationPage() {
       zakatNote: "After sending Zakat, please inform us on WhatsApp:",
       footer:
         "Every donation is recorded transparently and used according to the project.",
+      applyHelp: "Need support? Apply for donation help",
     },
     bn: {
       title: "অনুদান করুন",
@@ -34,6 +36,7 @@ export default async function DonationPage() {
       zakatNote: "যাকাত পাঠিয়ে WHATSAPP এ জানিয়ে দিন:",
       footer:
         "আপনার প্রতিটি অনুদান স্বচ্ছতার সাথে রেকর্ড করা হয় এবং প্রজেক্ট ভিত্তিকভাবে ব্যবহার করা হয়।",
+      applyHelp: "সহায়তা প্রয়োজন? অনুদানের জন্য আবেদন করুন",
     },
   } as const;
 
@@ -115,6 +118,14 @@ export default async function DonationPage() {
         </div>
 
         <p className="mt-8 text-sm text-muted-foreground">{content.footer}</p>
+        <div className="mt-4">
+          <Link
+            href="/apply-for-donation"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            {content.applyHelp}
+          </Link>
+        </div>
       </section>
     </main>
   );

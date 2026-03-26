@@ -1,11 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "100mb",
+    },
+  },
+ images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "needyfoundation.org",
+        // Optional: you can add pathname: '/wp-content/uploads/**' 
+        // if you want to be even more specific.
       },
     ],
   },

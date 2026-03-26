@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { getTubewellProjectBySlug } from "@/actions/tubewell-project";
 import { getRequestLanguage } from "@/lib/language";
 
@@ -52,6 +53,21 @@ export default async function TubewellProjectDetailPage({
         <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
+
+        {project.photos.length > 0 && (
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {project.photos.map((photo, index) => (
+              <Image
+                key={photo + index}
+                src={photo}
+                alt={`${title} ${index + 1}`}
+                width={1200}
+                height={700}
+                className="h-56 w-full rounded-xl object-cover"
+              />
+            ))}
+          </div>
+        )}
 
         {project.impactSummary && (
           <div className="mt-6 rounded-xl bg-muted p-4 text-sm text-muted-foreground">

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  deleteTubewellProjectPermanently,
   duplicateTubewellProject,
   softDeleteTubewellProject,
 } from "@/actions/tubewell-project";
@@ -149,6 +150,16 @@ export default async function TubewellProjectsAdminPage({
               >
                 <Button variant="destructive" size="sm" type="submit">
                   Archive
+                </Button>
+              </form>
+              <form
+                action={async () => {
+                  "use server";
+                  await deleteTubewellProjectPermanently(project.id);
+                }}
+              >
+                <Button variant="destructive" size="sm" type="submit">
+                  Delete
                 </Button>
               </form>
             </CardContent>

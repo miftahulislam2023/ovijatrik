@@ -2,8 +2,11 @@
 
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getMessages() {
+  await requireAdminAction();
+
   return prisma.message.findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
@@ -11,6 +14,8 @@ export async function getMessages() {
 }
 
 export async function getMessageById(id: string) {
+  await requireAdminAction();
+
   return prisma.message.findUnique({
     where: { id },
   });
@@ -44,6 +49,8 @@ export async function sendContactMessage(formData: FormData) {
 
 // Admin mark as read
 export async function markMessageAsRead(id: string) {
+  await requireAdminAction();
+
   const msg = await prisma.message.update({
     where: { id },
     data: { readAt: new Date() },
@@ -54,6 +61,8 @@ export async function markMessageAsRead(id: string) {
 }
 
 export async function softDeleteMessage(id: string) {
+  await requireAdminAction();
+
   const msg = await prisma.message.update({
     where: { id },
     data: { deletedAt: new Date() },

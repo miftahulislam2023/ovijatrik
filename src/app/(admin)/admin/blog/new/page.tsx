@@ -21,14 +21,13 @@ export default function NewBlogPostPage() {
     const metaDescription = String(
       formData.get("metaDescription") || "",
     ).trim();
-    const coverImageUrl = String(formData.get("coverImageUrl") || "").trim();
     const coverFile = formData.get("coverFile");
 
     if (!titleBn || !markdownBn) {
       throw new Error("Title and markdown content are required");
     }
 
-    let coverImage = coverImageUrl || undefined;
+    let coverImage: string | undefined;
     if (coverFile instanceof File && coverFile.size > 0) {
       const uploaded = await uploadImage(coverFile, "ovijatrik/blog");
       coverImage = uploaded.url;
@@ -105,11 +104,6 @@ export default function NewBlogPostPage() {
             name="markdownEn"
             rows={10}
             placeholder="Markdown (English)"
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <input
-            name="coverImageUrl"
-            placeholder="Cover image URL"
             className="w-full rounded-md border border-input px-3 py-2"
           />
           <input

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
+  deleteTubewellProjectPermanently,
   duplicateTubewellProject,
   softDeleteTubewellProject,
   updateTubewellProject,
@@ -32,24 +33,17 @@ export default async function EditTubewellProjectPage({
     const titleEn = String(formData.get("titleEn") || "").trim();
     const slugInput = String(formData.get("slug") || "").trim();
     const location = String(formData.get("location") || "").trim();
-    const descriptionBn = String(formData.get("descriptionBn") || "").trim();
-    const descriptionEn = String(formData.get("descriptionEn") || "").trim();
+    const description = String(formData.get("description") || "").trim();
     const completionDateStr = String(
       formData.get("completionDate") || "",
     ).trim();
     const impactSummary = String(formData.get("impactSummary") || "").trim();
-    const photoUrlsRaw = String(formData.get("photoUrls") || "").trim();
 
     const completionDate = completionDateStr
       ? new Date(completionDateStr)
       : project.completionDate;
 
-    const urls = photoUrlsRaw
-      ? photoUrlsRaw
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean)
-      : [];
+    const urls = [...project.photos];
 
     const photoFiles = formData
       .getAll("photoFiles")
@@ -66,8 +60,8 @@ export default async function EditTubewellProjectPage({
       titleEn: titleEn || undefined,
       slug: slugify(slugInput || titleEn || titleBn),
       location,
-      descriptionBn,
-      descriptionEn: descriptionEn || undefined,
+      descriptionBn: description,
+      descriptionEn: description,
       photos: urls,
       completionDate,
       year: completionDate.getFullYear(),
@@ -86,6 +80,12 @@ export default async function EditTubewellProjectPage({
   async function deleteAction() {
     "use server";
     await softDeleteTubewellProject(id);
+    redirect("/admin/tubewell-projects");
+  }
+
+  async function permanentDeleteAction() {
+    "use server";
+    await deleteTubewellProjectPermanently(id);
     redirect("/admin/tubewell-projects");
   }
 
@@ -129,27 +129,15 @@ export default async function EditTubewellProjectPage({
             />
           </div>
           <textarea
-            name="descriptionBn"
-            defaultValue={project.descriptionBn}
+            name="description"
+            defaultValue={project.descriptionEn || project.descriptionBn}
             rows={5}
             className="w-full rounded-md border border-input px-3 py-2"
             required
           />
           <textarea
-            name="descriptionEn"
-            defaultValue={project.descriptionEn ?? ""}
-            rows={5}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <textarea
             name="impactSummary"
             defaultValue={project.impactSummary ?? ""}
-            rows={4}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <textarea
-            name="photoUrls"
-            defaultValue={project.photos.join("\n")}
             rows={4}
             className="w-full rounded-md border border-input px-3 py-2"
           />
@@ -175,6 +163,11 @@ export default async function EditTubewellProjectPage({
           <form action={deleteAction}>
             <Button type="submit" variant="destructive">
               Archive
+            </Button>
+          </form>
+          <form action={permanentDeleteAction}>
+            <Button type="submit" variant="destructive">
+              Delete Permanently
             </Button>
           </form>
         </div>

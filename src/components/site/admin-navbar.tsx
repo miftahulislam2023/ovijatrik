@@ -13,6 +13,7 @@ import {
   Mail,
   Newspaper,
   ScrollText,
+  Users,
   Menu,
   X,
 } from "lucide-react";
@@ -27,6 +28,7 @@ const navItems = [
   { key: "gallery", href: "/admin/gallery", icon: FileImage },
   { key: "donations", href: "/admin/donations", icon: HandCoins },
   { key: "applications", href: "/admin/applications", icon: ScrollText },
+  { key: "volunteers", href: "/admin/volunteers", icon: Users },
   { key: "messages", href: "/admin/messages", icon: Mail },
 ] as const;
 
@@ -43,6 +45,7 @@ const textCopy = {
       gallery: "Gallery",
       donations: "Global Donations",
       applications: "Applications",
+      volunteers: "Volunteers",
       messages: "Messages",
     },
   },
@@ -58,6 +61,7 @@ const textCopy = {
       gallery: "গ্যালারি",
       donations: "সাধারণ অনুদান",
       applications: "আবেদনসমূহ",
+      volunteers: "স্বেচ্ছাসেবক",
       messages: "বার্তাসমূহ",
     },
   },
@@ -135,11 +139,13 @@ export function AdminHeader({
     <>
       <header className="sticky top-0 z-40 w-full border-b border-black/10 bg-white/80 backdrop-blur-xl lg:static lg:border-none lg:bg-transparent lg:backdrop-blur-none dark:border-white/10 dark:bg-[#0e1416]/80 lg:dark:bg-transparent">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8 lg:py-6">
-          
           {/* Left Side: Mobile Logo OR Desktop Titles */}
           <div className="flex items-center gap-3">
             {/* Mobile Logo View */}
-            <Link href="/admin/dashboard" className="flex items-center gap-2.5 lg:hidden">
+            <Link
+              href="/admin/dashboard"
+              className="flex items-center gap-2.5 lg:hidden"
+            >
               <div className="relative h-8 w-8 overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-white/5">
                 <Image
                   src="/logo.png"
@@ -167,16 +173,19 @@ export function AdminHeader({
 
           {/* Right Side: Toggles & Hamburger */}
           <div className="flex items-center gap-2">
-            
             {/* Toggles passed from layout.tsx render perfectly here without duplicating */}
-            {children} 
-            
+            {children}
+
             <button
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
               className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 transition hover:bg-black/5 lg:hidden dark:text-white/70 dark:hover:bg-white/10"
             >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           </div>
         </div>

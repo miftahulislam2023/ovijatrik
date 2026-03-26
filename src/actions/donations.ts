@@ -2,8 +2,11 @@
 
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getDonations() {
+  await requireAdminAction();
+
   return prisma.donation.findMany({
     where: { deletedAt: null },
     orderBy: { date: "desc" },
@@ -11,6 +14,8 @@ export async function getDonations() {
 }
 
 export async function getDonationById(id: string) {
+  await requireAdminAction();
+
   return prisma.donation.findUnique({
     where: { id },
   });
@@ -26,6 +31,8 @@ export async function createDonation(data: {
   type?: "GENERAL" | "ZAKAT" | "SADAQAH" | "EMERGENCY" | "RAMADAN" | "OTHER";
   date?: Date;
 }) {
+  await requireAdminAction();
+
   const donation = await prisma.donation.create({
     data: {
       medium: data.medium,
@@ -56,6 +63,8 @@ export async function updateDonation(
     date?: Date;
   }>
 ) {
+  await requireAdminAction();
+
   const donation = await prisma.donation.update({
     where: { id },
     data,
@@ -66,6 +75,8 @@ export async function updateDonation(
 }
 
 export async function softDeleteDonation(id: string) {
+  await requireAdminAction();
+
   const donation = await prisma.donation.update({
     where: { id },
     data: { deletedAt: new Date() },
@@ -76,6 +87,8 @@ export async function softDeleteDonation(id: string) {
 }
 
 export async function duplicateDonation(id: string) {
+  await requireAdminAction();
+
   const original = await prisma.donation.findUnique({ where: { id } });
   if (!original) return null;
 

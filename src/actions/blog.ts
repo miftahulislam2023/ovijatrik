@@ -2,6 +2,7 @@
 
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getBlogPosts() {
   return prisma.blogPost.findMany({
@@ -35,6 +36,8 @@ export async function createBlogPost(data: {
   metaTitle?: string;
   metaDescription?: string;
 }) {
+  await requireAdminAction();
+
   const post = await prisma.blogPost.create({
     data: {
       titleBn: data.titleBn,
@@ -72,6 +75,8 @@ export async function updateBlogPost(
     metaDescription?: string;
   }>
 ) {
+  await requireAdminAction();
+
   const post = await prisma.blogPost.update({
     where: { id },
     data,
@@ -84,6 +89,8 @@ export async function updateBlogPost(
 }
 
 export async function softDeleteBlogPost(id: string) {
+  await requireAdminAction();
+
   const post = await prisma.blogPost.update({
     where: { id },
     data: { deletedAt: new Date() },
@@ -95,6 +102,8 @@ export async function softDeleteBlogPost(id: string) {
 }
 
 export async function duplicateBlogPost(id: string) {
+  await requireAdminAction();
+
   const original = await prisma.blogPost.findUnique({ where: { id } });
   if (!original) return null;
 

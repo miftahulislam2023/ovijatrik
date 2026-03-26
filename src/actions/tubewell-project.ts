@@ -2,6 +2,7 @@
 
 import {prisma }from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getTubewellProjects() {
   return prisma.tubewellProject.findMany({
@@ -34,6 +35,8 @@ export async function createTubewellProject(data: {
   year: number;
   impactSummary?: string;
 }) {
+  await requireAdminAction();
+
   const project = await prisma.tubewellProject.create({
     data: {
       titleBn: data.titleBn,
@@ -69,6 +72,8 @@ export async function updateTubewellProject(
     impactSummary?: string;
   }>
 ) {
+  await requireAdminAction();
+
   const project = await prisma.tubewellProject.update({
     where: { id },
     data,
@@ -81,17 +86,40 @@ export async function updateTubewellProject(
 }
 
 export async function softDeleteTubewellProject(id: string) {
+  await requireAdminAction();
+
   const project = await prisma.tubewellProject.update({
     where: { id },
     data: { deletedAt: new Date() },
   });
 
   revalidatePath("/admin/tubewell-projects");
+  revalidatePath(`/admin/tubewell-projects/${id}`);
   revalidatePath("/tubewell-projects");
+  revalidatePath(`/tubewell-projects/${project.slug}`);
+  return project;
+}
+
+export async function deleteTubewellProjectPermanently(id: string) {
+  await requireAdminAction();
+
+  const project = await prisma.tubewellProject.findUnique({ where: { id } });
+  if (!project) return null;
+
+  await prisma.tubewellProject.delete({
+    where: { id },
+  });
+
+  revalidatePath("/admin/tubewell-projects");
+  revalidatePath(`/admin/tubewell-projects/${id}`);
+  revalidatePath("/tubewell-projects");
+  revalidatePath(`/tubewell-projects/${project.slug}`);
   return project;
 }
 
 export async function duplicateTubewellProject(id: string) {
+  await requireAdminAction();
+
   const original = await prisma.tubewellProject.findUnique({ where: { id } });
   if (!original) return null;
 

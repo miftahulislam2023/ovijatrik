@@ -20,7 +20,6 @@ export default function Header() {
     en: {
       brand: "Ovijatrik",
       login: "Login",
-      signup: "Sign Up",
       profile: "Profile",
       logout: "Logout",
       donate: "Donate",
@@ -30,6 +29,8 @@ export default function Header() {
         projects: "Projects",
         weekly: "Weekly Projects",
         tubewell: "Tubewell Projects",
+        apply: "Apply for Donation",
+        join: "Join Us",
         blog: "Blog",
         gallery: "Gallery",
         contact: "Contact",
@@ -38,7 +39,6 @@ export default function Header() {
     bn: {
       brand: "অভিযাত্রিক",
       login: "লগইন",
-      signup: "সাইন আপ",
       profile: "প্রোফাইল",
       logout: "লগআউট",
       donate: "ডোনেট করুন",
@@ -48,6 +48,8 @@ export default function Header() {
         projects: "প্রজেক্টসমূহ",
         weekly: "সাপ্তাহিক প্রজেক্ট",
         tubewell: "টিউবওয়েল প্রজেক্ট",
+        apply: "অনুদানের জন্য আবেদন",
+        join: "যোগ দিন",
         blog: "ব্লগ",
         gallery: "গ্যালারি",
         contact: "যোগাযোগ",
@@ -65,6 +67,8 @@ export default function Header() {
     { href: "/projects", label: content.nav.projects },
     { href: "/weekly-projects", label: content.nav.weekly },
     { href: "/tubewell-projects", label: content.nav.tubewell },
+    { href: "/apply-for-donation", label: content.nav.apply },
+    { href: "/join-us", label: content.nav.join },
     { href: "/blog", label: content.nav.blog },
     { href: "/gallery", label: content.nav.gallery },
     { href: "/contact", label: content.nav.contact },
@@ -117,9 +121,6 @@ export default function Header() {
             <>
               <Button asChild variant="outline" size="sm" className="shadow-sm">
                 <Link href="/join-us">{content.login}</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm" className="shadow-sm">
-                <Link href="/create-admin">{content.signup}</Link>
               </Button>
             </>
           )}
@@ -184,9 +185,6 @@ export default function Header() {
               <>
                 <Button asChild variant="outline" className="mt-3" onClick={() => setOpen(false)}>
                   <Link href="/join-us">{content.login}</Link>
-                </Button>
-                <Button asChild variant="outline" className="mt-3" onClick={() => setOpen(false)}>
-                  <Link href="/create-admin">{content.signup}</Link>
                 </Button>
               </>
             )}

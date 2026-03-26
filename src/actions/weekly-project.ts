@@ -2,6 +2,7 @@
 
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getWeeklyProjects() {
   return prisma.weeklyProject.findMany({
@@ -46,6 +47,8 @@ export async function createWeeklyProject(data: {
   startDate?: Date;
   endDate?: Date;
 }) {
+  await requireAdminAction();
+
   const project = await prisma.weeklyProject.create({
     data: {
       titleBn: data.titleBn,
@@ -81,6 +84,8 @@ export async function updateWeeklyProject(
     endDate?: Date;
   }>
 ) {
+  await requireAdminAction();
+
   const project = await prisma.weeklyProject.update({
     where: { id },
     data,
@@ -93,17 +98,44 @@ export async function updateWeeklyProject(
 }
 
 export async function softDeleteWeeklyProject(id: string) {
+  await requireAdminAction();
+
   const project = await prisma.weeklyProject.update({
     where: { id },
     data: { deletedAt: new Date() },
   });
 
   revalidatePath("/admin/weekly-projects");
+  revalidatePath(`/admin/weekly-projects/${id}`);
   revalidatePath("/weekly-projects");
+  revalidatePath(`/weekly-projects/${project.slug}`);
+  return project;
+}
+
+export async function deleteWeeklyProjectPermanently(id: string) {
+  await requireAdminAction();
+
+  const project = await prisma.weeklyProject.findUnique({ where: { id } });
+  if (!project) return null;
+
+  await prisma.weeklyDonation.deleteMany({
+    where: { projectId: id },
+  });
+
+  await prisma.weeklyProject.delete({
+    where: { id },
+  });
+
+  revalidatePath("/admin/weekly-projects");
+  revalidatePath(`/admin/weekly-projects/${id}`);
+  revalidatePath("/weekly-projects");
+  revalidatePath(`/weekly-projects/${project.slug}`);
   return project;
 }
 
 export async function duplicateWeeklyProject(id: string) {
+  await requireAdminAction();
+
   const original = await prisma.weeklyProject.findUnique({ where: { id } });
   if (!original) return null;
 
@@ -138,6 +170,8 @@ export async function addWeeklyDonation(data: {
   donorName?: string;
   date?: Date;
 }) {
+  await requireAdminAction();
+
   const donation = await prisma.weeklyDonation.create({
     data: {
       projectId: data.projectId,
@@ -168,6 +202,8 @@ export async function addWeeklyDonation(data: {
 }
 
 export async function softDeleteWeeklyDonation(id: string) {
+  await requireAdminAction();
+
   const donation = await prisma.weeklyDonation.update({
     where: { id },
     data: { deletedAt: new Date() },
@@ -185,6 +221,42 @@ export async function softDeleteWeeklyDonation(id: string) {
   });
 
   revalidatePath("/admin/weekly-projects");
+  revalidatePath(`/admin/weekly-projects/${donation.projectId}`);
+  revalidatePath("/weekly-projects");
+  return donation;
+}
+
+export async function updateWeeklyDonation(
+  id: string,
+  data: Partial<{
+    medium: "BKASH" | "NAGAD" | "ROCKET" | "BANK" | "OTHER";
+    amount: number;
+    trxid?: string;
+    comments?: string;
+    phone?: string;
+    donorName?: string;
+    date?: Date;
+  }>,
+) {
+  await requireAdminAction();
+
+  const donation = await prisma.weeklyDonation.update({
+    where: { id },
+    data,
+  });
+
+  const aggregate = await prisma.weeklyDonation.aggregate({
+    where: { projectId: donation.projectId, deletedAt: null },
+    _sum: { amount: true },
+  });
+
+  await prisma.weeklyProject.update({
+    where: { id: donation.projectId },
+    data: { currentAmount: aggregate._sum.amount ?? 0 },
+  });
+
+  revalidatePath("/admin/weekly-projects");
+  revalidatePath(`/admin/weekly-projects/${donation.projectId}`);
   revalidatePath("/weekly-projects");
   return donation;
 }

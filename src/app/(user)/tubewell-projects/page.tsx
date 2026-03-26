@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getTubewellProjects } from "@/actions/tubewell-project";
 import { getRequestLanguage } from "@/lib/language";
 
@@ -39,6 +40,15 @@ export default async function TubewellProjectsPage() {
               href={`/tubewell-projects/${project.slug}`}
               className="block rounded-xl border border-border bg-card p-5 shadow-sm hover:border-primary"
             >
+              {project.photos[0] && (
+                <Image
+                  src={project.photos[0]}
+                  alt={project.titleEn || project.titleBn}
+                  width={900}
+                  height={500}
+                  className="mb-3 h-44 w-full rounded-lg object-cover"
+                />
+              )}
               <h2 className="text-base font-semibold">
                 {language === "en"
                   ? project.titleEn || project.titleBn

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  deleteWeeklyProjectPermanently,
   duplicateWeeklyProject,
   softDeleteWeeklyProject,
 } from "@/actions/weekly-project";
@@ -183,6 +184,16 @@ export default async function WeeklyProjectsAdminPage({
                 >
                   <Button variant="destructive" size="sm" type="submit">
                     Archive
+                  </Button>
+                </form>
+                <form
+                  action={async () => {
+                    "use server";
+                    await deleteWeeklyProjectPermanently(project.id);
+                  }}
+                >
+                  <Button variant="destructive" size="sm" type="submit">
+                    Delete
                   </Button>
                 </form>
               </CardContent>

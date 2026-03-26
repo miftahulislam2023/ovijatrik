@@ -14,25 +14,18 @@ export default function NewTubewellProjectPage() {
     const titleEn = String(formData.get("titleEn") || "").trim();
     const slugInput = String(formData.get("slug") || "").trim();
     const location = String(formData.get("location") || "").trim();
-    const descriptionBn = String(formData.get("descriptionBn") || "").trim();
-    const descriptionEn = String(formData.get("descriptionEn") || "").trim();
+    const description = String(formData.get("description") || "").trim();
     const completionDateStr = String(
       formData.get("completionDate") || "",
     ).trim();
     const impactSummary = String(formData.get("impactSummary") || "").trim();
-    const photoUrlsRaw = String(formData.get("photoUrls") || "").trim();
 
-    if (!titleBn || !location || !descriptionBn || !completionDateStr) {
+    if (!titleBn || !location || !description || !completionDateStr) {
       throw new Error("Required fields missing");
     }
 
     const completionDate = new Date(completionDateStr);
-    const urls = photoUrlsRaw
-      ? photoUrlsRaw
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean)
-      : [];
+    const urls: string[] = [];
 
     const photoFiles = formData
       .getAll("photoFiles")
@@ -49,8 +42,8 @@ export default function NewTubewellProjectPage() {
       titleEn: titleEn || undefined,
       slug: slugify(slugInput || titleEn || titleBn),
       location,
-      descriptionBn,
-      descriptionEn: descriptionEn || undefined,
+      descriptionBn: description,
+      descriptionEn: description,
       photos: urls,
       completionDate,
       year: completionDate.getFullYear(),
@@ -98,27 +91,15 @@ export default function NewTubewellProjectPage() {
             />
           </div>
           <textarea
-            name="descriptionBn"
-            placeholder="Description (Bangla)"
+            name="description"
+            placeholder="Description"
             rows={5}
             className="w-full rounded-md border border-input px-3 py-2"
             required
           />
           <textarea
-            name="descriptionEn"
-            placeholder="Description (English)"
-            rows={5}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <textarea
             name="impactSummary"
             placeholder="Impact summary"
-            rows={4}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <textarea
-            name="photoUrls"
-            placeholder="Photo URLs (one per line)"
             rows={4}
             className="w-full rounded-md border border-input px-3 py-2"
           />

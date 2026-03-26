@@ -2,6 +2,7 @@
 
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getGalleryItems() {
   return prisma.galleryItem.findMany({
@@ -22,6 +23,8 @@ export async function createGalleryItem(data: {
   imageUrl: string;
   sortOrder?: number;
 }) {
+  await requireAdminAction();
+
   const item = await prisma.galleryItem.create({
     data: {
       titleBn: data.titleBn ?? null,
@@ -45,6 +48,8 @@ export async function updateGalleryItem(
     sortOrder: number;
   }>
 ) {
+  await requireAdminAction();
+
   const item = await prisma.galleryItem.update({
     where: { id },
     data,
@@ -56,6 +61,8 @@ export async function updateGalleryItem(
 }
 
 export async function softDeleteGalleryItem(id: string) {
+  await requireAdminAction();
+
   const item = await prisma.galleryItem.update({
     where: { id },
     data: { deletedAt: new Date() },
@@ -67,6 +74,8 @@ export async function softDeleteGalleryItem(id: string) {
 }
 
 export async function duplicateGalleryItem(id: string) {
+  await requireAdminAction();
+
   const original = await prisma.galleryItem.findUnique({ where: { id } });
   if (!original) return null;
 

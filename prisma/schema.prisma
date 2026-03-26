@@ -13,7 +13,7 @@ model User {
   email     String?  @unique
   password  String?
   image     String?
-  role      String   @default("admin")
+  role      String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -67,10 +67,10 @@ model Donation {
 }
 
 model TubewellProject {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   titleBn        String
   titleEn        String?
-  slug           String   @unique
+  slug           String    @unique
   location       String
   descriptionBn  String
   descriptionEn  String?
@@ -78,64 +78,80 @@ model TubewellProject {
   completionDate DateTime
   year           Int
   impactSummary  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
 }
 
 model BlogPost {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   titleBn         String
   titleEn         String?
-  slug            String   @unique
+  slug            String    @unique
   markdownBn      String
   markdownEn      String?
   coverImage      String?
-  published       Boolean  @default(false)
-  featured        Boolean  @default(false)
+  published       Boolean   @default(false)
+  featured        Boolean   @default(false)
   readingTime     Int?
   metaTitle       String?
   metaDescription String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
 }
 
 model GalleryItem {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   titleBn   String?
   titleEn   String?
   imageUrl  String
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
 model Message {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String
   email     String
   phone     String?
   subject   String?
   body      String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   readAt    DateTime?
   deletedAt DateTime?
 }
 
 model Application {
-  id          String   @id @default(cuid())
-  name        String
-  phone       String
-  email       String?
-  address     String?
-  reason      String   // why they are applying for donation
-  details     String?  // extra info, documents description, etc.
-  status      AppStatus @default(PENDING)
-  createdAt   DateTime @default(now())
-  reviewedAt  DateTime?
-  deletedAt   DateTime?
+  id         String    @id @default(cuid())
+  name       String
+  phone      String
+  email      String?
+  address    String?
+  reason     String // why they are applying for donation
+  details    String? // extra info, documents description, etc.
+  status     AppStatus @default(PENDING)
+  createdAt  DateTime  @default(now())
+  reviewedAt DateTime?
+  deletedAt  DateTime?
+}
+
+model VolunteerApplication {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String
+  email        String?
+  address      String?
+  availability String?
+  interests    String?
+  experience   String?
+  motivation   String
+  status       AppStatus @default(PENDING)
+  createdAt    DateTime  @default(now())
+  reviewedAt   DateTime?
+  deletedAt    DateTime?
 }
 
 enum ProjectStatus {

@@ -9,36 +9,19 @@ export default function NewGalleryItemPage() {
     "use server";
     const titleBn = String(formData.get("titleBn") || "").trim();
     const titleEn = String(formData.get("titleEn") || "").trim();
-    const imageUrlInput = String(formData.get("imageUrl") || "").trim();
     const sortOrder = Number(formData.get("sortOrder") || 0);
     const imageFile = formData.get("imageFile");
 
-    let imageUrl = imageUrlInput;
-    if (imageFile instanceof File && imageFile.size > 0) {
-      try {
-        const uploaded = await uploadImage(imageFile, "ovijatrik/gallery");
-        imageUrl = uploaded.url;
-      } catch (error) {
-        if (
-          imageUrlInput &&
-          error instanceof Error &&
-          error.message.includes("Cloudinary is not configured")
-        ) {
-          imageUrl = imageUrlInput;
-        } else {
-          throw error;
-        }
-      }
+    if (!(imageFile instanceof File) || imageFile.size === 0) {
+      throw new Error("Please upload an image file");
     }
 
-    if (!imageUrl) {
-      throw new Error("Image URL or image file is required");
-    }
+    const uploaded = await uploadImage(imageFile, "ovijatrik/gallery");
 
     await createGalleryItem({
       titleBn: titleBn || undefined,
       titleEn: titleEn || undefined,
-      imageUrl,
+      imageUrl: uploaded.url,
       sortOrder,
     });
 
@@ -63,20 +46,21 @@ export default function NewGalleryItemPage() {
             className="w-full rounded-md border border-input px-3 py-2"
           />
           <input
-            name="imageUrl"
-            placeholder="Image URL"
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <input
             name="imageFile"
             type="file"
             accept="image/*"
             className="w-full rounded-md border border-input px-3 py-2"
+            required
           />
+          <p className="text-xs text-muted-foreground">
+            Upload an image file (JPG, PNG, WEBP). This will be stored in
+            Cloudinary.
+          </p>
           <input
             name="sortOrder"
             type="number"
             defaultValue={0}
+            placeholder="Sort order (0 = first)"
             className="w-full rounded-md border border-input px-3 py-2"
           />
           <Button type="submit" className="w-full sm:w-auto">

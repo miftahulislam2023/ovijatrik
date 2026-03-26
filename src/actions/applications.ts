@@ -2,8 +2,11 @@
 
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdminAction } from "@/lib/authorization";
 
 export async function getApplications() {
+  await requireAdminAction();
+
   return prisma.application.findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
@@ -11,6 +14,8 @@ export async function getApplications() {
 }
 
 export async function getApplicationById(id: string) {
+  await requireAdminAction();
+
   return prisma.application.findUnique({
     where: { id },
   });
@@ -58,6 +63,8 @@ export async function updateApplication(
     status: "PENDING" | "APPROVED" | "REJECTED";
   }>
 ) {
+  await requireAdminAction();
+
   const app = await prisma.application.update({
     where: { id },
     data: {
@@ -71,6 +78,8 @@ export async function updateApplication(
 }
 
 export async function softDeleteApplication(id: string) {
+  await requireAdminAction();
+
   const app = await prisma.application.update({
     where: { id },
     data: { deletedAt: new Date() },

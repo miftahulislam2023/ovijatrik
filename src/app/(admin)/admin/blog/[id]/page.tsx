@@ -39,10 +39,9 @@ export default async function EditBlogPostPage({
     const metaDescription = String(
       formData.get("metaDescription") || "",
     ).trim();
-    const coverImageUrl = String(formData.get("coverImageUrl") || "").trim();
     const coverFile = formData.get("coverFile");
 
-    let coverImage = coverImageUrl || undefined;
+    let coverImage = post.coverImage || undefined;
     if (coverFile instanceof File && coverFile.size > 0) {
       const uploaded = await uploadImage(coverFile, "ovijatrik/blog");
       coverImage = uploaded.url;
@@ -132,11 +131,6 @@ export default async function EditBlogPostPage({
             name="markdownEn"
             defaultValue={post.markdownEn ?? ""}
             rows={10}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <input
-            name="coverImageUrl"
-            defaultValue={post.coverImage ?? ""}
             className="w-full rounded-md border border-input px-3 py-2"
           />
           <input
