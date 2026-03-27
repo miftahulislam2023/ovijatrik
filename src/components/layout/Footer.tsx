@@ -68,20 +68,20 @@ export default function Footer() {
   const content = copy[language];
 
   return (
-    <footer className="relative overflow-hidden border-t border-border/70 bg-slate-950 text-slate-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.2),_transparent_50%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.18),_transparent_45%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:30px_30px] opacity-25" />
+    <footer className="relative overflow-hidden border-t border-border/70 bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(14,116,144,0.14),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.12),transparent_50%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.2),transparent_45%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(14,116,144,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(14,116,144,0.08)_1px,transparent_1px)] bg-size-[30px_30px] opacity-40 dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] dark:opacity-30" />
 
       <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid gap-8 rounded-3xl border border-white/15 bg-white/5 p-6 backdrop-blur-sm sm:p-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="grid gap-8 rounded-3xl border border-border/80 bg-card/70 p-6 backdrop-blur-sm sm:p-8 lg:grid-cols-[1.3fr_1fr]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-200/90">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/90">
               {content.brand}
             </p>
-            <h2 className="mt-4 max-w-xl text-2xl font-bold leading-tight text-white sm:text-3xl">
+            <h2 className="mt-4 max-w-xl text-2xl font-bold leading-tight text-foreground sm:text-3xl">
               {content.ctaTitle}
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-200/90 sm:text-base">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
               {content.ctaText}
             </p>
           </div>
@@ -89,7 +89,7 @@ export default function Footer() {
           <div className="flex items-center lg:justify-end">
             <Link
               href="/donation"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-emerald-950 transition hover:translate-y-[-1px] hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 lg:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-px hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:w-auto"
             >
               {content.ctaButton}
             </Link>
@@ -98,26 +98,26 @@ export default function Footer() {
 
         <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold tracking-tight text-white">
+            <h3 className="text-2xl font-bold tracking-tight text-foreground">
               {content.brand}
             </h3>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-300">
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
               {content.description}
             </p>
-            <p className="mt-5 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-slate-200">
+            <p className="mt-5 inline-flex rounded-full border border-border/80 bg-muted/70 px-3 py-1 text-xs text-muted-foreground">
               {content.location}
             </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-200">
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-foreground/90">
               {content.quickLinks}
             </h4>
-            <ul className="mt-3 space-y-2 text-sm text-slate-300">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/about"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.about}
                 </Link>
@@ -125,7 +125,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/projects"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.projects}
                 </Link>
@@ -133,7 +133,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/blog"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.blog}
                 </Link>
@@ -141,7 +141,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/gallery"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.gallery}
                 </Link>
@@ -150,14 +150,14 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-200">
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-foreground/90">
               {content.support}
             </h4>
-            <ul className="mt-3 space-y-2 text-sm text-slate-300">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/donation"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.donation}
                 </Link>
@@ -165,7 +165,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/apply-for-donation"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.apply}
                 </Link>
@@ -173,7 +173,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.contact}
                 </Link>
@@ -182,14 +182,14 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-200">
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-foreground/90">
               {content.community}
             </h4>
-            <ul className="mt-3 space-y-2 text-sm text-slate-300">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/our-impact"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.impact}
                 </Link>
@@ -197,7 +197,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/join-us"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.volunteer}
                 </Link>
@@ -205,7 +205,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.terms}
                 </Link>
@@ -213,7 +213,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/privacy-policy"
-                  className="transition-colors hover:text-sky-200"
+                  className="transition-colors hover:text-primary"
                 >
                   {content.links.privacy}
                 </Link>
@@ -222,7 +222,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/15 pt-6 text-center text-xs text-slate-400 sm:text-sm">
+        <div className="mt-10 border-t border-border/70 pt-6 text-center text-xs text-muted-foreground sm:text-sm">
           © {new Date().getFullYear()} {content.brand}. {content.copyright}
         </div>
       </div>
