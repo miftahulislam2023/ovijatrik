@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { MultiImageUploadField } from "@/components/admin/multi-image-upload-field";
 import { createTubewellProject } from "@/actions/tubewell-project";
 import { slugify } from "@/lib/slug";
 import { uploadImage } from "@/lib/cloudinary";
-import { ArrowLeft, Save, Upload } from "lucide-react";
+import { ArrowLeft, Droplets, MapPin, Save } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function NewTubewellProjectPage() {
@@ -14,7 +15,10 @@ export default async function NewTubewellProjectPage() {
     ? {
         title: "নতুন টিউবওয়েল প্রকল্প",
         subtitle: "প্রকাশনার জন্য লোকেশন ও প্রভাব তথ্য ডকুমেন্ট করুন।",
+        breadcrumb: "প্রকল্প / টিউবওয়েল / নতুন",
         coreInfo: "মূল তথ্য",
+        impact: "কমিউনিটি ইমপ্যাক্ট",
+        media: "প্রকল্প মিডিয়া",
         save: "প্রকল্প সংরক্ষণ",
         cancel: "বাতিল",
       }
@@ -22,7 +26,10 @@ export default async function NewTubewellProjectPage() {
         title: "Create Tubewell Project",
         subtitle:
           "Document core location and community impact for publication.",
+        breadcrumb: "Projects / Tubewells / New",
         coreInfo: "Core Information",
+        impact: "Community Impact",
+        media: "Project Media",
         save: "Save Project",
         cancel: "Cancel",
       };
@@ -74,104 +81,202 @@ export default async function NewTubewellProjectPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <Link
-            href="/admin/tubewell-projects"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121923] dark:text-slate-200"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <div>
-            <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">
-              {copy.title}
-            </h1>
-            <p className="mt-1 text-slate-600 dark:text-slate-300">
-              {copy.subtitle}
-            </p>
+    <div className="mx-auto max-w-6xl space-y-8 pb-16">
+      <header className="rounded-3xl border border-[#d4e6ef] bg-linear-to-br from-[#f4faff] via-[#edf7ff] to-[#e7f3fb] p-6 shadow-sm dark:border-white/10 dark:from-[#12212d] dark:via-[#0f1b25] dark:to-[#0d1720] md:p-8">
+        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
+          <span>{copy.breadcrumb}</span>
+        </div>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <Link
+              href="/admin/tubewell-projects"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#bed4de] bg-white text-[#00535b] transition-colors hover:bg-[#e7f6ff] dark:border-white/15 dark:bg-[#101b26]"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div>
+              <h1 className="font-serif text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
+                {copy.title}
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-300 md:text-base">
+                {copy.subtitle}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex w-full gap-3 sm:w-auto">
+            <Button
+              asChild
+              variant="outline"
+              className="flex-1 rounded-full border-[#bec8ca] bg-white text-[#00535b] hover:bg-[#e7f6ff] sm:flex-none dark:border-white/20 dark:bg-[#111d27]"
+            >
+              <Link href="/admin/tubewell-projects">{copy.cancel}</Link>
+            </Button>
+            <Button
+              type="submit"
+              form="new-tubewell-form"
+              className="flex-1 rounded-full bg-linear-to-br from-[#00535b] to-[#006d77] text-white shadow-lg shadow-[#00535b]/20 transition-transform hover:scale-[0.99] sm:flex-none"
+            >
+              <Save className="h-4 w-4" />
+              {copy.save}
+            </Button>
           </div>
         </div>
       </header>
 
       <form
+        id="new-tubewell-form"
         action={createAction}
-        className="grid gap-6 lg:grid-cols-[1fr_260px]"
+        className="grid grid-cols-1 gap-8 lg:grid-cols-3"
       >
-        <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#121923]">
-          <h2 className="text-2xl font-semibold text-[#0f5f79]">
-            {copy.coreInfo}
-          </h2>
+        <div className="space-y-8 lg:col-span-2">
+          <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-[#d5e5ef] dark:bg-[#121923] dark:ring-white/10 md:p-8">
+            <h2 className="mb-6 flex items-center gap-2 font-serif text-2xl font-bold text-[#006972]">
+              <Droplets className="h-5 w-5" />
+              {copy.coreInfo}
+            </h2>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <input
-              name="titleBn"
-              placeholder={isBn ? "শিরোনাম (বাংলা)" : "Title (Bangla)"}
-              required
-              className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
-            />
-            <input
-              name="titleEn"
-              placeholder={isBn ? "শিরোনাম (ইংরেজি)" : "Title (English)"}
-              className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
-            />
-            <input
-              name="slug"
-              placeholder="Slug (optional)"
-              className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 dark:border-white/10 dark:bg-[#0f1620]"
-            />
-            <input
-              name="location"
-              placeholder={isBn ? "লোকেশন" : "Location"}
-              required
-              className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
-            />
-            <input
-              name="completionDate"
-              type="date"
-              required
-              className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
-            />
-          </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn ? "শিরোনাম (বাংলা)" : "Title (Bangla)"}
+                </label>
+                <input
+                  name="titleBn"
+                  required
+                  placeholder={
+                    isBn ? "প্রকল্পের নাম লিখুন" : "Enter project title"
+                  }
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
 
-          <textarea
-            name="description"
-            rows={6}
-            required
-            placeholder={isBn ? "বিস্তারিত বিবরণ" : "Narrative description"}
-            className="w-full rounded-xl border border-slate-300 bg-[#e8f1f7] px-3 py-3 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
-          />
-          <textarea
-            name="impactSummary"
-            rows={4}
-            placeholder={isBn ? "প্রভাব সারাংশ" : "Impact summary"}
-            className="w-full rounded-xl border border-slate-300 bg-[#e8f1f7] px-3 py-3 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
-          />
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn ? "শিরোনাম (ইংরেজি)" : "Title (English)"}
+                </label>
+                <input
+                  name="titleEn"
+                  placeholder={isBn ? "ঐচ্ছিক" : "Optional"}
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
 
-          <label className="block rounded-xl border border-dashed border-slate-300 bg-[#dce8f2] p-8 text-center text-sm text-slate-600 dark:border-white/20 dark:bg-[#1d2a38] dark:text-slate-300">
-            <Upload className="mx-auto mb-2 h-6 w-6" />
-            Project media uploads
-            <input
-              name="photoFiles"
-              type="file"
-              multiple
-              accept="image/*"
-              className="mt-3 w-full text-xs"
-            />
-          </label>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  Slug
+                </label>
+                <input
+                  name="slug"
+                  placeholder="Optional. Auto-generated if empty"
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn ? "সমাপ্তির তারিখ" : "Completion Date"}
+                </label>
+                <input
+                  name="completionDate"
+                  type="date"
+                  required
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn ? "লোকেশন" : "Village / Location"}
+                </label>
+                <div className="relative">
+                  <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#006972]" />
+                  <input
+                    name="location"
+                    required
+                    placeholder={
+                      isBn ? "যেমন: মিঠি, থারপারকার" : "e.g. Mithi, Tharparkar"
+                    }
+                    className="w-full rounded-lg border-none bg-[#e7f6ff] py-3 pl-11 pr-4 focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-[#d5e5ef] dark:bg-[#121923] dark:ring-white/10 md:p-8">
+            <h2 className="mb-6 font-serif text-2xl font-bold text-[#006972]">
+              {copy.impact}
+            </h2>
+
+            <div className="space-y-5">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn ? "বিস্তারিত বিবরণ" : "Narrative Description"}
+                </label>
+                <textarea
+                  name="description"
+                  rows={6}
+                  required
+                  placeholder={
+                    isBn
+                      ? "এই টিউবওয়েল কিভাবে কমিউনিটিতে প্রভাব ফেলবে লিখুন..."
+                      : "Describe the local need, implementation, and expected impact..."
+                  }
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 leading-relaxed focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn ? "প্রভাব সারাংশ" : "Impact Summary"}
+                </label>
+                <textarea
+                  name="impactSummary"
+                  rows={4}
+                  placeholder={
+                    isBn
+                      ? "সংক্ষিপ্ত প্রভাব সারাংশ লিখুন"
+                      : "Short summary for cards, reports, or map popups"
+                  }
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 leading-relaxed focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
+            </div>
+          </section>
         </div>
 
-        <aside className="space-y-4">
-          <Button
-            type="submit"
-            className="w-full rounded-full bg-[#0b6979] py-6 text-white hover:bg-[#095968]"
-          >
-            <Save className="h-4 w-4" />
-            {copy.save}
-          </Button>
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/admin/tubewell-projects">{copy.cancel}</Link>
-          </Button>
+        <aside className="space-y-6">
+          <section className="rounded-2xl bg-[#e7f6ff] p-5 ring-1 ring-[#d5e5ef] dark:bg-[#162230] dark:ring-white/10">
+            <h3 className="mb-3 text-xl font-bold text-[#006972]">
+              {copy.media}
+            </h3>
+            <MultiImageUploadField
+              name="photoFiles"
+              label={isBn ? "ছবি আপলোড" : "Upload Images"}
+              hint={
+                isBn
+                  ? "একাধিক ছবি নির্বাচন করা যাবে"
+                  : "You can upload multiple images"
+              }
+              dropzoneClassName="group flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#bec8ca] bg-white px-4 py-8 text-center transition-colors hover:border-[#006d77] hover:bg-[#f4faff] dark:bg-[#0f1620]"
+              previewGridClassName="mt-4 grid grid-cols-2 gap-3"
+            />
+          </section>
+
+          <section className="rounded-2xl border border-[#d5e5ef] bg-white p-5 text-sm dark:border-white/10 dark:bg-[#121923]">
+            <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">
+              {isBn ? "প্রকাশনা অবস্থা" : "Publishing Status"}
+            </p>
+            <div className="mt-3 flex items-center justify-between rounded-xl bg-[#f4faff] px-4 py-3 dark:bg-[#0f1620]">
+              <span className="text-slate-600 dark:text-slate-300">
+                {isBn ? "স্ট্যাটাস" : "Status"}
+              </span>
+              <span className="rounded-full bg-[#ffad8f] px-3 py-1 text-xs font-semibold text-[#793f27]">
+                {isBn ? "খসড়া" : "Draft"}
+              </span>
+            </div>
+          </section>
         </aside>
       </form>
     </div>

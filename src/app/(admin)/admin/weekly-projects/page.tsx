@@ -45,6 +45,9 @@ export default async function WeeklyProjectsAdminPage({
         preservedRecords: "সংরক্ষিত রেকর্ড",
         searchPlaceholder: "শিরোনাম বা স্লাগ দিয়ে খুঁজুন",
         allStatuses: "সব স্ট্যাটাস",
+        statusDraft: "খসড়া",
+        statusPublished: "প্রকাশিত",
+        statusArchived: "আর্কাইভ",
         applyFilters: "ফিল্টার প্রয়োগ করুন",
         project: "প্রকল্প",
         category: "ক্যাটাগরি",
@@ -78,6 +81,9 @@ export default async function WeeklyProjectsAdminPage({
         preservedRecords: "Preserved records",
         searchPlaceholder: "Search by title or slug",
         allStatuses: "All statuses",
+        statusDraft: "Draft",
+        statusPublished: "Published",
+        statusArchived: "Archived",
         applyFilters: "Apply Filters",
         project: "Project",
         category: "Category",
@@ -158,15 +164,21 @@ export default async function WeeklyProjectsAdminPage({
     return `/admin/weekly-projects?${qp.toString()}`;
   };
 
+  const statusText: Record<ProjectStatus, string> = {
+    DRAFT: copy.statusDraft,
+    PUBLISHED: copy.statusPublished,
+    ARCHIVED: copy.statusArchived,
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
               {copy.badge}
             </p>
-            <h1 className="mt-1 text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
               {copy.title}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
@@ -189,26 +201,32 @@ export default async function WeeklyProjectsAdminPage({
             <p className="text-xs uppercase tracking-[0.16em] text-white/80">
               {copy.totalActiveFunding}
             </p>
-            <p className="mt-1 text-4xl font-black">
+            <p className="mt-1 text-3xl font-black sm:text-4xl">
               ৳ {totalTarget.toLocaleString()}
             </p>
-            <p className="mt-1 text-xs text-white/80">
-              {copy.acrossProjects}
-            </p>
+            <p className="mt-1 text-xs text-white/80">{copy.acrossProjects}</p>
           </div>
-          <div className="rounded-2xl border border-[#f0c5af] bg-[#fff2ea] p-4 text-[#70341f]">
-            <p className="text-xs uppercase tracking-[0.16em] text-[#8c4d2f]">
+          <div className="rounded-2xl border border-[#f0c5af] bg-[#fff2ea] p-4 text-[#70341f] dark:border-[#9c4f2f]/40 dark:bg-[#2b1f1a] dark:text-[#ffd1bf]">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#8c4d2f] dark:text-[#ffc3a8]">
               {copy.liveProjects}
             </p>
-            <p className="mt-1 text-4xl font-black">{publishedCount}</p>
-            <p className="mt-1 text-xs text-[#8c4d2f]">{copy.currentlyPublished}</p>
+            <p className="mt-1 text-3xl font-black sm:text-4xl">
+              {publishedCount}
+            </p>
+            <p className="mt-1 text-xs text-[#8c4d2f] dark:text-[#ffc3a8]">
+              {copy.currentlyPublished}
+            </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-[#eef5f8] p-4 text-slate-800 dark:border-white/10 dark:bg-[#1a2630] dark:text-slate-100">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
               {copy.archived}
             </p>
-            <p className="mt-1 text-4xl font-black">{archivedCount}</p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">{copy.preservedRecords}</p>
+            <p className="mt-1 text-3xl font-black sm:text-4xl">
+              {archivedCount}
+            </p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
+              {copy.preservedRecords}
+            </p>
           </div>
         </div>
       </div>
@@ -223,18 +241,18 @@ export default async function WeeklyProjectsAdminPage({
             name="q"
             defaultValue={q}
             placeholder={copy.searchPlaceholder}
-            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm dark:border-white/15 dark:bg-[#0f1720]"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
           />
         </label>
         <select
           name="status"
           defaultValue={status}
-          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-white/15 dark:bg-[#0f1720]"
+          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
         >
           <option value="">{copy.allStatuses}</option>
-          <option value="DRAFT">DRAFT</option>
-          <option value="PUBLISHED">PUBLISHED</option>
-          <option value="ARCHIVED">ARCHIVED</option>
+          <option value="DRAFT">{copy.statusDraft}</option>
+          <option value="PUBLISHED">{copy.statusPublished}</option>
+          <option value="ARCHIVED">{copy.statusArchived}</option>
         </select>
         <Button
           type="submit"
@@ -246,7 +264,7 @@ export default async function WeeklyProjectsAdminPage({
 
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
+          <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-[#edf4f8] text-xs uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">{copy.project}</th>
@@ -280,7 +298,7 @@ export default async function WeeklyProjectsAdminPage({
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-slate-400">
+                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-slate-400 dark:text-slate-300">
                               #{project.id.slice(-3).toUpperCase()}
                             </div>
                           )}
@@ -291,10 +309,10 @@ export default async function WeeklyProjectsAdminPage({
                               ? project.titleBn || project.titleEn
                               : project.titleEn || project.titleBn}
                           </p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
                             /{project.slug}
                           </p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
                             {project.startDate
                               ? project.startDate.toLocaleDateString()
                               : "-"}{" "}
@@ -307,7 +325,7 @@ export default async function WeeklyProjectsAdminPage({
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="rounded-full bg-[#ffe6da] px-2.5 py-1 text-xs font-semibold text-[#9c4f2f]">
+                      <span className="rounded-full bg-[#ffe6da] px-2.5 py-1 text-xs font-semibold text-[#9c4f2f] dark:bg-[#3a2720] dark:text-[#ffc3a8]">
                         {copy.weeklyImpact}
                       </span>
                     </td>
@@ -325,14 +343,14 @@ export default async function WeeklyProjectsAdminPage({
                         className={cn(
                           "rounded-full px-2.5 py-1 text-[11px] font-semibold",
                           project.status === "PUBLISHED" &&
-                            "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
+                            "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/20",
                           project.status === "DRAFT" &&
-                            "bg-amber-100 text-amber-700 hover:bg-amber-100",
+                            "bg-amber-100 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/20 dark:text-amber-300 dark:hover:bg-amber-500/20",
                           project.status === "ARCHIVED" &&
-                            "bg-slate-200 text-slate-700 hover:bg-slate-200",
+                            "bg-slate-200 text-slate-700 hover:bg-slate-200 dark:bg-slate-500/20 dark:text-slate-200 dark:hover:bg-slate-500/20",
                         )}
                       >
-                        {project.status}
+                        {statusText[project.status]}
                       </Badge>
                     </td>
                     <td className="px-4 py-4">
@@ -383,7 +401,7 @@ export default async function WeeklyProjectsAdminPage({
         </div>
 
         {projects.length === 0 && (
-          <div className="border-t border-slate-100 px-4 py-12 text-center text-sm text-slate-500 dark:border-white/10">
+          <div className="border-t border-slate-100 px-4 py-12 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-300">
             {copy.noProjects}
           </div>
         )}
@@ -391,7 +409,8 @@ export default async function WeeklyProjectsAdminPage({
 
       <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="text-slate-600 dark:text-slate-300">
-          {copy.pageLabel} {page} {copy.ofLabel} {totalPages} ({totalCount} {copy.items})
+          {copy.pageLabel} {page} {copy.ofLabel} {totalPages} ({totalCount}{" "}
+          {copy.items})
         </p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm" disabled={page <= 1}>

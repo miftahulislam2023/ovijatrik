@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { MultiImageUploadField } from "@/components/admin/multi-image-upload-field";
 import { createWeeklyProject } from "@/actions/weekly-project";
 import { uploadImage } from "@/lib/cloudinary";
 import { slugify } from "@/lib/slug";
-import { ArrowLeft, Eye, Save, Upload } from "lucide-react";
+import { ArrowLeft, Eye, Save } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function NewWeeklyProjectPage() {
@@ -237,22 +238,13 @@ export default async function NewWeeklyProjectPage() {
             <h2 className="mb-6 flex items-center gap-2 font-serif text-2xl font-bold text-[#8c4e35]">
               {copy.visualAssets}
             </h2>
-            <label className="group relative flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-[#bec8ca] bg-white px-4 text-center transition-colors hover:border-[#00535b] dark:bg-[#0f1620]">
-              <Upload className="mb-2 h-8 w-8 text-[#00535b]" />
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                Click to upload or drag and drop
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Recommended: 1920x1080 (PNG, JPG)
-              </p>
-              <input
-                name="photoFiles"
-                type="file"
-                multiple
-                accept="image/*"
-                className="mt-4 w-full text-xs"
-              />
-            </label>
+            <MultiImageUploadField
+              name="photoFiles"
+              label="Project Image Gallery"
+              hint="Recommended: 1920x1080"
+              dropzoneClassName="group flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#bec8ca] bg-white px-4 py-8 text-center transition-colors hover:border-[#00535b] dark:bg-[#0f1620]"
+              previewGridClassName="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"
+            />
           </section>
         </div>
 

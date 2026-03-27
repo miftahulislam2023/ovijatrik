@@ -146,7 +146,7 @@ export default async function TubewellProjectsAdminPage({
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
               {copy.badge}
             </p>
-            <h1 className="mt-1 text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
               {copy.title}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
@@ -169,7 +169,7 @@ export default async function TubewellProjectsAdminPage({
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
               {copy.totalWells}
             </p>
-            <p className="mt-1 text-4xl font-black text-[#014f60] dark:text-[#7ed4e4]">
+            <p className="mt-1 text-3xl font-black text-[#014f60] dark:text-[#7ed4e4] sm:text-4xl">
               {totalCount.toLocaleString()}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
@@ -180,7 +180,7 @@ export default async function TubewellProjectsAdminPage({
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
               {copy.activeDistricts}
             </p>
-            <p className="mt-1 text-4xl font-black text-[#8a3a1d] dark:text-[#ffb899]">
+            <p className="mt-1 text-3xl font-black text-[#8a3a1d] dark:text-[#ffb899] sm:text-4xl">
               {districtCount}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
@@ -191,7 +191,7 @@ export default async function TubewellProjectsAdminPage({
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500 dark:text-slate-300">
               {copy.yearFilter}
             </p>
-            <p className="mt-1 text-4xl font-black text-slate-800 dark:text-slate-100">
+            <p className="mt-1 text-3xl font-black text-slate-800 dark:text-slate-100 sm:text-4xl">
               {params.year || copy.all}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
@@ -211,13 +211,13 @@ export default async function TubewellProjectsAdminPage({
             name="q"
             defaultValue={q}
             placeholder={copy.searchPlaceholder}
-            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm dark:border-white/15 dark:bg-[#0f1720]"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
           />
         </label>
         <select
           name="year"
           defaultValue={params.year || ""}
-          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-white/15 dark:bg-[#0f1720]"
+          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
         >
           <option value="">{copy.allYears}</option>
           {years.map((item) => (
@@ -236,7 +236,7 @@ export default async function TubewellProjectsAdminPage({
 
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
+          <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-[#edf4f8] text-xs uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">{copy.projectId}</th>
@@ -287,7 +287,7 @@ export default async function TubewellProjectsAdminPage({
                     {project.completionDate.toLocaleDateString()}
                   </td>
                   <td className="px-4 py-4">
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                    <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
                       {copy.completed}
                     </span>
                   </td>

@@ -81,6 +81,9 @@ export default async function AdminVolunteersPage({
         awaitingReview: "রিভিউয়ের অপেক্ষায়",
         search: "নাম, ফোন, আগ্রহ দিয়ে খুঁজুন",
         allStatuses: "সব স্ট্যাটাস",
+        statusPending: "অপেক্ষমাণ",
+        statusApproved: "অনুমোদিত",
+        statusRejected: "প্রত্যাখ্যাত",
         applyFilters: "ফিল্টার প্রয়োগ করুন",
         volunteer: "স্বেচ্ছাসেবক",
         contact: "যোগাযোগ",
@@ -114,6 +117,9 @@ export default async function AdminVolunteersPage({
         awaitingReview: "Awaiting review",
         search: "Search name, phone, interests",
         allStatuses: "All statuses",
+        statusPending: "Pending",
+        statusApproved: "Approved",
+        statusRejected: "Rejected",
         applyFilters: "Apply Filters",
         volunteer: "Volunteer",
         contact: "Contact",
@@ -142,15 +148,21 @@ export default async function AdminVolunteersPage({
     return `/admin/volunteers?${qp.toString()}`;
   };
 
+  const statusText: Record<AppStatus, string> = {
+    PENDING: copy.statusPending,
+    APPROVED: copy.statusApproved,
+    REJECTED: copy.statusRejected,
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
               {copy.badge}
             </p>
-            <h1 className="mt-1 text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
               {copy.title}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
@@ -160,7 +172,7 @@ export default async function AdminVolunteersPage({
           <Button
             asChild
             variant="outline"
-            className="h-11 rounded-xl border-[#0c5f72] text-[#0c5f72] hover:bg-[#0c5f72] hover:text-white"
+            className="h-11 rounded-xl border-[#0c5f72] text-[#0c5f72] hover:bg-[#0c5f72] hover:text-white dark:border-[#66bdd0] dark:text-[#8dd6e4]"
           >
             <Link href="/admin/volunteers">{copy.exportCsv}</Link>
           </Button>
@@ -171,26 +183,28 @@ export default async function AdminVolunteersPage({
             <p className="text-xs uppercase tracking-[0.16em] text-white/80">
               {copy.totalEntries}
             </p>
-            <p className="mt-1 text-4xl font-black">{totalCount}</p>
+            <p className="mt-1 text-3xl font-black sm:text-4xl">{totalCount}</p>
             <p className="mt-1 text-xs text-white/80">{copy.tracked}</p>
           </div>
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-emerald-700">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-700/50 dark:bg-emerald-900/25">
+            <p className="text-xs uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-300">
               {copy.approved}
             </p>
-            <p className="mt-1 text-4xl font-black text-emerald-700">
+            <p className="mt-1 text-3xl font-black text-emerald-700 dark:text-emerald-300 sm:text-4xl">
               {approvedCount}
             </p>
-            <p className="mt-1 text-xs text-emerald-700/80">{copy.ready}</p>
+            <p className="mt-1 text-xs text-emerald-700/80 dark:text-emerald-300/80">
+              {copy.ready}
+            </p>
           </div>
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-amber-700">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-700/50 dark:bg-amber-900/25">
+            <p className="text-xs uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
               {copy.pending}
             </p>
-            <p className="mt-1 text-4xl font-black text-amber-700">
+            <p className="mt-1 text-3xl font-black text-amber-700 dark:text-amber-300 sm:text-4xl">
               {pendingCount}
             </p>
-            <p className="mt-1 text-xs text-amber-700/80">
+            <p className="mt-1 text-xs text-amber-700/80 dark:text-amber-300/80">
               {copy.awaitingReview}
             </p>
           </div>
@@ -207,18 +221,18 @@ export default async function AdminVolunteersPage({
             name="q"
             defaultValue={q}
             placeholder={copy.search}
-            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm dark:border-white/15 dark:bg-[#0f1720]"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
           />
         </label>
         <select
           name="status"
           defaultValue={status}
-          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-white/15 dark:bg-[#0f1720]"
+          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
         >
           <option value="">{copy.allStatuses}</option>
-          <option value="PENDING">PENDING</option>
-          <option value="APPROVED">APPROVED</option>
-          <option value="REJECTED">REJECTED</option>
+          <option value="PENDING">{copy.statusPending}</option>
+          <option value="APPROVED">{copy.statusApproved}</option>
+          <option value="REJECTED">{copy.statusRejected}</option>
         </select>
         <Button
           type="submit"
@@ -230,7 +244,7 @@ export default async function AdminVolunteersPage({
 
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
+          <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-[#edf4f8] text-xs uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">{copy.volunteer}</th>
@@ -249,14 +263,14 @@ export default async function AdminVolunteersPage({
                 >
                   <td className="px-4 py-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d7e6ef] text-[#0c5f72]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d7e6ef] text-[#0c5f72] dark:bg-[#1f3340] dark:text-[#8dd6e4]">
                         <UserRound className="h-5 w-5" />
                       </div>
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white">
                           {application.name}
                         </p>
-                        <p className="text-[11px] uppercase tracking-[0.12em] text-[#a95b37]">
+                        <p className="text-[11px] uppercase tracking-[0.12em] text-[#a95b37] dark:text-[#ffc3a8]">
                           {application.status === "APPROVED"
                             ? copy.fieldAdvocate
                             : copy.applicant}
@@ -274,7 +288,7 @@ export default async function AdminVolunteersPage({
                     {application.createdAt.toLocaleDateString()}
                   </td>
                   <td className="px-4 py-4">
-                    <span className="rounded-full bg-[#ffe6da] px-2.5 py-1 text-xs font-semibold text-[#9c4f2f]">
+                    <span className="rounded-full bg-[#ffe6da] px-2.5 py-1 text-xs font-semibold text-[#9c4f2f] dark:bg-[#3a2720] dark:text-[#ffc3a8]">
                       {application.interests || copy.general}
                     </span>
                   </td>
@@ -282,7 +296,7 @@ export default async function AdminVolunteersPage({
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusPill[application.status]}`}
                     >
-                      {application.status}
+                      {statusText[application.status]}
                     </span>
                   </td>
                   <td className="px-4 py-4">
@@ -311,7 +325,7 @@ export default async function AdminVolunteersPage({
         </div>
 
         {applications.length === 0 && (
-          <div className="border-t border-slate-100 px-4 py-12 text-center text-sm text-slate-500 dark:border-white/10">
+          <div className="border-t border-slate-100 px-4 py-12 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-300">
             {copy.noData}
           </div>
         )}
