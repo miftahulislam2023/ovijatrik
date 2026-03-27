@@ -10,12 +10,31 @@ import {
 } from "@/actions/gallery";
 import { uploadImage } from "@/lib/cloudinary";
 import { redirect } from "next/navigation";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function EditGalleryItemPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "গ্যালারি আইটেম সম্পাদনা",
+        itemAlt: "আইটেম",
+        save: "পরিবর্তন সংরক্ষণ",
+        duplicate: "ডুপ্লিকেট",
+        archive: "আর্কাইভ",
+      }
+    : {
+        title: "Edit Gallery Item",
+        itemAlt: "Item",
+        save: "Save Changes",
+        duplicate: "Duplicate",
+        archive: "Archive",
+      };
+
   const { id } = await params;
   const item = await prisma.galleryItem.findFirst({
     where: { id, deletedAt: null },
@@ -61,14 +80,16 @@ export default async function EditGalleryItemPage({
   }
 
   return (
-    <Card>
+    <Card className="dark:border-white/10 dark:bg-slate-950">
       <CardHeader>
-        <CardTitle>Edit Gallery Item</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-slate-100">
+          {copy.title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Image
           src={item.imageUrl}
-          alt={item.titleEn || item.titleBn || "Item"}
+          alt={item.titleEn || item.titleBn || copy.itemAlt}
           width={900}
           height={600}
           className="h-56 w-full rounded-md object-cover"
@@ -78,38 +99,38 @@ export default async function EditGalleryItemPage({
           <input
             name="titleBn"
             defaultValue={item.titleBn ?? ""}
-            className="w-full rounded-md border border-input px-3 py-2"
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="titleEn"
             defaultValue={item.titleEn ?? ""}
-            className="w-full rounded-md border border-input px-3 py-2"
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="imageFile"
             type="file"
             accept="image/*"
-            className="w-full rounded-md border border-input px-3 py-2"
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="sortOrder"
             type="number"
             defaultValue={item.sortOrder}
-            className="w-full rounded-md border border-input px-3 py-2"
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <Button type="submit" className="w-full sm:w-auto">
-            Save Changes
+            {copy.save}
           </Button>
         </form>
         <div className="flex flex-wrap gap-3">
           <form action={duplicateAction}>
             <Button type="submit" variant="outline">
-              Duplicate
+              {copy.duplicate}
             </Button>
           </form>
           <form action={deleteAction}>
             <Button type="submit" variant="destructive">
-              Archive
+              {copy.archive}
             </Button>
           </form>
         </div>

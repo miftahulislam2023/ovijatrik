@@ -26,7 +26,7 @@ export default async function AdminLayout({
   const language = await getRequestLanguage();
 
   return (
-    <div className="flex min-h-screen bg-[#f7f7f5] text-slate-900 dark:bg-[#0e1416] dark:text-white">
+    <div className="flex min-h-screen bg-background text-foreground">
       {/* Desktop Sidebar */}
       <AdminSidebar language={language} />
 

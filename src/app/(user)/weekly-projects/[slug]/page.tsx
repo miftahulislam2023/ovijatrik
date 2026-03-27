@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { getWeeklyProjectBySlug } from "@/actions/weekly-project";
 import { getRequestLanguage } from "@/lib/language";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 function maskPhone(phone?: string | null) {
   if (!phone) return "";
@@ -32,6 +35,14 @@ export default async function WeeklyProjectDetailPage({
       anonymous: "Anonymous",
       currency: "BDT",
       locationLabel: "",
+      weeklyImpactNarrative: "Weekly Impact Narrative",
+      impactSnapshot: "Impact Snapshot",
+      supportNow: "Support now",
+      goalLabel: "Goal",
+      collectedLabel: "Collected",
+      progressLabel: "Progress",
+      quote:
+        "Before, our children's futures were tied to the walk. Now, they are tied to the school that sits next to the well.",
     },
     bn: {
       goal: "লক্ষ্য",
@@ -42,6 +53,14 @@ export default async function WeeklyProjectDetailPage({
       anonymous: "নাম প্রকাশে অনিচ্ছুক",
       currency: "টাকা",
       locationLabel: "",
+      weeklyImpactNarrative: "সাপ্তাহিক প্রভাবের গল্প",
+      impactSnapshot: "প্রভাবের সংক্ষিপ্তচিত্র",
+      supportNow: "এখনই সহায়তা করুন",
+      goalLabel: "লক্ষ্য",
+      collectedLabel: "সংগ্রহিত",
+      progressLabel: "অগ্রগতি",
+      quote:
+        "আগে আমাদের শিশুদের ভবিষ্যৎ ছিল দীর্ঘ পথচলার সঙ্গে বাঁধা। এখন সেটি পাশের স্কুলের সঙ্গে যুক্ত।",
     },
   } as const;
 
@@ -58,70 +77,143 @@ export default async function WeeklyProjectDetailPage({
     ? Math.min(100, Math.round((total / project.targetAmount) * 100))
     : 0;
 
+  const primaryPhoto = project.photos[0] || null;
+  const secondaryPhoto = project.photos[1] || primaryPhoto;
+
   return (
-    <main className="min-h-screen">
-      <section className="mx-auto max-w-4xl px-4 py-12">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-          {title}
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">{description}</p>
+    <main className="min-h-screen bg-background text-foreground">
+      <section className="relative isolate overflow-hidden border-b border-border bg-primary/35">
+        {primaryPhoto ? (
+          <Image
+            src={primaryPhoto}
+            alt={title}
+            fill
+            className="object-cover opacity-45"
+            sizes="100vw"
+            priority
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-linear-to-br from-primary/88 via-primary/70 to-background/93" />
 
-        <div className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">
-            {content.goal}:{" "}
-            <span className="font-semibold text-foreground">
-              {project.targetAmount} {content.currency}
-            </span>
+        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pt-28">
+          <p className="inline-flex rounded-full bg-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-foreground">
+            {content.weeklyImpactNarrative}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {content.collected}:{" "}
-            <span className="font-semibold text-foreground">
-              {total} {content.currency}
+          <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.05] text-white md:text-6xl">
+            {title}
+          </h1>
+          <div className="mt-6 flex flex-wrap gap-5 text-xs text-slate-100/90">
+            <span>
+              {content.goal}: {project.targetAmount.toLocaleString()}{" "}
+              {content.currency}
             </span>
-          </p>
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${progress}%` }}
-            />
+            <span>
+              {content.collected}: {total.toLocaleString()} {content.currency}
+            </span>
+            <span>
+              {content.progress}: {progress}%
+            </span>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            {content.progress}: {progress}%
-          </p>
         </div>
+      </section>
 
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold">{content.recentDonations}</h2>
-          <div className="mt-4 space-y-3 rounded-xl border border-border bg-card p-4 text-sm">
-            {project.donations.length === 0 && (
-              <p className="text-muted-foreground">{content.noDonations}</p>
-            )}
+      <section className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:px-8">
+        <aside className="rounded-2xl border border-border bg-muted p-5 lg:sticky lg:top-24 lg:h-fit">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {content.impactSnapshot}
+          </p>
+          <dl className="mt-4 space-y-3">
+            <div>
+              <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                {content.goalLabel}
+              </dt>
+              <dd className="text-xl font-semibold text-primary">
+                {project.targetAmount.toLocaleString()} {content.currency}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                {content.collectedLabel}
+              </dt>
+              <dd className="text-xl font-semibold text-primary">
+                {total.toLocaleString()} {content.currency}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                {content.progressLabel}
+              </dt>
+              <dd className="text-xl font-semibold text-primary">
+                {progress}%
+              </dd>
+            </div>
+          </dl>
+        </aside>
 
-            {project.donations.map((d) => (
-              <div
-                key={d.id}
-                className="flex flex-col justify-between gap-1 border-b border-border/60 pb-2 last:border-b-0 last:pb-0 md:flex-row md:items-center"
+        <article>
+          <p className="text-base leading-8 text-foreground/85">
+            {description}
+          </p>
+
+          {secondaryPhoto ? (
+            <div className="mt-7 overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
+              <Image
+                src={secondaryPhoto}
+                alt={`${title} visual`}
+                width={1600}
+                height={900}
+                className="h-auto w-full object-cover"
+              />
+            </div>
+          ) : null}
+
+          <blockquote className="mt-8 border-l-2 border-primary bg-muted px-5 py-4 text-2xl font-medium italic leading-relaxed text-primary">
+            &quot;{content.quote}&quot;
+          </blockquote>
+
+          <section className="mt-10">
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <h2 className="text-2xl font-semibold text-foreground">
+                {content.recentDonations}
+              </h2>
+              <Link
+                href="/donation"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary"
               >
-                <div>
-                  <p className="font-medium">
-                    {d.donorName || content.anonymous}{" "}
-                    <span className="text-xs text-muted-foreground">
-                      ({maskPhone(d.phone || undefined)})
-                    </span>
-                  </p>
-                  {d.comments && (
-                    <p className="text-xs text-muted-foreground">
-                      {d.comments}
+                {content.supportNow}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-border bg-card p-4 text-sm">
+              {project.donations.length === 0 && (
+                <p className="text-slate-500">{content.noDonations}</p>
+              )}
+
+              {project.donations.map((d) => (
+                <div
+                  key={d.id}
+                  className="flex flex-col justify-between gap-2 border-b border-border pb-2 last:border-b-0 last:pb-0 md:flex-row md:items-center"
+                >
+                  <div>
+                    <p className="font-medium text-slate-800">
+                      {d.donorName || content.anonymous}{" "}
+                      <span className="text-xs text-slate-500">
+                        ({maskPhone(d.phone || undefined)})
+                      </span>
                     </p>
-                  )}
+                    {d.comments ? (
+                      <p className="text-xs text-slate-500">{d.comments}</p>
+                    ) : null}
+                  </div>
+                  <p className="text-sm font-semibold text-primary">
+                    {d.amount.toLocaleString()} {content.currency}
+                  </p>
                 </div>
-                <p className="text-sm font-semibold text-primary">
-                  {d.amount} {content.currency}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        </article>
       </section>
     </main>
   );

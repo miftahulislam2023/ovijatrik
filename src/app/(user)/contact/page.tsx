@@ -68,14 +68,14 @@ export default function ContactPage() {
         >
           {/* Success Message */}
           {status === "success" && (
-            <div className="rounded-md bg-green-100 p-3 text-sm text-green-800">
+            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300">
               {message}
             </div>
           )}
 
           {/* Error Message */}
           {status === "error" && (
-            <div className="rounded-md bg-red-100 p-3 text-sm text-red-800">
+            <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-300">
               {message}
             </div>
           )}

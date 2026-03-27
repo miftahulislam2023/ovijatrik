@@ -4,8 +4,39 @@ import { Button } from "@/components/ui/button";
 import { createDonation } from "@/actions/donations";
 import { addWeeklyDonation } from "@/actions/weekly-project";
 import { prisma } from "@/lib/prisma";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function NewDonationPage() {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "অনুদান যোগ করুন",
+        fundTypeGeneral: "সাধারণ তহবিল অনুদান",
+        fundTypeProject: "সাপ্তাহিক নির্দিষ্ট প্রকল্প",
+        projectPlaceholder:
+          "সাপ্তাহিক প্রকল্প নির্বাচন করুন (প্রকল্প অনুদানের জন্য)",
+        amount: "পরিমাণ",
+        donorName: "দাতার নাম",
+        phone: "ফোন",
+        trxId: "ট্রানজ্যাকশন আইডি",
+        comments: "মন্তব্য",
+        submit: "অনুদান তৈরি করুন",
+      }
+    : {
+        title: "Add Donation",
+        fundTypeGeneral: "General Fund Donation",
+        fundTypeProject: "Specific Weekly Project",
+        projectPlaceholder:
+          "Select weekly project (only for project donations)",
+        amount: "Amount",
+        donorName: "Donor name",
+        phone: "Phone",
+        trxId: "TRX ID",
+        comments: "Comments",
+        submit: "Create Donation",
+      };
+
   const weeklyProjects = await prisma.weeklyProject.findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
@@ -75,35 +106,37 @@ export default async function NewDonationPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add Donation</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-slate-100">
+          {copy.title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form action={createAction} className="grid gap-4 md:grid-cols-2">
           <select
             name="fundType"
             defaultValue="GENERAL"
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
-            <option value="GENERAL">General Fund Donation</option>
-            <option value="WEEKLY_PROJECT">Specific Weekly Project</option>
+            <option value="GENERAL">{copy.fundTypeGeneral}</option>
+            <option value="WEEKLY_PROJECT">{copy.fundTypeProject}</option>
           </select>
           <select
             name="projectId"
             defaultValue=""
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
-            <option value="">
-              Select weekly project (only for project donations)
-            </option>
+            <option value="">{copy.projectPlaceholder}</option>
             {weeklyProjects.map((project) => (
               <option key={project.id} value={project.id}>
-                {project.titleEn || project.titleBn}
+                {isBn
+                  ? project.titleBn || project.titleEn
+                  : project.titleEn || project.titleBn}
               </option>
             ))}
           </select>
           <select
             name="medium"
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="BKASH">BKASH</option>
             <option value="NAGAD">NAGAD</option>
@@ -113,7 +146,7 @@ export default async function NewDonationPage() {
           </select>
           <select
             name="type"
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="GENERAL">GENERAL</option>
             <option value="ZAKAT">ZAKAT</option>
@@ -126,38 +159,38 @@ export default async function NewDonationPage() {
             name="amount"
             type="number"
             min={1}
-            placeholder="Amount"
-            className="rounded-md border border-input px-3 py-2"
+            placeholder={copy.amount}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
             required
           />
           <input
             name="date"
             type="date"
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="donorName"
-            placeholder="Donor name"
-            className="rounded-md border border-input px-3 py-2"
+            placeholder={copy.donorName}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="phone"
-            placeholder="Phone"
-            className="rounded-md border border-input px-3 py-2"
+            placeholder={copy.phone}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="trxid"
-            placeholder="TRX ID"
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            placeholder={copy.trxId}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <textarea
             name="comments"
             rows={4}
-            placeholder="Comments"
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            placeholder={copy.comments}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <Button type="submit" className="w-full md:col-span-2 md:w-fit">
-            Create Donation
+            {copy.submit}
           </Button>
         </form>
       </CardContent>

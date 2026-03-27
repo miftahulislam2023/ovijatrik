@@ -225,7 +225,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30 text-foreground">
+    <div className="min-h-screen bg-linear-to-b from-background via-background to-muted/30 text-foreground">
       <Header />
       <main>
         <section className="relative overflow-hidden border-b border-border/60">

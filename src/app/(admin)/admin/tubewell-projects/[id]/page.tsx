@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   deleteTubewellProjectPermanently,
@@ -11,12 +10,37 @@ import {
 import { uploadImage } from "@/lib/cloudinary";
 import { slugify } from "@/lib/slug";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Save, Upload } from "lucide-react";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function EditTubewellProjectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        editBadge: "টিউবওয়েল সম্পাদনা",
+        project: "প্রকল্প",
+        publish: "প্রকল্প প্রকাশ",
+        coreInfo: "মূল তথ্য",
+        duplicate: "ডুপ্লিকেট",
+        archive: "আর্কাইভ",
+        delete: "স্থায়ীভাবে মুছুন",
+      }
+    : {
+        editBadge: "Edit Tubewell",
+        project: "Project",
+        publish: "Publish Project",
+        coreInfo: "Core Information",
+        duplicate: "Duplicate",
+        archive: "Archive",
+        delete: "Delete Permanently",
+      };
+
   const { id } = await params;
   const project = await prisma.tubewellProject.findFirst({
     where: { id, deletedAt: null },
@@ -90,88 +114,127 @@ export default async function EditTubewellProjectPage({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Edit: {project.titleEn || project.titleBn}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form action={updateAction} className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <input
-              name="titleBn"
-              defaultValue={project.titleBn}
-              className="rounded-md border border-input px-3 py-2"
-              required
-            />
-            <input
-              name="titleEn"
-              defaultValue={project.titleEn ?? ""}
-              className="rounded-md border border-input px-3 py-2"
-            />
-            <input
-              name="slug"
-              defaultValue={project.slug}
-              className="rounded-md border border-input px-3 py-2"
-              required
-            />
-            <input
-              name="location"
-              defaultValue={project.location}
-              className="rounded-md border border-input px-3 py-2"
-              required
-            />
-            <input
-              name="completionDate"
-              type="date"
-              defaultValue={project.completionDate.toISOString().slice(0, 10)}
-              className="rounded-md border border-input px-3 py-2"
-              required
-            />
+    <div className="space-y-6">
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <Link
+            href="/admin/tubewell-projects"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121923] dark:text-slate-200"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+              {copy.editBadge}
+            </p>
+            <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">
+              {copy.project} {project.slug}
+            </h1>
           </div>
-          <textarea
-            name="description"
-            defaultValue={project.descriptionEn || project.descriptionBn}
-            rows={5}
-            className="w-full rounded-md border border-input px-3 py-2"
-            required
-          />
-          <textarea
-            name="impactSummary"
-            defaultValue={project.impactSummary ?? ""}
-            rows={4}
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <input
-            name="photoFiles"
-            type="file"
-            multiple
-            accept="image/*"
-            className="w-full rounded-md border border-input px-3 py-2"
-          />
-          <div className="flex flex-wrap gap-3">
-            <Button type="submit" className="w-full sm:w-auto">
-              Save Changes
-            </Button>
-          </div>
-        </form>
-        <div className="mt-4 flex flex-wrap gap-3">
+        </div>
+        <Button
+          type="submit"
+          form="tubewell-edit-form"
+          className="rounded-full bg-[#0b6979] px-5 text-white hover:bg-[#095968]"
+        >
+          <Save className="h-4 w-4" />
+          {copy.publish}
+        </Button>
+      </header>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#121923]">
+          <form
+            id="tubewell-edit-form"
+            action={updateAction}
+            className="space-y-4"
+          >
+            <h2 className="text-2xl font-semibold text-[#0f5f79]">
+              {copy.coreInfo}
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              <input
+                name="titleBn"
+                defaultValue={project.titleBn}
+                required
+                className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+              />
+              <input
+                name="titleEn"
+                defaultValue={project.titleEn ?? ""}
+                className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+              />
+              <input
+                name="slug"
+                defaultValue={project.slug}
+                required
+                className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 dark:border-white/10 dark:bg-[#0f1620]"
+              />
+              <input
+                name="location"
+                defaultValue={project.location}
+                required
+                className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+              />
+              <input
+                name="completionDate"
+                type="date"
+                defaultValue={project.completionDate.toISOString().slice(0, 10)}
+                required
+                className="rounded-lg border border-slate-300 bg-[#e8f1f7] px-3 py-2.5 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+              />
+            </div>
+
+            <textarea
+              name="description"
+              rows={6}
+              defaultValue={
+                isBn
+                  ? project.descriptionBn || project.descriptionEn
+                  : project.descriptionEn || project.descriptionBn
+              }
+              required
+              className="w-full rounded-xl border border-slate-300 bg-[#e8f1f7] px-3 py-3 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+            />
+            <textarea
+              name="impactSummary"
+              rows={4}
+              defaultValue={project.impactSummary ?? ""}
+              className="w-full rounded-xl border border-slate-300 bg-[#e8f1f7] px-3 py-3 text-slate-900 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+            />
+
+            <label className="block rounded-xl border border-dashed border-slate-300 bg-[#dce8f2] p-8 text-center text-sm text-slate-600 dark:border-white/20 dark:bg-[#1d2a38] dark:text-slate-300">
+              <Upload className="mx-auto mb-2 h-6 w-6" />
+              Upload project media
+              <input
+                name="photoFiles"
+                type="file"
+                multiple
+                accept="image/*"
+                className="mt-3 w-full text-xs"
+              />
+            </label>
+          </form>
+        </section>
+
+        <aside className="space-y-4">
           <form action={duplicateAction}>
-            <Button type="submit" variant="outline">
-              Duplicate
+            <Button className="w-full" variant="outline" type="submit">
+              {copy.duplicate}
             </Button>
           </form>
           <form action={deleteAction}>
-            <Button type="submit" variant="destructive">
-              Archive
+            <Button className="w-full" variant="destructive" type="submit">
+              {copy.archive}
             </Button>
           </form>
           <form action={permanentDeleteAction}>
-            <Button type="submit" variant="destructive">
-              Delete Permanently
+            <Button className="w-full" variant="destructive" type="submit">
+              {copy.delete}
             </Button>
           </form>
-        </div>
-      </CardContent>
-    </Card>
+        </aside>
+      </div>
+    </div>
   );
 }

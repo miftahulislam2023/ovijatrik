@@ -6,12 +6,25 @@ import {
   softDeleteVolunteerApplication,
   updateVolunteerApplication,
 } from "@/actions/volunteers";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function VolunteerApplicationDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        save: "পরিবর্তন সংরক্ষণ",
+        archive: "আবেদন আর্কাইভ করুন",
+      }
+    : {
+        save: "Save Changes",
+        archive: "Archive Application",
+      };
+
   const { id } = await params;
   const application = await prisma.volunteerApplication.findFirst({
     where: { id, deletedAt: null },
@@ -48,48 +61,50 @@ export default async function VolunteerApplicationDetailPage({
   }
 
   return (
-    <Card>
+    <Card className="dark:border-white/10 dark:bg-slate-950">
       <CardHeader>
-        <CardTitle>{application.name}</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-slate-100">
+          {application.name}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <form action={updateAction} className="grid gap-4 md:grid-cols-2">
           <input
             name="name"
             defaultValue={application.name}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
             required
           />
           <input
             name="phone"
             defaultValue={application.phone}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
             required
           />
           <input
             name="email"
             defaultValue={application.email ?? ""}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="address"
             defaultValue={application.address ?? ""}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="availability"
             defaultValue={application.availability ?? ""}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="interests"
             defaultValue={application.interests ?? ""}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <select
             name="status"
             defaultValue={application.status}
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="PENDING">PENDING</option>
             <option value="APPROVED">APPROVED</option>
@@ -99,23 +114,23 @@ export default async function VolunteerApplicationDetailPage({
             name="experience"
             rows={4}
             defaultValue={application.experience ?? ""}
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <textarea
             name="motivation"
             rows={4}
             defaultValue={application.motivation}
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
             required
           />
           <Button type="submit" className="w-full md:col-span-2 md:w-fit">
-            Save Changes
+            {copy.save}
           </Button>
         </form>
 
         <form action={deleteAction}>
           <Button type="submit" variant="destructive">
-            Archive Application
+            {copy.archive}
           </Button>
         </form>
       </CardContent>

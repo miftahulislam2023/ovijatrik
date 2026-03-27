@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" fill="none">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14532D" />
+      <stop offset="1" stop-color="#052E16" />
+    </linearGradient>
+    <radialGradient id="glow5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1150 240) rotate(90) scale(380)">
+      <stop stop-color="#86EFAC" stop-opacity="0.75" />
+      <stop offset="1" stop-color="#86EFAC" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg5)"/>
+  <rect width="1600" height="1000" fill="url(#glow5)"/>
+  <path d="M0 780C340 690 540 860 860 790C1160 730 1310 850 1600 800V1000H0V780Z" fill="#22C55E" opacity="0.62"/>
+  <path d="M0 850C260 790 520 910 860 860C1140 820 1370 900 1600 870V1000H0V850Z" fill="#4ADE80" opacity="0.52"/>
+  <g fill="#DCFCE7" opacity="0.92">
+    <path d="M360 700L420 560L480 700H360Z"/>
+    <path d="M520 720L600 510L680 720H520Z"/>
+    <path d="M740 730L830 480L920 730H740Z"/>
+    <path d="M980 710L1040 560L1100 710H980Z"/>
+    <path d="M1160 730L1240 500L1320 730H1160Z"/>
+  </g>
+</svg>

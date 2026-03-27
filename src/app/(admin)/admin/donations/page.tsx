@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { duplicateDonation, softDeleteDonation } from "@/actions/donations";
 import { DonationMedium, DonationType } from "@/generated/prisma/enums";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function AdminDonationsPage({
   searchParams,
@@ -15,6 +16,44 @@ export default async function AdminDonationsPage({
     page?: string;
   }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "গ্লোবাল অনুদান",
+        addDonation: "অনুদান যোগ করুন",
+        searchPlaceholder: "দাতা/ফোন/ট্রানজ্যাকশন দিয়ে খুঁজুন",
+        allTypes: "সব ধরন",
+        allMediums: "সব মাধ্যম",
+        apply: "প্রয়োগ করুন",
+        via: "মাধ্যম",
+        edit: "এডিট",
+        duplicate: "ডুপ্লিকেট",
+        archive: "আর্কাইভ",
+        page: "পৃষ্ঠা",
+        of: "/",
+        items: "আইটেম",
+        previous: "পূর্ববর্তী",
+        next: "পরবর্তী",
+      }
+    : {
+        title: "Global Donations",
+        addDonation: "Add Donation",
+        searchPlaceholder: "Search donor/phone/trx",
+        allTypes: "All types",
+        allMediums: "All mediums",
+        apply: "Apply",
+        via: "via",
+        edit: "Edit",
+        duplicate: "Duplicate",
+        archive: "Archive",
+        page: "Page",
+        of: "of",
+        items: "items",
+        previous: "Previous",
+        next: "Next",
+      };
+
   const params = await searchParams;
   const q = (params.q || "").trim();
   const type = (params.type || "").trim();
@@ -71,9 +110,11 @@ export default async function AdminDonationsPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold">Global Donations</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+          {copy.title}
+        </h1>
         <Button asChild>
-          <Link href="/admin/donations/new">Add Donation</Link>
+          <Link href="/admin/donations/new">{copy.addDonation}</Link>
         </Button>
       </div>
 
@@ -84,15 +125,15 @@ export default async function AdminDonationsPage({
         <input
           name="q"
           defaultValue={q}
-          placeholder="Search donor/phone/trx"
-          className="rounded-md border border-input px-3 py-2"
+          placeholder={copy.searchPlaceholder}
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         />
         <select
           name="type"
           defaultValue={type}
-          className="rounded-md border border-input px-3 py-2"
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         >
-          <option value="">All types</option>
+          <option value="">{copy.allTypes}</option>
           <option value="GENERAL">GENERAL</option>
           <option value="ZAKAT">ZAKAT</option>
           <option value="SADAQAH">SADAQAH</option>
@@ -103,9 +144,9 @@ export default async function AdminDonationsPage({
         <select
           name="medium"
           defaultValue={medium}
-          className="rounded-md border border-input px-3 py-2"
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         >
-          <option value="">All mediums</option>
+          <option value="">{copy.allMediums}</option>
           <option value="BKASH">BKASH</option>
           <option value="NAGAD">NAGAD</option>
           <option value="ROCKET">ROCKET</option>
@@ -113,7 +154,7 @@ export default async function AdminDonationsPage({
           <option value="OTHER">OTHER</option>
         </select>
         <Button type="submit" className="w-full sm:w-auto">
-          Apply
+          {copy.apply}
         </Button>
       </form>
 
@@ -121,17 +162,19 @@ export default async function AdminDonationsPage({
         {donations.map((donation) => (
           <Card key={donation.id}>
             <CardHeader>
-              <CardTitle className="text-base">
+              <CardTitle className="text-base text-slate-900 dark:text-slate-100">
                 {donation.amount.toLocaleString()} BDT
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap items-center justify-between gap-4 text-sm">
               <p className="text-muted-foreground">
-                {donation.type} via {donation.medium}
+                {donation.type} {copy.via} {donation.medium}
               </p>
               <div className="flex flex-wrap items-center gap-2">
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/admin/donations/${donation.id}`}>Edit</Link>
+                  <Link href={`/admin/donations/${donation.id}`}>
+                    {copy.edit}
+                  </Link>
                 </Button>
                 <form
                   action={async () => {
@@ -140,7 +183,7 @@ export default async function AdminDonationsPage({
                   }}
                 >
                   <Button variant="outline" size="sm" type="submit">
-                    Duplicate
+                    {copy.duplicate}
                   </Button>
                 </form>
                 <form
@@ -150,7 +193,7 @@ export default async function AdminDonationsPage({
                   }}
                 >
                   <Button variant="destructive" size="sm" type="submit">
-                    Archive
+                    {copy.archive}
                   </Button>
                 </form>
               </div>
@@ -161,11 +204,11 @@ export default async function AdminDonationsPage({
 
       <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground">
-          Page {page} of {totalPages} ({totalCount} items)
+          {copy.page} {page} {copy.of} {totalPages} ({totalCount} {copy.items})
         </p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-            <Link href={queryWithPage(prevPage)}>Previous</Link>
+            <Link href={queryWithPage(prevPage)}>{copy.previous}</Link>
           </Button>
           <Button
             asChild
@@ -173,7 +216,7 @@ export default async function AdminDonationsPage({
             size="sm"
             disabled={page >= totalPages}
           >
-            <Link href={queryWithPage(nextPage)}>Next</Link>
+            <Link href={queryWithPage(nextPage)}>{copy.next}</Link>
           </Button>
         </div>
       </div>

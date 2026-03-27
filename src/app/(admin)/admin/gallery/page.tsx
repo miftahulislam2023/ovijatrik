@@ -4,12 +4,53 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { duplicateGalleryItem, softDeleteGalleryItem } from "@/actions/gallery";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function AdminGalleryPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "গ্যালারি",
+        addImage: "ছবি যোগ করুন",
+        search: "শিরোনাম দিয়ে খুঁজুন",
+        apply: "প্রয়োগ করুন",
+        untitled: "শিরোনামহীন",
+        itemAlt: "গ্যালারি আইটেম",
+        sort: "ক্রম",
+        edit: "এডিট",
+        duplicate: "ডুপ্লিকেট",
+        archive: "আর্কাইভ",
+        noData: "কোনো গ্যালারি আইটেম পাওয়া যায়নি।",
+        page: "পৃষ্ঠা",
+        of: "/",
+        items: "আইটেম",
+        previous: "পূর্ববর্তী",
+        next: "পরবর্তী",
+      }
+    : {
+        title: "Gallery",
+        addImage: "Add Image",
+        search: "Search title",
+        apply: "Apply",
+        untitled: "Untitled",
+        itemAlt: "Gallery item",
+        sort: "Sort",
+        edit: "Edit",
+        duplicate: "Duplicate",
+        archive: "Archive",
+        noData: "No gallery items found.",
+        page: "Page",
+        of: "of",
+        items: "items",
+        previous: "Previous",
+        next: "Next",
+      };
+
   const params = await searchParams;
   const q = (params.q || "").trim();
   const page = Math.max(1, Number(params.page || "1") || 1);
@@ -51,9 +92,11 @@ export default async function AdminGalleryPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold">Gallery</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+          {copy.title}
+        </h1>
         <Button asChild>
-          <Link href="/admin/gallery/new">Add Image</Link>
+          <Link href="/admin/gallery/new">{copy.addImage}</Link>
         </Button>
       </div>
 
@@ -64,11 +107,11 @@ export default async function AdminGalleryPage({
         <input
           name="q"
           defaultValue={q}
-          placeholder="Search title"
-          className="rounded-md border border-input px-3 py-2"
+          placeholder={copy.search}
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         />
         <Button type="submit" className="w-full sm:w-auto">
-          Apply
+          {copy.apply}
         </Button>
       </form>
 
@@ -77,23 +120,27 @@ export default async function AdminGalleryPage({
           <Card key={item.id}>
             <CardHeader>
               <CardTitle className="text-base">
-                {item.titleEn || item.titleBn || "Untitled"}
+                {isBn
+                  ? item.titleBn || item.titleEn || copy.untitled
+                  : item.titleEn || item.titleBn || copy.untitled}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Image
                 src={item.imageUrl}
-                alt={item.titleEn || item.titleBn || "Gallery item"}
+                alt={item.titleEn || item.titleBn || copy.itemAlt}
                 width={900}
                 height={600}
                 className="h-44 w-full rounded-md object-cover"
                 unoptimized
               />
               <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-muted-foreground">Sort: {item.sortOrder}</p>
+                <p className="text-muted-foreground">
+                  {copy.sort}: {item.sortOrder}
+                </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/gallery/${item.id}`}>Edit</Link>
+                    <Link href={`/admin/gallery/${item.id}`}>{copy.edit}</Link>
                   </Button>
                   <form
                     action={async () => {
@@ -102,7 +149,7 @@ export default async function AdminGalleryPage({
                     }}
                   >
                     <Button variant="outline" size="sm" type="submit">
-                      Duplicate
+                      {copy.duplicate}
                     </Button>
                   </form>
                   <form
@@ -112,7 +159,7 @@ export default async function AdminGalleryPage({
                     }}
                   >
                     <Button variant="destructive" size="sm" type="submit">
-                      Archive
+                      {copy.archive}
                     </Button>
                   </form>
                 </div>
@@ -124,7 +171,7 @@ export default async function AdminGalleryPage({
         {items.length === 0 && (
           <Card className="md:col-span-2 xl:col-span-3">
             <CardContent className="py-12 text-center text-sm text-muted-foreground">
-              No gallery items found.
+              {copy.noData}
             </CardContent>
           </Card>
         )}
@@ -132,11 +179,11 @@ export default async function AdminGalleryPage({
 
       <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground">
-          Page {page} of {totalPages} ({totalCount} items)
+          {copy.page} {page} {copy.of} {totalPages} ({totalCount} {copy.items})
         </p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-            <Link href={queryWithPage(prevPage)}>Previous</Link>
+            <Link href={queryWithPage(prevPage)}>{copy.previous}</Link>
           </Button>
           <Button
             asChild
@@ -144,7 +191,7 @@ export default async function AdminGalleryPage({
             size="sm"
             disabled={page >= totalPages}
           >
-            <Link href={queryWithPage(nextPage)}>Next</Link>
+            <Link href={queryWithPage(nextPage)}>{copy.next}</Link>
           </Button>
         </div>
       </div>

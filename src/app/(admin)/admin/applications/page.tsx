@@ -4,12 +4,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { softDeleteApplication } from "@/actions/applications";
 import { AppStatus } from "@/generated/prisma/enums";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function AdminApplicationsPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        pageTitle: "অনুদান আবেদনসমূহ",
+        searchPlaceholder: "নাম, ফোন, কারণ দিয়ে খুঁজুন",
+        allStatuses: "সব স্ট্যাটাস",
+        apply: "প্রয়োগ করুন",
+        view: "দেখুন",
+        archive: "আর্কাইভ",
+        noData: "কোনো আবেদন পাওয়া যায়নি।",
+        page: "পৃষ্ঠা",
+        of: "/",
+        items: "আইটেম",
+        previous: "পূর্ববর্তী",
+        next: "পরবর্তী",
+      }
+    : {
+        pageTitle: "Donation Applications",
+        searchPlaceholder: "Search name, phone, reason",
+        allStatuses: "All statuses",
+        apply: "Apply",
+        view: "View",
+        archive: "Archive",
+        noData: "No applications found.",
+        page: "Page",
+        of: "of",
+        items: "items",
+        previous: "Previous",
+        next: "Next",
+      };
+
   const params = await searchParams;
   const q = (params.q || "").trim();
   const status = (params.status || "").trim();
@@ -57,7 +90,9 @@ export default async function AdminApplicationsPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Donation Applications</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+        {copy.pageTitle}
+      </h1>
 
       <form
         className="grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-2 md:grid-cols-[1fr_180px_auto]"
@@ -66,21 +101,21 @@ export default async function AdminApplicationsPage({
         <input
           name="q"
           defaultValue={q}
-          placeholder="Search name, phone, reason"
-          className="rounded-md border border-input px-3 py-2"
+          placeholder={copy.searchPlaceholder}
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         />
         <select
           name="status"
           defaultValue={status}
-          className="rounded-md border border-input px-3 py-2"
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         >
-          <option value="">All statuses</option>
+          <option value="">{copy.allStatuses}</option>
           <option value="PENDING">PENDING</option>
           <option value="APPROVED">APPROVED</option>
           <option value="REJECTED">REJECTED</option>
         </select>
         <Button type="submit" className="w-full sm:w-auto">
-          Apply
+          {copy.apply}
         </Button>
       </form>
 
@@ -91,7 +126,9 @@ export default async function AdminApplicationsPage({
             className="transition hover:border-primary"
           >
             <CardHeader>
-              <CardTitle className="text-base">{application.name}</CardTitle>
+              <CardTitle className="text-base text-slate-900 dark:text-slate-100">
+                {application.name}
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
               <p>
@@ -100,7 +137,7 @@ export default async function AdminApplicationsPage({
               <div className="flex flex-wrap gap-2">
                 <Button asChild variant="outline" size="sm">
                   <Link href={`/admin/applications/${application.id}`}>
-                    View
+                    {copy.view}
                   </Link>
                 </Button>
                 <form
@@ -110,7 +147,7 @@ export default async function AdminApplicationsPage({
                   }}
                 >
                   <Button type="submit" variant="destructive" size="sm">
-                    Archive
+                    {copy.archive}
                   </Button>
                 </form>
               </div>
@@ -121,7 +158,7 @@ export default async function AdminApplicationsPage({
         {applications.length === 0 && (
           <Card>
             <CardContent className="py-12 text-center text-sm text-muted-foreground">
-              No applications found.
+              {copy.noData}
             </CardContent>
           </Card>
         )}
@@ -129,11 +166,11 @@ export default async function AdminApplicationsPage({
 
       <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground">
-          Page {page} of {totalPages} ({totalCount} items)
+          {copy.page} {page} {copy.of} {totalPages} ({totalCount} {copy.items})
         </p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-            <Link href={queryWithPage(prevPage)}>Previous</Link>
+            <Link href={queryWithPage(prevPage)}>{copy.previous}</Link>
           </Button>
           <Button
             asChild
@@ -141,7 +178,7 @@ export default async function AdminApplicationsPage({
             size="sm"
             disabled={page >= totalPages}
           >
-            <Link href={queryWithPage(nextPage)}>Next</Link>
+            <Link href={queryWithPage(nextPage)}>{copy.next}</Link>
           </Button>
         </div>
       </div>

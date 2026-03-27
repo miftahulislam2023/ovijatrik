@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getBlogPosts } from "@/actions/blog";
 import { getRequestLanguage } from "@/lib/language";
+import { stripHtmlToText } from "@/lib/rich-text";
 
 export default async function BlogPage() {
   const language = await getRequestLanguage();
@@ -44,9 +45,10 @@ export default async function BlogPage() {
                   : post.titleBn}
               </h2>
               <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                {(language === "en"
-                  ? post.markdownEn || post.markdownBn
-                  : post.markdownBn
+                {stripHtmlToText(
+                  language === "en"
+                    ? post.markdownEn || post.markdownBn
+                    : post.markdownBn,
                 ).slice(0, 160)}
                 ...
               </p>

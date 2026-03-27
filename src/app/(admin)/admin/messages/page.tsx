@@ -3,12 +3,53 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { markMessageAsRead, softDeleteMessage } from "@/actions/contact";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function AdminMessagesPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; read?: string; page?: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "যোগাযোগ বার্তাসমূহ",
+        search: "প্রেরক, বিষয়, বার্তা দিয়ে খুঁজুন",
+        all: "সব",
+        read: "পড়া",
+        unread: "অপঠিত",
+        apply: "প্রয়োগ করুন",
+        noSubject: "কোনো বিষয় নেই",
+        view: "দেখুন",
+        markRead: "পঠিত করুন",
+        archive: "আর্কাইভ",
+        noData: "কোনো বার্তা পাওয়া যায়নি।",
+        page: "পৃষ্ঠা",
+        of: "/",
+        items: "আইটেম",
+        previous: "পূর্ববর্তী",
+        next: "পরবর্তী",
+      }
+    : {
+        title: "Contact Messages",
+        search: "Search sender, subject, message",
+        all: "All",
+        read: "Read",
+        unread: "Unread",
+        apply: "Apply",
+        noSubject: "No Subject",
+        view: "View",
+        markRead: "Mark Read",
+        archive: "Archive",
+        noData: "No messages found.",
+        page: "Page",
+        of: "of",
+        items: "items",
+        previous: "Previous",
+        next: "Next",
+      };
+
   const params = await searchParams;
   const q = (params.q || "").trim();
   const read = (params.read || "").trim();
@@ -55,7 +96,9 @@ export default async function AdminMessagesPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Contact Messages</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+        {copy.title}
+      </h1>
 
       <form
         className="grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-2 md:grid-cols-[1fr_180px_auto]"
@@ -64,20 +107,20 @@ export default async function AdminMessagesPage({
         <input
           name="q"
           defaultValue={q}
-          placeholder="Search sender, subject, message"
-          className="rounded-md border border-input px-3 py-2"
+          placeholder={copy.search}
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         />
         <select
           name="read"
           defaultValue={read}
-          className="rounded-md border border-input px-3 py-2"
+          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
         >
-          <option value="">All</option>
-          <option value="read">Read</option>
-          <option value="unread">Unread</option>
+          <option value="">{copy.all}</option>
+          <option value="read">{copy.read}</option>
+          <option value="unread">{copy.unread}</option>
         </select>
         <Button type="submit" className="w-full sm:w-auto">
-          Apply
+          {copy.apply}
         </Button>
       </form>
 
@@ -86,7 +129,7 @@ export default async function AdminMessagesPage({
           <Card key={message.id} className="transition hover:border-primary">
             <CardHeader>
               <CardTitle className="text-base">
-                {message.subject || "No Subject"}
+                {message.subject || copy.noSubject}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
@@ -96,7 +139,9 @@ export default async function AdminMessagesPage({
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/admin/messages/${message.id}`}>View</Link>
+                  <Link href={`/admin/messages/${message.id}`}>
+                    {copy.view}
+                  </Link>
                 </Button>
                 {!message.readAt && (
                   <form
@@ -106,7 +151,7 @@ export default async function AdminMessagesPage({
                     }}
                   >
                     <Button type="submit" variant="outline" size="sm">
-                      Mark Read
+                      {copy.markRead}
                     </Button>
                   </form>
                 )}
@@ -117,7 +162,7 @@ export default async function AdminMessagesPage({
                   }}
                 >
                   <Button type="submit" variant="destructive" size="sm">
-                    Archive
+                    {copy.archive}
                   </Button>
                 </form>
               </div>
@@ -128,7 +173,7 @@ export default async function AdminMessagesPage({
         {messages.length === 0 && (
           <Card>
             <CardContent className="py-12 text-center text-sm text-muted-foreground">
-              No messages found.
+              {copy.noData}
             </CardContent>
           </Card>
         )}
@@ -136,11 +181,11 @@ export default async function AdminMessagesPage({
 
       <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground">
-          Page {page} of {totalPages} ({totalCount} items)
+          {copy.page} {page} {copy.of} {totalPages} ({totalCount} {copy.items})
         </p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-            <Link href={queryWithPage(prevPage)}>Previous</Link>
+            <Link href={queryWithPage(prevPage)}>{copy.previous}</Link>
           </Button>
           <Button
             asChild
@@ -148,7 +193,7 @@ export default async function AdminMessagesPage({
             size="sm"
             disabled={page >= totalPages}
           >
-            <Link href={queryWithPage(nextPage)}>Next</Link>
+            <Link href={queryWithPage(nextPage)}>{copy.next}</Link>
           </Button>
         </div>
       </div>

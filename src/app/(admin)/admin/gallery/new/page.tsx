@@ -3,8 +3,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createGalleryItem } from "@/actions/gallery";
 import { uploadImage } from "@/lib/cloudinary";
+import { getRequestLanguage } from "@/lib/language";
 
-export default function NewGalleryItemPage() {
+export default async function NewGalleryItemPage() {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "গ্যালারি আইটেম যোগ করুন",
+        titleBn: "শিরোনাম (বাংলা)",
+        titleEn: "শিরোনাম (ইংরেজি)",
+        uploadHint:
+          "ছবি আপলোড করুন (JPG, PNG, WEBP)। এটি Cloudinary-তে সংরক্ষিত হবে।",
+        sortOrder: "সাজানোর ক্রম (0 = প্রথম)",
+        submit: "গ্যালারি আইটেম তৈরি করুন",
+      }
+    : {
+        title: "Add Gallery Item",
+        titleBn: "Title (Bangla)",
+        titleEn: "Title (English)",
+        uploadHint:
+          "Upload an image file (JPG, PNG, WEBP). This will be stored in Cloudinary.",
+        sortOrder: "Sort order (0 = first)",
+        submit: "Create Gallery Item",
+      };
+
   async function createAction(formData: FormData) {
     "use server";
     const titleBn = String(formData.get("titleBn") || "").trim();
@@ -29,42 +52,41 @@ export default function NewGalleryItemPage() {
   }
 
   return (
-    <Card>
+    <Card className="dark:border-white/10 dark:bg-slate-950">
       <CardHeader>
-        <CardTitle>Add Gallery Item</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-slate-100">
+          {copy.title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form action={createAction} className="space-y-4">
           <input
             name="titleBn"
-            placeholder="Title (Bangla)"
-            className="w-full rounded-md border border-input px-3 py-2"
+            placeholder={copy.titleBn}
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="titleEn"
-            placeholder="Title (English)"
-            className="w-full rounded-md border border-input px-3 py-2"
+            placeholder={copy.titleEn}
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="imageFile"
             type="file"
             accept="image/*"
-            className="w-full rounded-md border border-input px-3 py-2"
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
             required
           />
-          <p className="text-xs text-muted-foreground">
-            Upload an image file (JPG, PNG, WEBP). This will be stored in
-            Cloudinary.
-          </p>
+          <p className="text-xs text-muted-foreground">{copy.uploadHint}</p>
           <input
             name="sortOrder"
             type="number"
             defaultValue={0}
-            placeholder="Sort order (0 = first)"
-            className="w-full rounded-md border border-input px-3 py-2"
+            placeholder={copy.sortOrder}
+            className="w-full rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <Button type="submit" className="w-full sm:w-auto">
-            Create Gallery Item
+            {copy.submit}
           </Button>
         </form>
       </CardContent>

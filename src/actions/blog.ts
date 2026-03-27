@@ -3,6 +3,28 @@
 import {prisma} from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdminAction } from "@/lib/authorization";
+import { uploadImage } from "@/lib/cloudinary";
+
+const MAX_INLINE_IMAGE_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+export async function uploadBlogInlineImage(file: File) {
+  await requireAdminAction();
+
+  if (!(file instanceof File)) {
+    throw new Error("Image file is required");
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image uploads are allowed");
+  }
+
+  if (file.size <= 0 || file.size > MAX_INLINE_IMAGE_UPLOAD_BYTES) {
+    throw new Error("Image must be between 1 byte and 10 MB");
+  }
+
+  const uploaded = await uploadImage(file, "ovijatrik/blog/inline");
+  return uploaded.url;
+}
 
 export async function getBlogPosts() {
   return prisma.blogPost.findMany({

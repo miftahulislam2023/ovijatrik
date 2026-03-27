@@ -1,13 +1,40 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AuthError } from "next-auth";
 import { signIn } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getRequestLanguage } from "@/lib/language";
 import { VolunteerApplyForm } from "@/components/site/volunteer-apply-form";
 
-export default async function JoinUsPage() {
+function resolveRedirectTarget(callbackUrl?: string) {
+  if (!callbackUrl) return "/admin/dashboard";
+
+  if (callbackUrl.startsWith("/admin")) {
+    return callbackUrl;
+  }
+
+  try {
+    const parsed = new URL(callbackUrl);
+    const internalPath = `${parsed.pathname}${parsed.search}`;
+    if (internalPath.startsWith("/admin")) {
+      return internalPath;
+    }
+  } catch {
+    return "/admin/dashboard";
+  }
+
+  return "/admin/dashboard";
+}
+
+export default async function JoinUsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+}) {
   const language = await getRequestLanguage();
+  const { callbackUrl, error } = await searchParams;
+  const redirectTarget = resolveRedirectTarget(callbackUrl);
   const copy = {
     en: {
       title: "Join us",
@@ -20,6 +47,7 @@ export default async function JoinUsPage() {
       emailPlaceholder: "Admin email",
       passwordPlaceholder: "Password",
       submit: "Sign in",
+      invalidCredentials: "Invalid credentials. Please try again.",
     },
     bn: {
       title: "আমাদের সাথে যুক্ত হোন",
@@ -32,6 +60,7 @@ export default async function JoinUsPage() {
       emailPlaceholder: "অ্যাডমিন ইমেইল",
       passwordPlaceholder: "পাসওয়ার্ড",
       submit: "সাইন ইন",
+      invalidCredentials: "ইমেইল বা পাসওয়ার্ড সঠিক নয়। আবার চেষ্টা করুন।",
     },
   } as const;
 
@@ -39,16 +68,27 @@ export default async function JoinUsPage() {
 
   async function signInAction(formData: FormData) {
     "use server";
-    const email = String(formData.get("email") || "").trim();
+    const email = String(formData.get("email") || "").trim().toLowerCase();
     const password = String(formData.get("password") || "");
+    const redirectTo = resolveRedirectTarget(
+      String(formData.get("redirectTo") || "")
+    );
 
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/admin/dashboard",
-    });
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        redirectTo,
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        redirect(
+          `/join-us?error=credentials&callbackUrl=${encodeURIComponent(redirectTo)}`
+        );
+      }
 
-    redirect("/admin/dashboard");
+      throw error;
+    }
   }
 
   return (
@@ -78,6 +118,12 @@ export default async function JoinUsPage() {
           </CardHeader>
           <CardContent>
             <form action={signInAction} className="space-y-4">
+              {error === "credentials" && (
+                <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {content.invalidCredentials}
+                </p>
+              )}
+              <input type="hidden" name="redirectTo" value={redirectTarget} />
               <input
                 name="email"
                 type="email"

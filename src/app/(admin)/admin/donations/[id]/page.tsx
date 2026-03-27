@@ -8,12 +8,39 @@ import {
   updateDonation,
 } from "@/actions/donations";
 import { redirect } from "next/navigation";
+import { getRequestLanguage } from "@/lib/language";
 
 export default async function EditDonationPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const language = await getRequestLanguage();
+  const isBn = language === "bn";
+  const copy = isBn
+    ? {
+        title: "অনুদান সম্পাদনা",
+        amount: "পরিমাণ",
+        donorName: "দাতার নাম",
+        phone: "ফোন",
+        trxId: "ট্রানজ্যাকশন আইডি",
+        comments: "মন্তব্য",
+        save: "পরিবর্তন সংরক্ষণ",
+        duplicate: "ডুপ্লিকেট",
+        archive: "আর্কাইভ",
+      }
+    : {
+        title: "Edit Donation",
+        amount: "Amount",
+        donorName: "Donor name",
+        phone: "Phone",
+        trxId: "TRX ID",
+        comments: "Comments",
+        save: "Save Changes",
+        duplicate: "Duplicate",
+        archive: "Archive",
+      };
+
   const { id } = await params;
   const donation = await prisma.donation.findFirst({
     where: { id, deletedAt: null },
@@ -64,16 +91,18 @@ export default async function EditDonationPage({
   }
 
   return (
-    <Card>
+    <Card className="dark:border-white/10 dark:bg-slate-950">
       <CardHeader>
-        <CardTitle>Edit Donation</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-slate-100">
+          {copy.title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <form action={updateAction} className="grid gap-4 md:grid-cols-2">
           <select
             name="medium"
             defaultValue={donation.medium}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="BKASH">BKASH</option>
             <option value="NAGAD">NAGAD</option>
@@ -84,7 +113,7 @@ export default async function EditDonationPage({
           <select
             name="type"
             defaultValue={donation.type}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="GENERAL">GENERAL</option>
             <option value="ZAKAT">ZAKAT</option>
@@ -98,49 +127,54 @@ export default async function EditDonationPage({
             type="number"
             min={1}
             defaultValue={donation.amount}
-            className="rounded-md border border-input px-3 py-2"
+            placeholder={copy.amount}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
             required
           />
           <input
             name="date"
             type="date"
             defaultValue={donation.date.toISOString().slice(0, 10)}
-            className="rounded-md border border-input px-3 py-2"
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="donorName"
             defaultValue={donation.donorName ?? ""}
-            className="rounded-md border border-input px-3 py-2"
+            placeholder={copy.donorName}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="phone"
             defaultValue={donation.phone ?? ""}
-            className="rounded-md border border-input px-3 py-2"
+            placeholder={copy.phone}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <input
             name="trxid"
             defaultValue={donation.trxid ?? ""}
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            placeholder={copy.trxId}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <textarea
             name="comments"
             rows={4}
             defaultValue={donation.comments ?? ""}
-            className="rounded-md border border-input px-3 py-2 md:col-span-2"
+            placeholder={copy.comments}
+            className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
           />
           <Button type="submit" className="w-full md:col-span-2 md:w-fit">
-            Save Changes
+            {copy.save}
           </Button>
         </form>
         <div className="flex flex-wrap gap-3">
           <form action={duplicateAction}>
             <Button type="submit" variant="outline">
-              Duplicate
+              {copy.duplicate}
             </Button>
           </form>
           <form action={deleteAction}>
             <Button type="submit" variant="destructive">
-              Archive
+              {copy.archive}
             </Button>
           </form>
         </div>
