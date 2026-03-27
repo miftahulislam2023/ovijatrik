@@ -116,7 +116,6 @@ export function MultiImageUploadField({
           onChange={(event) => {
             const incoming = Array.from(event.target.files || []);
             if (incoming.length) addFiles(incoming);
-            event.currentTarget.value = "";
           }}
         />
       </label>

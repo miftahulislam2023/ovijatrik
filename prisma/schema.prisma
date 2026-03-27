@@ -105,6 +105,7 @@ model GalleryItem {
   id        String    @id @default(cuid())
   titleBn   String?
   titleEn   String?
+  details   String?
   imageUrl  String
   sortOrder Int       @default(0)
   createdAt DateTime  @default(now())

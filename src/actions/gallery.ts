@@ -20,6 +20,7 @@ export async function getGalleryItemById(id: string) {
 export async function createGalleryItem(data: {
   titleBn?: string;
   titleEn?: string;
+  details?: string;
   imageUrl: string;
   sortOrder?: number;
 }) {
@@ -29,6 +30,7 @@ export async function createGalleryItem(data: {
     data: {
       titleBn: data.titleBn ?? null,
       titleEn: data.titleEn ?? null,
+      details: data.details ?? null,
       imageUrl: data.imageUrl,
       sortOrder: data.sortOrder ?? 0,
     },
@@ -44,6 +46,7 @@ export async function updateGalleryItem(
   data: Partial<{
     titleBn?: string;
     titleEn?: string;
+    details?: string;
     imageUrl: string;
     sortOrder: number;
   }>
@@ -83,6 +86,7 @@ export async function duplicateGalleryItem(id: string) {
     data: {
       titleBn: original.titleBn ? original.titleBn + " (কপি)" : null,
       titleEn: original.titleEn ? original.titleEn + " (Copy)" : null,
+      details: original.details,
       imageUrl: original.imageUrl,
       sortOrder: original.sortOrder,
     },
