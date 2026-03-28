@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getRequestLanguage } from "@/lib/language";
 import {
+  bulkDeleteWeeklyProjectsPermanently,
+  bulkSoftDeleteWeeklyProjects,
   deleteWeeklyProjectPermanently,
   duplicateWeeklyProject,
   softDeleteWeeklyProject,
@@ -60,6 +62,10 @@ export default async function WeeklyProjectsAdminPage({
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
         delete: "ডিলিট",
+        selectedActions: "নির্বাচিত প্রকল্পের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        deleteSelected: "নির্বাচিত ডিলিট",
+        select: "নির্বাচন",
         noProjects: "এখনও কোনো সাপ্তাহিক প্রকল্প নেই।",
         pageLabel: "পৃষ্ঠা",
         ofLabel: "/",
@@ -96,6 +102,10 @@ export default async function WeeklyProjectsAdminPage({
         duplicate: "Duplicate",
         archive: "Archive",
         delete: "Delete",
+        selectedActions: "Actions for selected projects",
+        archiveSelected: "Archive Selected",
+        deleteSelected: "Delete Selected",
+        select: "Select",
         noProjects: "No weekly projects yet.",
         pageLabel: "Page",
         ofLabel: "of",
@@ -262,11 +272,37 @@ export default async function WeeklyProjectsAdminPage({
         </Button>
       </form>
 
+      <form
+        id="weekly-projects-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteWeeklyProjects}
+          variant="outline"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+        <Button
+          type="submit"
+          formAction={bulkDeleteWeeklyProjectsPermanently}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.deleteSelected}
+        </Button>
+      </form>
+
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-[#edf4f8] text-xs uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400">
               <tr>
+                <th className="px-4 py-3">{copy.select}</th>
                 <th className="px-4 py-3">{copy.project}</th>
                 <th className="px-4 py-3">{copy.category}</th>
                 <th className="px-4 py-3">{copy.funding}</th>
@@ -286,6 +322,15 @@ export default async function WeeklyProjectsAdminPage({
                     key={project.id}
                     className="border-t border-slate-100 align-top dark:border-white/10"
                   >
+                    <td className="px-4 py-4 align-middle">
+                      <input
+                        type="checkbox"
+                        name="ids"
+                        value={project.id}
+                        form="weekly-projects-bulk-actions"
+                        className="h-4 w-4"
+                      />
+                    </td>
                     <td className="px-4 py-4">
                       <div className="flex items-start gap-3">
                         <div className="h-14 w-14 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-white/5">

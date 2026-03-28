@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { softDeleteVolunteerApplication } from "@/actions/volunteers";
+import {
+  bulkSoftDeleteVolunteerApplications,
+  softDeleteVolunteerApplication,
+} from "@/actions/volunteers";
 import { AppStatus } from "@/generated/prisma/enums";
 import { Search, UserRound } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
@@ -96,6 +99,9 @@ export default async function AdminVolunteersPage({
         general: "সাধারণ",
         view: "দেখুন",
         archive: "আর্কাইভ",
+        selectedActions: "নির্বাচিত আবেদনের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        select: "নির্বাচন",
         noData: "কোনো স্বেচ্ছাসেবক আবেদন পাওয়া যায়নি।",
         page: "পৃষ্ঠা",
         of: "/",
@@ -132,6 +138,9 @@ export default async function AdminVolunteersPage({
         general: "General",
         view: "View",
         archive: "Archive",
+        selectedActions: "Actions for selected applications",
+        archiveSelected: "Archive Selected",
+        select: "Select",
         noData: "No volunteer applications found.",
         page: "Page",
         of: "of",
@@ -242,11 +251,29 @@ export default async function AdminVolunteersPage({
         </Button>
       </form>
 
+      <form
+        id="volunteers-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteVolunteerApplications}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+      </form>
+
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-[#edf4f8] text-xs uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400">
               <tr>
+                <th className="px-4 py-3">{copy.select}</th>
                 <th className="px-4 py-3">{copy.volunteer}</th>
                 <th className="px-4 py-3">{copy.contact}</th>
                 <th className="px-4 py-3">{copy.joined}</th>
@@ -261,6 +288,15 @@ export default async function AdminVolunteersPage({
                   key={application.id}
                   className="border-t border-slate-100 align-top dark:border-white/10"
                 >
+                  <td className="px-4 py-4 align-middle">
+                    <input
+                      type="checkbox"
+                      name="ids"
+                      value={application.id}
+                      form="volunteers-bulk-actions"
+                      className="h-4 w-4"
+                    />
+                  </td>
                   <td className="px-4 py-4">
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d7e6ef] text-[#0c5f72] dark:bg-[#1f3340] dark:text-[#8dd6e4]">

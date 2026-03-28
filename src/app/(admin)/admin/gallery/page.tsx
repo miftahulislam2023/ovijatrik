@@ -3,7 +3,11 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { duplicateGalleryItem, softDeleteGalleryItem } from "@/actions/gallery";
+import {
+  bulkSoftDeleteGalleryItems,
+  duplicateGalleryItem,
+  softDeleteGalleryItem,
+} from "@/actions/gallery";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function AdminGalleryPage({
@@ -25,6 +29,9 @@ export default async function AdminGalleryPage({
         edit: "এডিট",
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
+        selectedActions: "নির্বাচিত আইটেমের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        select: "নির্বাচন",
         noData: "কোনো গ্যালারি আইটেম পাওয়া যায়নি।",
         page: "পৃষ্ঠা",
         of: "/",
@@ -43,6 +50,9 @@ export default async function AdminGalleryPage({
         edit: "Edit",
         duplicate: "Duplicate",
         archive: "Archive",
+        selectedActions: "Actions for selected items",
+        archiveSelected: "Archive Selected",
+        select: "Select",
         noData: "No gallery items found.",
         page: "Page",
         of: "of",
@@ -115,15 +125,44 @@ export default async function AdminGalleryPage({
         </Button>
       </form>
 
+      <form
+        id="gallery-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteGalleryItems}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+      </form>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
           <Card key={item.id}>
             <CardHeader>
-              <CardTitle className="text-base">
-                {isBn
-                  ? item.titleBn || item.titleEn || copy.untitled
-                  : item.titleEn || item.titleBn || copy.untitled}
-              </CardTitle>
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle className="text-base">
+                  {isBn
+                    ? item.titleBn || item.titleEn || copy.untitled
+                    : item.titleEn || item.titleBn || copy.untitled}
+                </CardTitle>
+                <label className="inline-flex items-center gap-2 rounded-md border border-input px-2 py-1 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    name="ids"
+                    value={item.id}
+                    form="gallery-bulk-actions"
+                    className="h-4 w-4"
+                  />
+                  {copy.select}
+                </label>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               <Image

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { getRequestLanguage } from "@/lib/language";
 import {
+  bulkDeleteTubewellProjectsPermanently,
+  bulkSoftDeleteTubewellProjects,
   deleteTubewellProjectPermanently,
   duplicateTubewellProject,
   softDeleteTubewellProject,
@@ -45,6 +47,10 @@ export default async function TubewellProjectsAdminPage({
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
         delete: "ডিলিট",
+        selectedActions: "নির্বাচিত প্রকল্পের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        deleteSelected: "নির্বাচিত ডিলিট",
+        select: "নির্বাচন",
         noProjects: "এখনও কোনো টিউবওয়েল প্রকল্প নেই।",
         pageLabel: "পৃষ্ঠা",
         ofLabel: "/",
@@ -78,6 +84,10 @@ export default async function TubewellProjectsAdminPage({
         duplicate: "Duplicate",
         archive: "Archive",
         delete: "Delete",
+        selectedActions: "Actions for selected projects",
+        archiveSelected: "Archive Selected",
+        deleteSelected: "Delete Selected",
+        select: "Select",
         noProjects: "No tubewell projects yet.",
         pageLabel: "Page",
         ofLabel: "of",
@@ -234,11 +244,37 @@ export default async function TubewellProjectsAdminPage({
         </Button>
       </form>
 
+      <form
+        id="tubewell-projects-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteTubewellProjects}
+          variant="outline"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+        <Button
+          type="submit"
+          formAction={bulkDeleteTubewellProjectsPermanently}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.deleteSelected}
+        </Button>
+      </form>
+
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111a23]">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-xs sm:text-sm">
             <thead className="bg-[#edf4f8] text-xs uppercase tracking-[0.14em] text-slate-500 dark:bg-white/5 dark:text-slate-400">
               <tr>
+                <th className="px-4 py-3">{copy.select}</th>
                 <th className="px-4 py-3">{copy.projectId}</th>
                 <th className="px-4 py-3">{copy.location}</th>
                 <th className="px-4 py-3">{copy.completion}</th>
@@ -252,6 +288,15 @@ export default async function TubewellProjectsAdminPage({
                   key={project.id}
                   className="border-t border-slate-100 align-top dark:border-white/10"
                 >
+                  <td className="px-4 py-4 align-middle">
+                    <input
+                      type="checkbox"
+                      name="ids"
+                      value={project.id}
+                      form="tubewell-projects-bulk-actions"
+                      className="h-4 w-4"
+                    />
+                  </td>
                   <td className="px-4 py-4 font-semibold text-slate-700 dark:text-slate-200">
                     #TW-{project.year}-{project.id.slice(-3).toUpperCase()}
                   </td>

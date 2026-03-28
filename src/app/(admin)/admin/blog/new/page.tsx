@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { createBlogPost } from "@/actions/blog";
 import { uploadImage } from "@/lib/cloudinary";
 import { slugify } from "@/lib/slug";
-import { ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { TinyMCEField } from "@/components/admin/blog/tiny-mce-field";
+import { CoverImageInput } from "@/components/admin/blog/cover-image-input";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function NewBlogPostPage() {
@@ -19,6 +20,7 @@ export default async function NewBlogPostPage() {
         publish: "আর্টিকেল প্রকাশ করুন",
         uploadHero: "হিরো ছবি আপলোড করুন",
         recommended: "প্রস্তাবিত 2000 x 850",
+        noImageSelected: "এখনও কোনো ছবি নির্বাচন করা হয়নি",
         titleBn: "শিরোনাম (বাংলা)",
         titleEn: "শিরোনাম (ইংরেজি)",
         slug: "স্লাগ (ঐচ্ছিক)",
@@ -39,6 +41,7 @@ export default async function NewBlogPostPage() {
         publish: "Publish Article",
         uploadHero: "Upload Hero Image",
         recommended: "Recommended 2000 x 850",
+        noImageSelected: "No image selected yet",
         titleBn: "Title (Bangla)",
         titleEn: "Title (English)",
         slug: "Slug (optional)",
@@ -134,17 +137,12 @@ export default async function NewBlogPostPage() {
         className="grid gap-6 lg:grid-cols-[1fr_290px]"
       >
         <div className="space-y-5 rounded-2xl border border-slate-200 bg-[#e9f0f6] p-5 dark:border-white/10 dark:bg-[#121d29]">
-          <label className="block rounded-xl border border-dashed border-slate-300 bg-[#dce8f2] p-10 text-center text-slate-600 dark:border-white/20 dark:bg-[#1d2a38] dark:text-slate-300">
-            <Upload className="mx-auto mb-3 h-8 w-8" />
-            <p className="font-medium">{copy.uploadHero}</p>
-            <p className="text-xs">{copy.recommended}</p>
-            <input
-              name="coverFile"
-              type="file"
-              accept="image/*"
-              className="mt-4 w-full text-xs"
-            />
-          </label>
+          <CoverImageInput
+            name="coverFile"
+            label={copy.uploadHero}
+            hint={copy.recommended}
+            emptyPreviewLabel={copy.noImageSelected}
+          />
 
           <div className="grid gap-4 md:grid-cols-2">
             <input

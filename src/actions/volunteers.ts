@@ -95,3 +95,27 @@ export async function softDeleteVolunteerApplication(id: string) {
   revalidatePath("/admin/volunteers");
   return application;
 }
+
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function bulkSoftDeleteVolunteerApplications(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  await prisma.volunteerApplication.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/volunteers");
+}

@@ -95,3 +95,28 @@ export async function duplicateGalleryItem(id: string) {
   revalidatePath("/admin/gallery");
   return copy;
 }
+
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function bulkSoftDeleteGalleryItems(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  await prisma.galleryItem.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/gallery");
+  revalidatePath("/gallery");
+}

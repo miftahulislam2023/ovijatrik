@@ -108,3 +108,27 @@ export async function duplicateDonation(id: string) {
   revalidatePath("/admin/donations");
   return copy;
 }
+
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function bulkSoftDeleteDonations(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  await prisma.donation.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/donations");
+}

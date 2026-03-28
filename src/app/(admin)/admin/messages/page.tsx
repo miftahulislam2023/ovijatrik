@@ -2,7 +2,12 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { markMessageAsRead, softDeleteMessage } from "@/actions/contact";
+import {
+  bulkMarkMessagesAsRead,
+  bulkSoftDeleteMessages,
+  markMessageAsRead,
+  softDeleteMessage,
+} from "@/actions/contact";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function AdminMessagesPage({
@@ -24,6 +29,10 @@ export default async function AdminMessagesPage({
         view: "দেখুন",
         markRead: "পঠিত করুন",
         archive: "আর্কাইভ",
+        selectedActions: "নির্বাচিত বার্তার অ্যাকশন",
+        markSelectedRead: "নির্বাচিত পঠিত করুন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        select: "নির্বাচন",
         noData: "কোনো বার্তা পাওয়া যায়নি।",
         page: "পৃষ্ঠা",
         of: "/",
@@ -42,6 +51,10 @@ export default async function AdminMessagesPage({
         view: "View",
         markRead: "Mark Read",
         archive: "Archive",
+        selectedActions: "Actions for selected messages",
+        markSelectedRead: "Mark Selected Read",
+        archiveSelected: "Archive Selected",
+        select: "Select",
         noData: "No messages found.",
         page: "Page",
         of: "of",
@@ -124,13 +137,50 @@ export default async function AdminMessagesPage({
         </Button>
       </form>
 
+      <form
+        id="messages-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkMarkMessagesAsRead}
+          variant="outline"
+          size="sm"
+        >
+          {copy.markSelectedRead}
+        </Button>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteMessages}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+      </form>
+
       <div className="grid gap-4">
         {messages.map((message) => (
           <Card key={message.id} className="transition hover:border-primary">
             <CardHeader>
-              <CardTitle className="text-base">
-                {message.subject || copy.noSubject}
-              </CardTitle>
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle className="text-base">
+                  {message.subject || copy.noSubject}
+                </CardTitle>
+                <label className="inline-flex items-center gap-2 rounded-md border border-input px-2 py-1 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    name="ids"
+                    value={message.id}
+                    form="messages-bulk-actions"
+                    className="h-4 w-4"
+                  />
+                  {copy.select}
+                </label>
+              </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
               <p>

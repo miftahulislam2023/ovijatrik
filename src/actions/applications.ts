@@ -88,3 +88,27 @@ export async function softDeleteApplication(id: string) {
   revalidatePath("/admin/applications");
   return app;
 }
+
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function bulkSoftDeleteApplications(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  await prisma.application.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/applications");
+}

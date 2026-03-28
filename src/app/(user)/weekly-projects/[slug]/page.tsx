@@ -4,6 +4,7 @@ import { getRequestLanguage } from "@/lib/language";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { WeeklyProjectProgressBar } from "@/components/site/weekly-project-progress-bar";
 
 function maskPhone(phone?: string | null) {
   if (!phone) return "";
@@ -82,18 +83,18 @@ export default async function WeeklyProjectDetailPage({
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <section className="relative isolate overflow-hidden border-b border-border bg-primary/35">
+      <section className="relative isolate overflow-hidden border-b border-border bg-primary/20">
         {primaryPhoto ? (
           <Image
             src={primaryPhoto}
             alt={title}
             fill
-            className="object-cover opacity-45"
+            className="object-cover object-center opacity-70"
             sizes="100vw"
             priority
           />
         ) : null}
-        <div className="absolute inset-0 bg-linear-to-br from-primary/88 via-primary/70 to-background/93" />
+        <div className="absolute inset-0 bg-linear-to-br from-black/55 via-black/35 to-primary/45" />
 
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pt-28">
           <p className="inline-flex rounded-full bg-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-foreground">
@@ -143,8 +144,11 @@ export default async function WeeklyProjectDetailPage({
               <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
                 {content.progressLabel}
               </dt>
-              <dd className="text-xl font-semibold text-primary">
-                {progress}%
+              <dd className="pt-1">
+                <WeeklyProjectProgressBar
+                  progress={progress}
+                  progressLabel={content.progressLabel}
+                />
               </dd>
             </div>
           </dl>

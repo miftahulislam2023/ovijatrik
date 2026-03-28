@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { duplicateBlogPost, softDeleteBlogPost } from "@/actions/blog";
+import {
+  bulkDeleteBlogPostsPermanently,
+  bulkSoftDeleteBlogPosts,
+  deleteBlogPostPermanently,
+  duplicateBlogPost,
+  softDeleteBlogPost,
+} from "@/actions/blog";
 import { Eye, Pencil, Plus, Search } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
 
@@ -40,6 +46,11 @@ export default async function AdminBlogPage({
         edit: "এডিট",
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
+        delete: "ডিলিট",
+        selectedActions: "নির্বাচিত পোস্টের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        deleteSelected: "নির্বাচিত ডিলিট",
+        select: "নির্বাচন",
         noData: "কোনো ব্লগ পোস্ট পাওয়া যায়নি।",
         updated: "আপডেট হয়েছে",
         page: "পৃষ্ঠা",
@@ -70,6 +81,11 @@ export default async function AdminBlogPage({
         edit: "Edit",
         duplicate: "Duplicate",
         archive: "Archive",
+        delete: "Delete",
+        selectedActions: "Actions for selected posts",
+        archiveSelected: "Archive Selected",
+        deleteSelected: "Delete Selected",
+        select: "Select",
         noData: "No blog posts found.",
         updated: "Updated",
         page: "Page",
@@ -230,6 +246,31 @@ export default async function AdminBlogPage({
         </Button>
       </form>
 
+      <form
+        id="blog-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteBlogPosts}
+          variant="outline"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+        <Button
+          type="submit"
+          formAction={bulkDeleteBlogPostsPermanently}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.deleteSelected}
+        </Button>
+      </form>
+
       <div className="space-y-4">
         {posts.map((post) => (
           <article
@@ -277,6 +318,16 @@ export default async function AdminBlogPage({
             </div>
 
             <div className="flex flex-wrap gap-2 md:flex-col md:items-end">
+              <label className="inline-flex items-center gap-2 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-600 dark:border-white/15 dark:text-slate-300">
+                <input
+                  type="checkbox"
+                  name="ids"
+                  value={post.id}
+                  form="blog-bulk-actions"
+                  className="h-4 w-4"
+                />
+                {copy.select}
+              </label>
               <Button asChild variant="outline" size="sm">
                 <Link href={`/blog/${post.slug}`}>
                   <Eye className="h-3.5 w-3.5" />
@@ -307,6 +358,16 @@ export default async function AdminBlogPage({
               >
                 <Button variant="destructive" size="sm" type="submit">
                   {copy.archive}
+                </Button>
+              </form>
+              <form
+                action={async () => {
+                  "use server";
+                  await deleteBlogPostPermanently(post.id);
+                }}
+              >
+                <Button variant="destructive" size="sm" type="submit">
+                  {copy.delete}
                 </Button>
               </form>
             </div>

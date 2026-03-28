@@ -141,3 +141,60 @@ export async function duplicateTubewellProject(id: string) {
   revalidatePath("/admin/tubewell-projects");
   return copy;
 }
+
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function bulkSoftDeleteTubewellProjects(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  const projects = await prisma.tubewellProject.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, slug: true },
+  });
+
+  await prisma.tubewellProject.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/tubewell-projects");
+  revalidatePath("/tubewell-projects");
+  for (const project of projects) {
+    revalidatePath(`/admin/tubewell-projects/${project.id}`);
+    revalidatePath(`/tubewell-projects/${project.slug}`);
+  }
+}
+
+export async function bulkDeleteTubewellProjectsPermanently(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  const projects = await prisma.tubewellProject.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, slug: true },
+  });
+
+  await prisma.tubewellProject.deleteMany({
+    where: { id: { in: ids } },
+  });
+
+  revalidatePath("/admin/tubewell-projects");
+  revalidatePath("/tubewell-projects");
+  for (const project of projects) {
+    revalidatePath(`/admin/tubewell-projects/${project.id}`);
+    revalidatePath(`/tubewell-projects/${project.slug}`);
+  }
+}

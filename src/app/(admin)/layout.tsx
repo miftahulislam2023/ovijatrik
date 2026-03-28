@@ -5,6 +5,12 @@ import { getRequestLanguage } from "@/lib/language";
 import { auth } from "@/lib/auth";
 import { isAdminRole } from "@/lib/authorization";
 import { redirect } from "next/navigation";
+import { Hind_Siliguri } from "next/font/google";
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +32,9 @@ export default async function AdminLayout({
   const language = await getRequestLanguage();
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div
+      className={`flex min-h-screen bg-background text-foreground ${language === "bn" ? hindSiliguri.className : ""}`}
+    >
       {/* Desktop Sidebar */}
       <AdminSidebar language={language} />
 

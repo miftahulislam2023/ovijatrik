@@ -6,6 +6,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ArrowRight } from "lucide-react";
 import { isLikelyHtml, sanitizeRichText } from "@/lib/rich-text";
+import Image from "next/image";
 
 export default async function BlogPostPage({
   params,
@@ -46,10 +47,10 @@ export default async function BlogPostPage({
       language: "ভাষা",
       status: "অবস্থা",
       published: "প্রকাশিত",
-      fallbackTags: ["টেকসই উন্নয়ন", "পানির অধিকার", "কমিউনিটি উন্নয়ন"],
+      fallbackTags: ["টেকসই উন্নয়ন", "পানির অধিকার", "কমিউনিটি উন্নয়ন"],
       relatedStories: "সম্পর্কিত গল্প",
       viewAll: "সবগুলো দেখুন",
-      editorial: "সম্পাদকীয়",
+      editorial: "সম্পাদকীয়",
       bangla: "বাংলা",
       english: "ইংরেজি",
     },
@@ -82,36 +83,36 @@ export default async function BlogPostPage({
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <section className="relative isolate overflow-hidden border-b border-border bg-primary/35">
+      <section className="relative isolate overflow-hidden border-b border-border bg-slate-900">
         {post.coverImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={post.coverImage}
             alt={title}
-            className="absolute inset-0 h-full w-full object-cover opacity-40"
+            fill
+            priority
+            className="scale-105 object-cover object-center"
           />
         )}
-        <div className="absolute inset-0 bg-linear-to-br from-primary/90 via-primary/75 to-background/95" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/45 to-black/20" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/30 via-primary/10 to-transparent" />
 
-        <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-20 sm:px-6 lg:px-8 lg:pt-28">
-          <p className="inline-flex rounded-full bg-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-foreground">
-            {content.impactStory}
-          </p>
-          <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.05] text-white md:text-6xl">
-            {title}
-          </h1>
-          <div className="mt-7 flex flex-wrap items-center gap-6 text-xs text-slate-100/90">
-            <span>
-              {content.publishedOn}{" "}
-              {publishDate.toLocaleDateString(
-                language === "bn" ? "bn-BD" : "en-US",
-                { month: "long", day: "numeric", year: "numeric" },
-              )}
-            </span>
-            {post.readingTime ? (
-              <span>{content.minRead(post.readingTime)}</span>
-            ) : null}
+        <div className="mt-7 flex w-full items-center gap-2 text-[10px] text-slate-100 sm:gap-3 sm:text-xs">
+          <div className="truncate">
+            {content.publishedOn}{" "}
+            {publishDate.toLocaleDateString(
+              language === "bn" ? "bn-BD" : "en-US",
+              { month: "short", day: "numeric", year: "numeric" },
+            )}
           </div>
+
+          {post.readingTime ? (
+            <>
+              <span className="shrink-0 opacity-50">•</span>
+              <div className="shrink-0">
+                {content.minRead(post.readingTime)}
+              </div>
+            </>
+          ) : null}
         </div>
       </section>
 

@@ -158,6 +158,67 @@ export async function duplicateWeeklyProject(id: string) {
   return copy;
 }
 
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function bulkSoftDeleteWeeklyProjects(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  const projects = await prisma.weeklyProject.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, slug: true },
+  });
+
+  await prisma.weeklyProject.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/weekly-projects");
+  revalidatePath("/weekly-projects");
+  for (const project of projects) {
+    revalidatePath(`/admin/weekly-projects/${project.id}`);
+    revalidatePath(`/weekly-projects/${project.slug}`);
+  }
+}
+
+export async function bulkDeleteWeeklyProjectsPermanently(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  const projects = await prisma.weeklyProject.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, slug: true },
+  });
+
+  await prisma.weeklyDonation.deleteMany({
+    where: { projectId: { in: ids } },
+  });
+
+  await prisma.weeklyProject.deleteMany({
+    where: { id: { in: ids } },
+  });
+
+  revalidatePath("/admin/weekly-projects");
+  revalidatePath("/weekly-projects");
+  for (const project of projects) {
+    revalidatePath(`/admin/weekly-projects/${project.id}`);
+    revalidatePath(`/weekly-projects/${project.slug}`);
+  }
+}
+
 // Weekly donations for a project
 
 export async function addWeeklyDonation(data: {

@@ -2,7 +2,10 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { softDeleteApplication } from "@/actions/applications";
+import {
+  bulkSoftDeleteApplications,
+  softDeleteApplication,
+} from "@/actions/applications";
 import { AppStatus } from "@/generated/prisma/enums";
 import { getRequestLanguage } from "@/lib/language";
 
@@ -21,6 +24,9 @@ export default async function AdminApplicationsPage({
         apply: "প্রয়োগ করুন",
         view: "দেখুন",
         archive: "আর্কাইভ",
+        selectedActions: "নির্বাচিত আবেদনের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        select: "নির্বাচন",
         noData: "কোনো আবেদন পাওয়া যায়নি।",
         page: "পৃষ্ঠা",
         of: "/",
@@ -35,6 +41,9 @@ export default async function AdminApplicationsPage({
         apply: "Apply",
         view: "View",
         archive: "Archive",
+        selectedActions: "Actions for selected applications",
+        archiveSelected: "Archive Selected",
+        select: "Select",
         noData: "No applications found.",
         page: "Page",
         of: "of",
@@ -119,6 +128,23 @@ export default async function AdminApplicationsPage({
         </Button>
       </form>
 
+      <form
+        id="applications-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteApplications}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+      </form>
+
       <div className="grid gap-4">
         {applications.map((application) => (
           <Card
@@ -126,9 +152,21 @@ export default async function AdminApplicationsPage({
             className="transition hover:border-primary"
           >
             <CardHeader>
-              <CardTitle className="text-base text-slate-900 dark:text-slate-100">
-                {application.name}
-              </CardTitle>
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle className="text-base text-slate-900 dark:text-slate-100">
+                  {application.name}
+                </CardTitle>
+                <label className="inline-flex items-center gap-2 rounded-md border border-input px-2 py-1 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    name="ids"
+                    value={application.id}
+                    form="applications-bulk-actions"
+                    className="h-4 w-4"
+                  />
+                  {copy.select}
+                </label>
+              </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
               <p>

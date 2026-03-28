@@ -2,7 +2,11 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { duplicateDonation, softDeleteDonation } from "@/actions/donations";
+import {
+  bulkSoftDeleteDonations,
+  duplicateDonation,
+  softDeleteDonation,
+} from "@/actions/donations";
 import { DonationMedium, DonationType } from "@/generated/prisma/enums";
 import { getRequestLanguage } from "@/lib/language";
 
@@ -30,6 +34,9 @@ export default async function AdminDonationsPage({
         edit: "এডিট",
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
+        selectedActions: "নির্বাচিত অনুদানের অ্যাকশন",
+        archiveSelected: "নির্বাচিত আর্কাইভ",
+        select: "নির্বাচন",
         page: "পৃষ্ঠা",
         of: "/",
         items: "আইটেম",
@@ -47,6 +54,9 @@ export default async function AdminDonationsPage({
         edit: "Edit",
         duplicate: "Duplicate",
         archive: "Archive",
+        selectedActions: "Actions for selected donations",
+        archiveSelected: "Archive Selected",
+        select: "Select",
         page: "Page",
         of: "of",
         items: "items",
@@ -158,13 +168,42 @@ export default async function AdminDonationsPage({
         </Button>
       </form>
 
+      <form
+        id="donations-bulk-actions"
+        className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3"
+      >
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          {copy.selectedActions}
+        </span>
+        <Button
+          type="submit"
+          formAction={bulkSoftDeleteDonations}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.archiveSelected}
+        </Button>
+      </form>
+
       <div className="grid gap-4">
         {donations.map((donation) => (
           <Card key={donation.id}>
             <CardHeader>
-              <CardTitle className="text-base text-slate-900 dark:text-slate-100">
-                {donation.amount.toLocaleString()} BDT
-              </CardTitle>
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle className="text-base text-slate-900 dark:text-slate-100">
+                  {donation.amount.toLocaleString()} BDT
+                </CardTitle>
+                <label className="inline-flex items-center gap-2 rounded-md border border-input px-2 py-1 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    name="ids"
+                    value={donation.id}
+                    form="donations-bulk-actions"
+                    className="h-4 w-4"
+                  />
+                  {copy.select}
+                </label>
+              </div>
             </CardHeader>
             <CardContent className="flex flex-wrap items-center justify-between gap-4 text-sm">
               <p className="text-muted-foreground">

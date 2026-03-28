@@ -123,6 +123,67 @@ export async function softDeleteBlogPost(id: string) {
   return post;
 }
 
+function getIdsFromFormData(formData: FormData) {
+  return formData
+    .getAll("ids")
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+}
+
+export async function deleteBlogPostPermanently(id: string) {
+  await requireAdminAction();
+
+  const post = await prisma.blogPost.findUnique({ where: { id } });
+  if (!post) return null;
+
+  await prisma.blogPost.delete({ where: { id } });
+
+  revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${post.slug}`);
+  return post;
+}
+
+export async function bulkSoftDeleteBlogPosts(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  await prisma.blogPost.updateMany({
+    where: {
+      id: { in: ids },
+      deletedAt: null,
+    },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+}
+
+export async function bulkDeleteBlogPostsPermanently(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  const slugs = await prisma.blogPost.findMany({
+    where: { id: { in: ids } },
+    select: { slug: true },
+  });
+
+  await prisma.blogPost.deleteMany({
+    where: { id: { in: ids } },
+  });
+
+  revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+  for (const item of slugs) {
+    revalidatePath(`/blog/${item.slug}`);
+  }
+}
+
 export async function duplicateBlogPost(id: string) {
   await requireAdminAction();
 

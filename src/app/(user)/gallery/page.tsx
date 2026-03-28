@@ -45,64 +45,90 @@ export default async function GalleryPage() {
     <main
       className={`min-h-screen bg-linear-to-b from-[#f4faff] via-[#edf7ff] to-[#f7fbff] text-[#0e1d25] dark:from-[#0c151e] dark:via-[#0e1a26] dark:to-[#101722] dark:text-slate-100 ${fontClass}`}
     >
-      <section className="mx-auto max-w-6xl px-4 pb-10 pt-8 sm:px-6 lg:px-8 lg:pt-12">
-        <header className="max-w-4xl">
-          <p className="mb-3 inline-flex rounded-full border border-[#bed4de] bg-[#e7f6ff] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#00535b] dark:border-white/15 dark:bg-[#14202c] dark:text-[#9becf7]">
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
+        
+        {/* Header Section */}
+        <header className="mx-auto max-w-3xl text-center">
+          <p className="mb-6 inline-flex items-center rounded-full border border-[#bed4de] bg-[#e7f6ff]/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#00535b] shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-[#14202c]/80 dark:text-[#9becf7]">
             {content.galleryLabel}
           </p>
-          <h1 className="text-3xl leading-[0.98] tracking-tight text-[#00535b] sm:text-4xl lg:text-5xl dark:text-[#9becf7]">
+          <h1 className="text-4xl font-medium leading-tight tracking-tight text-[#00535b] sm:text-5xl lg:text-6xl dark:text-[#9becf7]">
             {content.title}
             <span className="mt-2 block font-light italic text-[#8c4e35] dark:text-[#ffb59a]">
               {content.titleAccent}
             </span>
           </h1>
-          <p className="mt-5 max-w-3xl text-sm leading-relaxed text-[#3e494a] sm:text-base dark:text-slate-300">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#3e494a] sm:text-lg dark:text-slate-300">
             {content.subtitle}
           </p>
         </header>
 
-        {items.length === 0 && (
-          <div className="mt-10 rounded-2xl border border-dashed border-[#bec8ca] bg-[#e7f6ff] p-8 text-sm text-[#3e494a] dark:border-white/15 dark:bg-[#15202d] dark:text-slate-300">
-            {content.empty}
-          </div>
-        )}
+        {/* Gallery / Empty State Section */}
+        <div className="mt-16 sm:mt-20">
+          {items.length === 0 ? (
+            <div className="mx-auto flex max-w-2xl flex-col items-center justify-center rounded-3xl border border-dashed border-[#bec8ca] bg-[#e7f6ff]/50 px-8 py-16 text-center dark:border-white/10 dark:bg-[#15202d]/50">
+              <svg
+                className="mb-4 h-12 w-12 text-[#00535b]/40 dark:text-[#9becf7]/40"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+                />
+              </svg>
+              <p className="text-base font-medium text-[#3e494a] dark:text-slate-300">
+                {content.empty}
+              </p>
+            </div>
+          ) : (
+            <GalleryLightbox
+              items={items.map((item) => ({
+                id: item.id,
+                imageUrl: item.imageUrl,
+                title:
+                  language === "en"
+                    ? item.titleEn || item.titleBn || content.fallbackTitle
+                    : item.titleBn || item.titleEn || content.fallbackTitle,
+                details: item.details || undefined,
+              }))}
+            />
+          )}
+        </div>
 
-        {items.length > 0 && (
-          <GalleryLightbox
-            items={items.map((item) => ({
-              id: item.id,
-              imageUrl: item.imageUrl,
-              title:
-                language === "en"
-                  ? item.titleEn || item.titleBn || content.fallbackTitle
-                  : item.titleBn || item.titleEn || content.fallbackTitle,
-              details: item.details || undefined,
-            }))}
-          />
-        )}
+        {/* Call to Action Section */}
+        <section className="relative mx-auto mt-24 flex max-w-4xl flex-col items-center overflow-hidden rounded-[2.5rem] border border-[#bed4de]/50 bg-linear-to-br from-[#006d77] to-[#00535b] px-6 py-16 text-center text-white shadow-2xl dark:border-white/10 sm:px-12 lg:px-20 lg:py-20">
+          
+          {/* Decorative Ambient Background Blurs */}
+          <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#9becf7]/10 blur-3xl" />
 
-        <section className="mt-20 overflow-hidden rounded-3xl border border-[#bed4de] bg-linear-to-br from-[#006d77] to-[#00535b] px-5 py-10 text-white shadow-[0_24px_50px_-30px_rgba(0,83,91,0.8)] sm:px-8 lg:px-12 lg:py-14">
-          <h2 className="text-2xl tracking-tight sm:text-3xl lg:text-4xl">
+          <h2 className="relative z-10 text-3xl font-medium tracking-tight sm:text-4xl lg:text-5xl">
             {content.ctaTitle}
           </h2>
-          <p className="mt-3 max-w-2xl text-xs text-[#c8f0f7] sm:text-sm">
+          <p className="relative z-10 mt-4 max-w-xl text-sm leading-relaxed text-[#c8f0f7] sm:text-base">
             {content.ctaText}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          
+          <div className="relative z-10 mt-10 flex w-full flex-col justify-center gap-4 sm:w-auto sm:flex-row">
             <Link
               href="/donation"
-              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-xs font-bold text-[#00535b] transition-colors hover:bg-[#e7f6ff] sm:text-sm"
+              className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3.5 text-sm font-bold text-[#00535b] shadow-lg transition-all hover:scale-105 hover:bg-[#e7f6ff] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/50"
             >
               {content.donate}
             </Link>
             <Link
               href="/join-us"
-              className="inline-flex items-center justify-center rounded-full border border-white/30 px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-white/10 sm:text-sm"
+              className="inline-flex items-center justify-center rounded-full border-2 border-white/30 bg-transparent px-8 py-3.5 text-sm font-bold text-white transition-all hover:bg-white/10 hover:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
             >
               {content.volunteer}
             </Link>
           </div>
         </section>
+
       </section>
     </main>
   );
