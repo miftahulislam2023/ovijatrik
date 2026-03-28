@@ -7,7 +7,7 @@ import { useLanguage } from "@/components/providers/language-provider";
 const LOADING_COPY = {
   en: {
     strapline: "Ovijatrik Foundation",
-    title: "Moving with purpose",
+    title: "Quest for a Smiling Face ",
     subtitle:
       "Education, clean water, and compassionate support for every journey.",
     missionTag: "Mission in motion",
@@ -19,7 +19,7 @@ const LOADING_COPY = {
   },
   bn: {
     strapline: "অভিযাত্রিক ফাউন্ডেশন",
-    title: "লক্ষ্যের পথে এগিয়ে চলা",
+    title: "হাসি মুখের খুঁজে অভিযাত্রা",
     subtitle: "শিক্ষা, বিশুদ্ধ পানি ও মানবিক সহায়তায় নিরাপদ আগামী গড়া।",
     missionTag: "মিশন চলমান",
     loadingText: "আপনার ইমপ্যাক্ট অভিজ্ঞতা প্রস্তুত হচ্ছে",

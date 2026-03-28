@@ -14,8 +14,9 @@ type InitiateBody = {
   donorName?: string;
   email?: string;
   phone?: string;
-  address?: string;
-  city?: string;
+  isAnonymousPublic?: boolean;
+  campaignType?: "WEEKLY" | "TUBEWELL";
+  campaignSlug?: string;
 };
 
 function resolveIpAddress(request: Request) {
@@ -38,9 +39,15 @@ export async function POST(request: Request) {
     const amount = Number(body.amount || 0);
     const donorNameInput = trimValue(body.donorName);
     const emailInput = trimValue(body.email);
-    const phone = trimValue(body.phone);
-    const address = trimValue(body.address) || "Dhaka";
-    const city = trimValue(body.city) || "Dhaka";
+    const phoneInput = trimValue(body.phone);
+    const isAnonymousPublic = Boolean(body.isAnonymousPublic);
+    const address = "Dinajpur";
+    const city = "Dinajpur";
+    const campaignType =
+      body.campaignType === "WEEKLY" || body.campaignType === "TUBEWELL"
+        ? body.campaignType
+        : undefined;
+    const campaignSlug = trimValue(body.campaignSlug);
 
     let profileName = "";
     let profileEmail = "";
@@ -56,18 +63,16 @@ export async function POST(request: Request) {
       profileUserId = trimValue(profile?.id);
     }
 
-    const donorName = profileName || donorNameInput;
-    const email = profileEmail || emailInput;
+    const fallbackName = "Ovijatrik Donor";
+    const fallbackEmail = "support@ovijatrik.org";
+    const fallbackPhone = "01720803305";
+
+    const donorName = profileName || donorNameInput || fallbackName;
+    const email = profileEmail || emailInput || fallbackEmail;
+    const phone = phoneInput || fallbackPhone;
 
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: "Invalid donation amount" }, { status: 400 });
-    }
-
-    if (!donorName || !email || !phone) {
-      return NextResponse.json(
-        { error: "Name, email and phone are required" },
-        { status: 400 }
-      );
     }
 
     const merchantTransactionId = getMerchantTransactionId();
@@ -82,6 +87,13 @@ export async function POST(request: Request) {
     if (profileUserId) {
       successUrl.searchParams.set("userId", profileUserId);
     }
+    if (campaignType && campaignSlug) {
+      successUrl.searchParams.set("campaignType", campaignType);
+      successUrl.searchParams.set("campaignSlug", campaignSlug);
+    }
+    if (isAnonymousPublic) {
+      successUrl.searchParams.set("anonymous", "1");
+    }
 
     const failUrl = new URL("/api/payments/eps/callback", callbackBase);
     failUrl.searchParams.set("state", "fail");
@@ -89,12 +101,26 @@ export async function POST(request: Request) {
     if (profileUserId) {
       failUrl.searchParams.set("userId", profileUserId);
     }
+    if (campaignType && campaignSlug) {
+      failUrl.searchParams.set("campaignType", campaignType);
+      failUrl.searchParams.set("campaignSlug", campaignSlug);
+    }
+    if (isAnonymousPublic) {
+      failUrl.searchParams.set("anonymous", "1");
+    }
 
     const cancelUrl = new URL("/api/payments/eps/callback", callbackBase);
     cancelUrl.searchParams.set("state", "cancel");
     cancelUrl.searchParams.set("merchantTransactionId", merchantTransactionId);
     if (profileUserId) {
       cancelUrl.searchParams.set("userId", profileUserId);
+    }
+    if (campaignType && campaignSlug) {
+      cancelUrl.searchParams.set("campaignType", campaignType);
+      cancelUrl.searchParams.set("campaignSlug", campaignSlug);
+    }
+    if (isAnonymousPublic) {
+      cancelUrl.searchParams.set("anonymous", "1");
     }
 
     const token = await getEpsToken();

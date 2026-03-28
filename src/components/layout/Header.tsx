@@ -10,11 +10,19 @@ import { LanguageToggle } from "@/components/site/language-toggle";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { useLanguage } from "@/components/providers/language-provider";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const defaultSearchTarget = pathname.startsWith("/weekly-projects")
     ? "/weekly-projects"
     : pathname.startsWith("/tubewell-projects")
@@ -36,11 +44,17 @@ export default function Header() {
 
     if (!trimmedQuery) {
       router.push(searchTarget);
+      setSearchOpen(false);
       return;
     }
 
     router.push(`${searchTarget}?q=${encodeURIComponent(trimmedQuery)}`);
+    setSearchOpen(false);
+  }
+
+  function handleSearchOpen() {
     setOpen(false);
+    setSearchOpen(true);
   }
 
   const copy = {
@@ -69,8 +83,14 @@ export default function Header() {
         contact: "Contact",
       },
       search: {
+        title: "Search Content",
+        description: "Search blog posts, weekly updates, and tubewell stories.",
+        triggerLabel: "Open search",
+        scopeLabel: "Search in",
+        queryLabel: "Keyword",
         placeholder: "Search...",
         button: "Search",
+        cancel: "Cancel",
         scopeBlog: "Blog",
         scopeWeekly: "Weekly",
         scopeTubewell: "Tubewell",
@@ -101,8 +121,15 @@ export default function Header() {
         contact: "যোগাযোগ",
       },
       search: {
+        title: "কনটেন্ট খুঁজুন",
+        description:
+          "ব্লগ, সাপ্তাহিক আপডেট এবং টিউবওয়েল প্রকল্পের গল্প খুঁজে দেখুন।",
+        triggerLabel: "সার্চ খুলুন",
+        scopeLabel: "কোথায় খুঁজবেন",
+        queryLabel: "কিওয়ার্ড",
         placeholder: "অনুসন্ধান করুন...",
         button: "খুঁজুন",
+        cancel: "বাতিল",
         scopeBlog: "ব্লগ",
         scopeWeekly: "সাপ্তাহিক",
         scopeTubewell: "টিউবওয়েল",
@@ -228,39 +255,16 @@ export default function Header() {
 
         {/* Desktop Actions (Right Side) */}
         <div className="hidden items-center gap-3 md:flex">
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex items-center gap-2 rounded-full border border-border bg-muted/40 px-2 py-1"
-            role="search"
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleSearchOpen}
+            className="rounded-full border border-black/10 bg-white/80 text-slate-600 shadow-sm transition-all hover:bg-black/5 hover:text-slate-900 dark:border-white/10 dark:bg-[#0e1416]/70 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+            aria-label={content.search.triggerLabel}
           >
-            <select
-              value={searchTarget}
-              onChange={(event) => setSearchTarget(event.target.value)}
-              className="h-8 rounded-full border border-border bg-background px-2 text-xs text-foreground outline-none"
-              aria-label="Search section"
-            >
-              <option value="/blog">{content.search.scopeBlog}</option>
-              <option value="/weekly-projects">
-                {content.search.scopeWeekly}
-              </option>
-              <option value="/tubewell-projects">
-                {content.search.scopeTubewell}
-              </option>
-            </select>
-            <input
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder={content.search.placeholder}
-              className="h-8 w-36 rounded-full border border-border bg-background px-3 text-xs text-foreground outline-none placeholder:text-muted-foreground"
-            />
-            <Button
-              type="submit"
-              size="sm"
-              className="h-8 rounded-full px-3 text-xs"
-            >
-              <Search className="h-3.5 w-3.5" />
-            </Button>
-          </form>
+            <Search className="h-4 w-4" />
+          </Button>
 
           <div className="flex items-center gap-1">
             <LanguageToggle />
@@ -383,42 +387,19 @@ export default function Header() {
 
             {/* Bottom Utility & Action Center */}
             <div className="flex flex-col gap-3 pt-4">
-              <form
-                onSubmit={handleSearchSubmit}
-                className="space-y-2 rounded-lg border border-border bg-muted/30 p-3"
-                role="search"
-              >
-                <div className="flex gap-2">
-                  <select
-                    value={searchTarget}
-                    onChange={(event) => setSearchTarget(event.target.value)}
-                    className="h-10 w-28 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none"
-                    aria-label="Search section"
-                  >
-                    <option value="/blog">{content.search.scopeBlog}</option>
-                    <option value="/weekly-projects">
-                      {content.search.scopeWeekly}
-                    </option>
-                    <option value="/tubewell-projects">
-                      {content.search.scopeTubewell}
-                    </option>
-                  </select>
-                  <input
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder={content.search.placeholder}
-                    className="h-10 min-w-0 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
-                </div>
-                <Button type="submit" className="w-full" size="sm">
-                  <Search className="mr-1.5 h-4 w-4" />
-                  {content.search.button}
-                </Button>
-              </form>
-
               {/* The "Four Buttons" Grouped Neatly */}
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-2">
                 <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-md"
+                    onClick={handleSearchOpen}
+                    aria-label={content.search.triggerLabel}
+                  >
+                    <Search className="h-5 w-5" />
+                  </Button>
                   <LanguageToggle />
                   <ThemeToggle />
                 </div>
@@ -470,6 +451,86 @@ export default function Header() {
           </nav>
         </div>
       )}
+
+      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+        <DialogContent
+          showCloseButton={false}
+          className="max-w-xl overflow-hidden border-black/10 bg-white/95 p-0 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#0e1416]/95"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(14,116,144,0.12),transparent_60%)] dark:bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.2),transparent_60%)]" />
+          <div className="relative">
+            <DialogHeader className="border-b border-black/10 px-6 pt-6 pb-4 text-left dark:border-white/10">
+              <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {content.search.title}
+              </DialogTitle>
+              <DialogDescription className="text-sm text-slate-500 dark:text-white/60">
+                {content.search.description}
+              </DialogDescription>
+            </DialogHeader>
+
+            <form
+              onSubmit={handleSearchSubmit}
+              className="space-y-4 px-6 pt-5 pb-6"
+              role="search"
+            >
+              <div className="space-y-2">
+                <label
+                  htmlFor="header-search-scope"
+                  className="text-[11px] font-semibold tracking-[0.16em] uppercase text-slate-500 dark:text-white/50"
+                >
+                  {content.search.scopeLabel}
+                </label>
+                <select
+                  id="header-search-scope"
+                  value={searchTarget}
+                  onChange={(event) => setSearchTarget(event.target.value)}
+                  className="h-11 w-full rounded-xl border border-black/10 bg-white/80 px-3 text-sm text-slate-700 outline-none transition focus:border-slate-400 dark:border-white/10 dark:bg-[#0b1012]/70 dark:text-white/85 dark:focus:border-white/30"
+                  aria-label={content.search.scopeLabel}
+                >
+                  <option value="/blog">{content.search.scopeBlog}</option>
+                  <option value="/weekly-projects">
+                    {content.search.scopeWeekly}
+                  </option>
+                  <option value="/tubewell-projects">
+                    {content.search.scopeTubewell}
+                  </option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="header-search-query"
+                  className="text-[11px] font-semibold tracking-[0.16em] uppercase text-slate-500 dark:text-white/50"
+                >
+                  {content.search.queryLabel}
+                </label>
+                <input
+                  id="header-search-query"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={content.search.placeholder}
+                  className="h-12 w-full rounded-xl border border-black/10 bg-white/80 px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-slate-400 dark:border-white/10 dark:bg-[#0b1012]/70 dark:text-white/85 dark:placeholder:text-white/35 dark:focus:border-white/30"
+                />
+              </div>
+
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => setSearchOpen(false)}
+                >
+                  {content.search.cancel}
+                </Button>
+                <Button type="submit" className="rounded-xl">
+                  <Search className="mr-2 h-4 w-4" />
+                  {content.search.button}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

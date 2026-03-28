@@ -42,6 +42,7 @@ export default async function TubewellProjectDetailPage({
       geoBody:
         "The project serves a central cluster of families and reduces daily travel burden for water access.",
       viewAllProjects: "View all projects",
+      donateToProject: "Donate to this project",
       noImage: "No Image",
     },
     bn: {
@@ -67,6 +68,7 @@ export default async function TubewellProjectDetailPage({
       geoBody:
         "এই প্রকল্পটি কেন্দ্রীয় পরিবারসমূহকে সেবা দেয় এবং পানি আনতে দৈনিক যাতায়াতের চাপ কমায়।",
       viewAllProjects: "সব প্রকল্প দেখুন",
+      donateToProject: "এই প্রকল্পে অনুদান করুন",
       noImage: "ছবি নেই",
     },
   } as const;
@@ -235,6 +237,13 @@ export default async function TubewellProjectDetailPage({
                 <p>
                   {content.completedYear}: {project.year}
                 </p>
+                <Link
+                  href={`/donation?campaign=TUBEWELL&project=${encodeURIComponent(project.slug)}`}
+                  className="inline-flex items-center gap-1 font-medium text-primary"
+                >
+                  {content.donateToProject}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
                 <Link
                   href="/tubewell-projects"
                   className="inline-flex items-center gap-1 font-medium text-primary"

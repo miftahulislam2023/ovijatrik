@@ -181,7 +181,7 @@ export default async function WeeklyProjectDetailPage({
                 {content.recentDonations}
               </h2>
               <Link
-                href="/donation"
+                href={`/donation?campaign=WEEKLY&project=${encodeURIComponent(project.slug)}`}
                 className="inline-flex items-center gap-1 text-sm font-medium text-primary"
               >
                 {content.supportNow}

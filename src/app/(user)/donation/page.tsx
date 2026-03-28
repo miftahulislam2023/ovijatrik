@@ -16,11 +16,36 @@ import {
 export default async function DonationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ eps?: string; tx?: string }>;
+  searchParams: Promise<{
+    eps?: string;
+    tx?: string;
+    campaign?: string;
+    project?: string;
+  }>;
 }) {
   const language = await getRequestLanguage();
-  const { eps, tx } = await searchParams;
+  const { eps, tx, campaign, project } = await searchParams;
   const session = await auth();
+
+  const campaignRaw = String(campaign || "").toUpperCase();
+  const campaignSlug = String(project || "").trim();
+  const campaignType =
+    campaignRaw === "WEEKLY" || campaignRaw === "TUBEWELL"
+      ? campaignRaw
+      : undefined;
+
+  const [weeklyProjects, tubewellProjects] = await Promise.all([
+    prisma.weeklyProject.findMany({
+      where: { deletedAt: null },
+      orderBy: { createdAt: "desc" },
+      select: { slug: true, titleBn: true, titleEn: true },
+    }),
+    prisma.tubewellProject.findMany({
+      where: { deletedAt: null },
+      orderBy: { completionDate: "desc" },
+      select: { slug: true, titleBn: true, titleEn: true },
+    }),
+  ]);
 
   const user = session?.user?.id
     ? await prisma.user.findUnique({
@@ -47,11 +72,13 @@ export default async function DonationPage({
       applyHelp: "Need support? Apply for donation help",
       sponsor: "Want to sponsor a family or tubewell?",
       sponsorCta: "Explore sponsorship",
-      epsSuccess: "Online payment successful. Thank you for your donation!",
       epsFailed:
         "Online payment failed or could not be verified. Please try again.",
       epsCancelled: "Payment was cancelled. You can retry anytime.",
       txLabel: "Transaction",
+      projectDonationFor: "You are donating for",
+      weeklyProjectLabel: "Weekly Project",
+      tubewellProjectLabel: "Tubewell Project",
     },
     bn: {
       title: "আজই অনুদান করুন",
@@ -70,24 +97,24 @@ export default async function DonationPage({
       applyHelp: "সহায়তা প্রয়োজন? অনুদানের জন্য আবেদন করুন",
       sponsor: "একটি পরিবার বা টিউবওয়েল স্পন্সর করতে চান?",
       sponsorCta: "স্পন্সরশিপ দেখুন",
-      epsSuccess: "অনলাইন পেমেন্ট সফল হয়েছে। অনুদানের জন্য ধন্যবাদ।",
       epsFailed:
         "অনলাইন পেমেন্ট ব্যর্থ হয়েছে বা যাচাই করা যায়নি। আবার চেষ্টা করুন।",
       epsCancelled: "পেমেন্ট বাতিল করা হয়েছে। চাইলে আবার চেষ্টা করতে পারেন।",
       txLabel: "ট্রানজ্যাকশন",
+      projectDonationFor: "আপনি অনুদান দিচ্ছেন",
+      weeklyProjectLabel: "সাপ্তাহিক প্রকল্প",
+      tubewellProjectLabel: "টিউবওয়েল প্রকল্প",
     },
   } as const;
 
   const content = copy[language];
 
   const paymentStatusMessage =
-    eps === "success"
-      ? content.epsSuccess
-      : eps === "failed"
-        ? content.epsFailed
-        : eps === "cancelled"
-          ? content.epsCancelled
-          : null;
+    eps === "failed"
+      ? content.epsFailed
+      : eps === "cancelled"
+        ? content.epsCancelled
+        : null;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,rgba(56,189,248,0.18),transparent_38%),radial-gradient(circle_at_90%_20%,rgba(244,114,182,0.16),transparent_30%),linear-gradient(180deg,#f8fbff_0%,#eef7ff_45%,#f6fff6_100%)] selection:bg-cyan-300/35 dark:bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.18),transparent_38%),radial-gradient(circle_at_90%_20%,rgba(59,130,246,0.18),transparent_30%),linear-gradient(180deg,#07111f_0%,#09172b_45%,#0b1620_100%)]">
@@ -134,12 +161,40 @@ export default async function DonationPage({
           </div>
         ) : null}
 
+        {campaignType && campaignSlug ? (
+          <div className="mb-6 rounded-2xl border border-cyan-300/60 bg-cyan-50/90 px-4 py-3 text-sm font-semibold text-cyan-900 dark:border-cyan-300/30 dark:bg-cyan-900/20 dark:text-cyan-100">
+            {content.projectDonationFor}:{" "}
+            {campaignType === "WEEKLY"
+              ? content.weeklyProjectLabel
+              : content.tubewellProjectLabel}{" "}
+            <span className="font-mono text-xs">{campaignSlug}</span>
+          </div>
+        ) : null}
+
         <div className="mb-6">
           <EpsDonationForm
             language={language}
             initialName={user?.name || ""}
             initialEmail={user?.email || ""}
             isLoggedIn={Boolean(session?.user?.id)}
+            campaignType={
+              campaignType as "GENERAL" | "WEEKLY" | "TUBEWELL" | undefined
+            }
+            campaignSlug={campaignSlug || undefined}
+            weeklyProjects={weeklyProjects.map((project) => ({
+              slug: project.slug,
+              title:
+                language === "en"
+                  ? project.titleEn || project.titleBn
+                  : project.titleBn,
+            }))}
+            tubewellProjects={tubewellProjects.map((project) => ({
+              slug: project.slug,
+              title:
+                language === "en"
+                  ? project.titleEn || project.titleBn
+                  : project.titleBn,
+            }))}
           />
         </div>
 

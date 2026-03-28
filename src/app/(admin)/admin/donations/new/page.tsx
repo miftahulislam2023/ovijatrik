@@ -18,8 +18,11 @@ export default async function NewDonationPage() {
           "সাধারণ তহবিল বা নির্দিষ্ট সাপ্তাহিক প্রকল্পের জন্য দ্রুত অনুদান রেকর্ড করুন।",
         fundTypeGeneral: "সাধারণ তহবিল অনুদান",
         fundTypeProject: "সাপ্তাহিক নির্দিষ্ট প্রকল্প",
+        fundTypeTubewell: "নির্দিষ্ট টিউবওয়েল প্রকল্প",
         projectPlaceholder:
           "সাপ্তাহিক প্রকল্প নির্বাচন করুন (প্রকল্প অনুদানের জন্য)",
+        tubewellPlaceholder:
+          "টিউবওয়েল প্রকল্প নির্বাচন করুন (ট্যাগকৃত অনুদানের জন্য)",
         donationSetup: "অনুদান সেটআপ",
         donorDetails: "দাতা ও লেনদেন তথ্য",
         amount: "পরিমাণ",
@@ -37,8 +40,10 @@ export default async function NewDonationPage() {
           "Quickly record contributions for either the general fund or a specific weekly project.",
         fundTypeGeneral: "General Fund Donation",
         fundTypeProject: "Specific Weekly Project",
+        fundTypeTubewell: "Specific Tubewell Project",
         projectPlaceholder:
           "Select weekly project (only for project donations)",
+        tubewellPlaceholder: "Select tubewell project (for tagged donations)",
         donationSetup: "Donation Setup",
         donorDetails: "Donor & Transaction Details",
         amount: "Amount",
@@ -61,10 +66,24 @@ export default async function NewDonationPage() {
     },
   });
 
+  const tubewellProjects = await prisma.tubewellProject.findMany({
+    where: { deletedAt: null },
+    orderBy: { completionDate: "desc" },
+    select: {
+      id: true,
+      titleBn: true,
+      titleEn: true,
+      slug: true,
+    },
+  });
+
   async function createAction(formData: FormData) {
     "use server";
     const fundType = String(formData.get("fundType") || "GENERAL");
     const projectId = String(formData.get("projectId") || "").trim();
+    const tubewellProjectId = String(
+      formData.get("tubewellProjectId") || "",
+    ).trim();
 
     if (fundType === "WEEKLY_PROJECT") {
       if (!projectId) {
@@ -93,6 +112,30 @@ export default async function NewDonationPage() {
       redirect(`/admin/weekly-projects/${projectId}`);
     }
 
+    let enrichedComments = String(formData.get("comments") || "").trim();
+    if (fundType === "TUBEWELL_PROJECT") {
+      if (!tubewellProjectId) {
+        throw new Error("Please select a tubewell project for this donation");
+      }
+
+      const tubewellProject = await prisma.tubewellProject.findFirst({
+        where: {
+          id: tubewellProjectId,
+          deletedAt: null,
+        },
+        select: { slug: true },
+      });
+
+      if (!tubewellProject) {
+        throw new Error("Selected tubewell project was not found");
+      }
+
+      const projectTag = `Campaign:TUBEWELL:${tubewellProject.slug}`;
+      enrichedComments = enrichedComments
+        ? `${enrichedComments} | ${projectTag}`
+        : projectTag;
+    }
+
     await createDonation({
       medium: String(formData.get("medium") || "OTHER") as
         | "BKASH"
@@ -103,7 +146,7 @@ export default async function NewDonationPage() {
         | "OTHER",
       amount: Number(formData.get("amount") || 0),
       trxid: String(formData.get("trxid") || "") || undefined,
-      comments: String(formData.get("comments") || "") || undefined,
+      comments: enrichedComments || undefined,
       phone: String(formData.get("phone") || "") || undefined,
       donorName: String(formData.get("donorName") || "") || undefined,
       type: String(formData.get("type") || "GENERAL") as
@@ -170,6 +213,9 @@ export default async function NewDonationPage() {
               >
                 <option value="GENERAL">{copy.fundTypeGeneral}</option>
                 <option value="WEEKLY_PROJECT">{copy.fundTypeProject}</option>
+                <option value="TUBEWELL_PROJECT">
+                  {copy.fundTypeTubewell}
+                </option>
               </select>
               <select
                 name="projectId"
@@ -178,6 +224,20 @@ export default async function NewDonationPage() {
               >
                 <option value="">{copy.projectPlaceholder}</option>
                 {weeklyProjects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {isBn
+                      ? project.titleBn || project.titleEn
+                      : project.titleEn || project.titleBn}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="tubewellProjectId"
+                defaultValue=""
+                className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 md:col-span-2 dark:border-white/15 dark:bg-[#0f1620] dark:text-slate-100"
+              >
+                <option value="">{copy.tubewellPlaceholder}</option>
+                {tubewellProjects.map((project) => (
                   <option key={project.id} value={project.id}>
                     {isBn
                       ? project.titleBn || project.titleEn
