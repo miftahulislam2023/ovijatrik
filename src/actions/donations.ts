@@ -22,7 +22,7 @@ export async function getDonationById(id: string) {
 }
 
 export async function createDonation(data: {
-  medium: "BKASH" | "NAGAD" | "ROCKET" | "BANK" | "OTHER";
+  medium: "BKASH" | "NAGAD" | "ROCKET" | "EPS" | "BANK" | "OTHER";
   amount: number;
   trxid?: string;
   comments?: string;
@@ -53,7 +53,7 @@ export async function createDonation(data: {
 export async function updateDonation(
   id: string,
   data: Partial<{
-    medium: "BKASH" | "NAGAD" | "ROCKET" | "BANK" | "OTHER";
+    medium: "BKASH" | "NAGAD" | "ROCKET" | "EPS" | "BANK" | "OTHER";
     amount: number;
     trxid?: string;
     comments?: string;

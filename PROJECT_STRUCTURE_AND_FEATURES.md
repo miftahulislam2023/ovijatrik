@@ -12,6 +12,7 @@ ovijatrik/
   package.json
   postcss.config.mjs
   prisma.config.ts
+  PROJECT_STRUCTURE_AND_FEATURES.md
   proxy.ts
   tsconfig.json
 
@@ -34,8 +35,12 @@ ovijatrik/
       weekly-project.ts
 
     app/
+      apple-icon.png
       error.tsx
+      favicon.ico
       globals.css
+      icon0.svg
+      icon1.png
       layout.tsx
       loading.tsx
       manifest.json
@@ -48,11 +53,15 @@ ovijatrik/
         loading.tsx
         not-found.tsx
         admin/
+          error.tsx
+          loading.tsx
+          not-found.tsx
           page.tsx
           dashboard/
           applications/
           blog/
           donations/
+          donor-segments/
           gallery/
           messages/
           tubewell-projects/
@@ -76,10 +85,9 @@ ovijatrik/
         privacy-policy/
         profile/
         projects/
+        sponsor/
         terms/
-        tubewell-project/
         tubewell-projects/
-        weekly-project/
         weekly-projects/
 
       api/
@@ -89,6 +97,9 @@ ovijatrik/
         page.tsx
 
     components/
+      admin/
+        blog/
+        multi-image-upload-field.tsx
       charts/
         admin-overview-charts.tsx
       layout/
@@ -104,10 +115,9 @@ ovijatrik/
         gallery-lightbox.tsx
         language-toggle.tsx
         public-experience-sections.tsx
-        site-footer.tsx
-        site-header.tsx
         theme-toggle.tsx
         volunteer-apply-form.tsx
+        weekly-project-progress-bar.tsx
       ui/
         (many reusable UI primitives)
 
@@ -126,6 +136,7 @@ ovijatrik/
       language.ts
       prisma.ts
       proxy.ts
+      rich-text.ts
       slug.ts
       utils.ts
 
@@ -136,14 +147,19 @@ ovijatrik/
 
 ## Main Features
 
-- Public-facing website with dedicated user routes (about, projects, gallery, contact, donation, FAQ, privacy policy, terms, etc.).
-- Admin panel under `src/app/(admin)/admin` for managing content and operations.
+- Public-facing website with dedicated user routes (about, projects, gallery, contact, donation, FAQ, privacy policy, sponsor, terms, etc.).
+- Admin panel under `src/app/(admin)/admin` for managing content and operations, including donor segmentation views.
 - Authentication with NextAuth (`src/app/api/auth`, `src/lib/auth.ts`) and role-based authorization (`src/lib/authorization.ts`).
 - Donation system:
   - General donations
   - Weekly project donations
   - Support for multiple donation mediums (bKash, Nagad, Rocket, bank, other)
   - Donation categories/types (general, zakat, sadaqah, emergency, Ramadan, other)
+- Donor profile features:
+  - Donation history timeline (general + weekly donations)
+  - Computed receipt reference display per donation entry
+  - Recurring donation preference settings (amount + monthly/quarterly/yearly frequency)
+  - Personalized update preferences (weekly digest and campaign alerts)
 - Weekly project management with fundraising progress and publish states.
 - Tubewell project showcase/management with location, completion year/date, and impact summary.
 - Blog management with bilingual content, markdown, featured/published status, and SEO fields.
@@ -155,7 +171,7 @@ ovijatrik/
 - Theme support (theme toggle + provider).
 - Charting/analytics components for admin overview (`src/components/charts/admin-overview-charts.tsx`).
 - Cloudinary integration for media handling (`src/lib/cloudinary.ts`).
-- Prisma + PostgreSQL data layer with generated Prisma client (`src/generated/prisma`).
+- Prisma + PostgreSQL data layer with generated Prisma client (`src/generated/prisma`) and Neon adapter (`@prisma/adapter-neon`).
 - Soft-delete pattern across most data models (`deletedAt` fields).
 
 ## Core Data Models (Prisma)
@@ -171,6 +187,14 @@ ovijatrik/
 - `Application`
 - `VolunteerApplication`
 
+## Core Enums (Prisma)
+
+- `ProjectStatus`
+- `DonationMedium`
+- `DonationType`
+- `AppStatus`
+- `DonationFrequency`
+
 ## Tech Stack Snapshot
 
 - Framework: Next.js 16 (App Router)
@@ -180,4 +204,6 @@ ovijatrik/
 - ORM/DB: Prisma + PostgreSQL (Neon adapter included)
 - Validation/Forms: Zod + React Hook Form
 - Charts: Recharts
+- Rich text/editor tooling: TinyMCE
+- Utility tooling: QR code + jsPDF support
 - Email/communication utility: Resend

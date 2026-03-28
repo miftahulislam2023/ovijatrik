@@ -414,17 +414,17 @@ export default async function AdminDashboardPage() {
       };
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-3xl border border-slate-200/70 bg-linear-to-br from-white via-slate-50 to-sky-50 p-6 shadow-sm dark:border-white/10 dark:from-[#151f2b] dark:via-[#0f1622] dark:to-[#111b27] md:p-8">
+    <div className="space-y-6 md:space-y-8">
+      <section className="rounded-3xl border border-slate-200/70 bg-linear-to-br from-white via-slate-50 to-sky-50 p-4 shadow-sm dark:border-white/10 dark:from-[#151f2b] dark:via-[#0f1622] dark:to-[#111b27] sm:p-6 md:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
               {copy.overview}
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
+            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
               {copy.dashboard}
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
+            <p className="mt-2 max-w-2xl text-xs text-slate-600 dark:text-slate-300 sm:text-sm">
               Real-time insight across donations, projects, volunteers, and
               communications.
             </p>
@@ -441,7 +441,7 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111723]">
+        <article className="min-w-0 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-5">
           <div className="mb-4 flex items-start justify-between">
             <span className="rounded-xl bg-blue-100 p-2 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200">
               <HandCoins className="h-4 w-4" />
@@ -458,12 +458,12 @@ export default async function AdminDashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-300">
             {copy.totalDonations}
           </p>
-          <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+          <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
             {formatCurrency(totalDonations)} BDT
           </p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111723]">
+        <article className="min-w-0 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-5">
           <div className="mb-4 flex items-start justify-between">
             <span className="rounded-xl bg-violet-100 p-2 text-violet-700 dark:bg-violet-500/20 dark:text-violet-200">
               <Users className="h-4 w-4" />
@@ -475,12 +475,12 @@ export default async function AdminDashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-300">
             {copy.uniqueDonors}
           </p>
-          <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+          <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
             {uniquePhones.size.toLocaleString()}
           </p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111723]">
+        <article className="min-w-0 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-5">
           <div className="mb-4 flex items-start justify-between">
             <span className="rounded-xl bg-orange-100 p-2 text-orange-700 dark:bg-orange-500/20 dark:text-orange-200">
               <FolderKanban className="h-4 w-4" />
@@ -492,12 +492,12 @@ export default async function AdminDashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-300">
             {copy.weeklyProjects}
           </p>
-          <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+          <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
             {weeklyProjectCount.toLocaleString()}
           </p>
         </article>
 
-        <article className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111723]">
+        <article className="min-w-0 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-5">
           <div className="mb-4 flex items-start justify-between">
             <span className="rounded-xl bg-emerald-100 p-2 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
               <Droplets className="h-4 w-4" />
@@ -509,17 +509,17 @@ export default async function AdminDashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-300">
             {copy.tubewellProjects}
           </p>
-          <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+          <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
             {completedTubewells.toLocaleString()}
           </p>
         </article>
       </section>
 
       <section className="grid gap-6 xl:grid-cols-3">
-        <article className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111723] xl:col-span-2">
+        <article className="min-w-0 rounded-3xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
                 {copy.donationTrends}
               </h2>
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
@@ -557,8 +557,8 @@ export default async function AdminDashboardPage() {
           </div>
         </article>
 
-        <article className="rounded-3xl border border-slate-200/70 bg-slate-50 p-6 shadow-sm dark:border-white/10 dark:bg-[#0f1a28]">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <article className="min-w-0 rounded-3xl border border-slate-200/70 bg-slate-50 p-4 shadow-sm dark:border-white/10 dark:bg-[#0f1a28] sm:p-6">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
             {copy.recentActivity}
           </h2>
           <div className="mt-5 space-y-4">
@@ -573,10 +573,10 @@ export default async function AdminDashboardPage() {
                     className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${activityDotClass[entry.tone]}`}
                   />
                   <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    <p className="text-xs font-semibold text-slate-900 dark:text-white sm:text-sm">
                       {entry.title}
                     </p>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                    <p className="mt-1 break-words text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 sm:text-xs">
                       {entry.details}
                     </p>
                     <p className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-blue-700 dark:text-blue-300">
@@ -591,79 +591,85 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-5">
-        <article className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111723] xl:col-span-3">
+        <article className="min-w-0 rounded-3xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-6 xl:col-span-3">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
                 {copy.recentDonations}
               </h2>
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-300">
                 Unified stream from global and weekly donation schemas
               </p>
             </div>
-            <Button variant="outline" size="sm" className="rounded-xl">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl text-xs sm:text-sm"
+            >
               <Download className="h-4 w-4" />
               Export
             </Button>
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{copy.donor}</TableHead>
-                <TableHead>{copy.amount}</TableHead>
-                <TableHead>{copy.medium}</TableHead>
-                <TableHead>{copy.source}</TableHead>
-                <TableHead>{copy.date}</TableHead>
-                <TableHead>{copy.status}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {donationRows.length === 0 ? (
+          <div className="overflow-x-auto">
+            <Table className="min-w-[680px]">
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="h-24 text-center text-sm text-muted-foreground"
-                  >
-                    {copy.noRows}
-                  </TableCell>
+                  <TableHead>{copy.donor}</TableHead>
+                  <TableHead>{copy.amount}</TableHead>
+                  <TableHead>{copy.medium}</TableHead>
+                  <TableHead>{copy.source}</TableHead>
+                  <TableHead>{copy.date}</TableHead>
+                  <TableHead>{copy.status}</TableHead>
                 </TableRow>
-              ) : (
-                donationRows.map((row) => (
-                  <TableRow key={`${row.source}-${row.id}`}>
-                    <TableCell className="font-medium">{row.donor}</TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(row.amount)} BDT
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="rounded-full">
-                        {row.medium}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-45 truncate">
-                      {row.source}
-                    </TableCell>
-                    <TableCell>
-                      {row.date.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="rounded-full bg-emerald-600 text-white hover:bg-emerald-600">
-                        {row.status}
-                      </Badge>
+              </TableHeader>
+              <TableBody>
+                {donationRows.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="h-24 text-center text-sm text-muted-foreground"
+                    >
+                      {copy.noRows}
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  donationRows.map((row) => (
+                    <TableRow key={`${row.source}-${row.id}`}>
+                      <TableCell className="font-medium">{row.donor}</TableCell>
+                      <TableCell className="font-semibold">
+                        {formatCurrency(row.amount)} BDT
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="rounded-full">
+                          {row.medium}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-[11rem] truncate">
+                        {row.source}
+                      </TableCell>
+                      <TableCell>
+                        {row.date.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="rounded-full bg-emerald-600 text-white hover:bg-emerald-600">
+                          {row.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </article>
 
-        <article className="space-y-4 rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111723] xl:col-span-2">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <article className="space-y-4 rounded-3xl border border-slate-200/70 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#111723] sm:p-6 xl:col-span-2">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
             {copy.operations}
           </h2>
 

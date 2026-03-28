@@ -223,7 +223,7 @@ export async function bulkDeleteWeeklyProjectsPermanently(formData: FormData) {
 
 export async function addWeeklyDonation(data: {
   projectId: string;
-  medium: "BKASH" | "NAGAD" | "ROCKET" | "BANK" | "OTHER";
+  medium: "BKASH" | "NAGAD" | "ROCKET" | "EPS" | "BANK" | "OTHER";
   amount: number;
   trxid?: string;
   comments?: string;
@@ -290,7 +290,7 @@ export async function softDeleteWeeklyDonation(id: string) {
 export async function updateWeeklyDonation(
   id: string,
   data: Partial<{
-    medium: "BKASH" | "NAGAD" | "ROCKET" | "BANK" | "OTHER";
+    medium: "BKASH" | "NAGAD" | "ROCKET" | "EPS" | "BANK" | "OTHER";
     amount: number;
     trxid?: string;
     comments?: string;

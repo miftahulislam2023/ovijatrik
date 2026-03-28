@@ -124,10 +124,20 @@ export default async function ProfilePage({
       ? prisma.donation.findMany({
           where: {
             deletedAt: null,
-            donorName: {
-              contains: nameQuery,
-              mode: "insensitive",
-            },
+            OR: [
+              {
+                donorName: {
+                  contains: nameQuery,
+                  mode: "insensitive",
+                },
+              },
+              {
+                comments: {
+                  contains: `UserId:${session.user.id}`,
+                  mode: "insensitive",
+                },
+              },
+            ],
           },
           orderBy: { date: "desc" },
           take: 12,
@@ -194,7 +204,10 @@ export default async function ProfilePage({
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, 12);
 
-  const donationTotal = donationHistory.reduce((sum, item) => sum + item.amount, 0);
+  const donationTotal = donationHistory.reduce(
+    (sum, item) => sum + item.amount,
+    0,
+  );
 
   async function updateProfileAction(formData: FormData) {
     "use server";
@@ -205,7 +218,9 @@ export default async function ProfilePage({
     }
 
     const name = String(formData.get("name") || "").trim() || null;
-    const emailRaw = String(formData.get("email") || "").trim().toLowerCase();
+    const emailRaw = String(formData.get("email") || "")
+      .trim()
+      .toLowerCase();
     const image = String(formData.get("image") || "").trim() || null;
 
     if (!emailRaw) {
@@ -248,7 +263,9 @@ export default async function ProfilePage({
     }
 
     const amountRaw = Number(String(formData.get("preferredAmount") || "0"));
-    const frequencyRaw = String(formData.get("donationFrequency") || "").toUpperCase();
+    const frequencyRaw = String(
+      formData.get("donationFrequency") || "",
+    ).toUpperCase();
 
     const normalizedAmount = Number.isFinite(amountRaw)
       ? Math.max(100, Math.floor(amountRaw))
@@ -297,10 +314,14 @@ export default async function ProfilePage({
         <h1 className="text-3xl font-bold tracking-tight">{content.title}</h1>
         <p className="text-sm text-muted-foreground">{content.subtitle}</p>
         {params.saved === "preferences" && (
-          <p className="text-sm font-medium text-primary">{content.preferencesSaved}</p>
+          <p className="text-sm font-medium text-primary">
+            {content.preferencesSaved}
+          </p>
         )}
         {params.saved === "updates" && (
-          <p className="text-sm font-medium text-primary">{content.updatesSaved}</p>
+          <p className="text-sm font-medium text-primary">
+            {content.updatesSaved}
+          </p>
         )}
       </div>
 
@@ -365,19 +386,25 @@ export default async function ProfilePage({
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>{content.donorToolsTitle}</CardTitle>
-          <p className="text-sm text-muted-foreground">{content.donorToolsSubtitle}</p>
+          <p className="text-sm text-muted-foreground">
+            {content.donorToolsSubtitle}
+          </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="rounded-md border border-border bg-muted/30 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold">{content.donationHistory}</h3>
+              <h3 className="text-sm font-semibold">
+                {content.donationHistory}
+              </h3>
               <span className="text-sm text-muted-foreground">
                 {donationTotal.toLocaleString()} BDT
               </span>
             </div>
 
             {donationHistory.length === 0 ? (
-              <p className="mt-3 text-sm text-muted-foreground">{content.noDonations}</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {content.noDonations}
+              </p>
             ) : (
               <div className="mt-3 space-y-3">
                 {donationHistory.map((item) => (
@@ -399,13 +426,17 @@ export default async function ProfilePage({
                       <span>{item.kind}</span>
                       <span>•</span>
                       <span>
-                        {content.receiptRef}: OVJ-{item.id.slice(-6).toUpperCase()}
+                        {content.receiptRef}: OVJ-
+                        {item.id.slice(-6).toUpperCase()}
                       </span>
                       {item.details && (
                         <>
                           <span>•</span>
                           {item.href ? (
-                            <Link href={item.href} className="text-primary hover:underline">
+                            <Link
+                              href={item.href}
+                              className="text-primary hover:underline"
+                            >
                               {item.details}
                             </Link>
                           ) : (
@@ -425,8 +456,12 @@ export default async function ProfilePage({
             className="space-y-4 rounded-md border border-border bg-muted/30 p-4"
           >
             <div>
-              <h3 className="text-sm font-semibold">{content.recurringTitle}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{content.recurringHelp}</p>
+              <h3 className="text-sm font-semibold">
+                {content.recurringTitle}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {content.recurringHelp}
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -445,7 +480,10 @@ export default async function ProfilePage({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="donationFrequency" className="text-sm font-medium">
+              <label
+                htmlFor="donationFrequency"
+                className="text-sm font-medium"
+              >
                 {content.frequencyLabel}
               </label>
               <select
@@ -476,7 +514,9 @@ export default async function ProfilePage({
           >
             <div>
               <h3 className="text-sm font-semibold">{content.updatesTitle}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{content.updatesHelp}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {content.updatesHelp}
+              </p>
             </div>
 
             <label className="flex items-center gap-2 text-sm">

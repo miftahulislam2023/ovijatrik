@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   bulkSoftDeleteDonations,
@@ -9,6 +8,7 @@ import {
 } from "@/actions/donations";
 import { DonationMedium, DonationType } from "@/generated/prisma/enums";
 import { getRequestLanguage } from "@/lib/language";
+import { Copy, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 export default async function AdminDonationsPage({
   searchParams,
@@ -24,13 +24,25 @@ export default async function AdminDonationsPage({
   const isBn = language === "bn";
   const copy = isBn
     ? {
+        badge: "অ্যাডমিন / ফান্ড অপারেশন",
         title: "গ্লোবাল অনুদান",
+        subtitle:
+          "দাতা কার্যক্রম ট্র্যাক করুন, লেনদেন যাচাই করুন, এবং ফান্ড ফ্লো রেকর্ড আপডেট রাখুন।",
         addDonation: "অনুদান যোগ করুন",
+        totalDonations: "মোট অনুদান",
+        inCurrentView: "বর্তমান ফিল্টার ভিউ",
+        thisPageAmount: "এই পাতার পরিমাণ",
+        onThisPage: "শুধু এই পাতার অনুদান",
+        mediumsUsed: "মাধ্যম ব্যবহৃত",
+        activeChannels: "সক্রিয় চ্যানেল",
         searchPlaceholder: "দাতা/ফোন/ট্রানজ্যাকশন দিয়ে খুঁজুন",
         allTypes: "সব ধরন",
         allMediums: "সব মাধ্যম",
         apply: "প্রয়োগ করুন",
         via: "মাধ্যম",
+        donor: "দাতা",
+        trxid: "লেনদেন",
+        date: "তারিখ",
         edit: "এডিট",
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
@@ -44,13 +56,25 @@ export default async function AdminDonationsPage({
         next: "পরবর্তী",
       }
     : {
+        badge: "Admin / Fund Operations",
         title: "Global Donations",
+        subtitle:
+          "Track donor activity, verify transactions, and keep fund flow records current.",
         addDonation: "Add Donation",
+        totalDonations: "Total Donations",
+        inCurrentView: "In current filtered view",
+        thisPageAmount: "This Page Amount",
+        onThisPage: "Donations shown on this page",
+        mediumsUsed: "Mediums Used",
+        activeChannels: "Active channels",
         searchPlaceholder: "Search donor/phone/trx",
         allTypes: "All types",
         allMediums: "All mediums",
         apply: "Apply",
         via: "via",
+        donor: "Donor",
+        trxid: "Transaction",
+        date: "Date",
         edit: "Edit",
         duplicate: "Duplicate",
         archive: "Archive",
@@ -89,7 +113,8 @@ export default async function AdminDonationsPage({
     )
       ? { type: type as DonationType }
       : {}),
-    ...(medium && ["BKASH", "NAGAD", "ROCKET", "BANK", "OTHER"].includes(medium)
+    ...(medium &&
+    ["BKASH", "NAGAD", "ROCKET", "EPS", "BANK", "OTHER"].includes(medium)
       ? { medium: medium as DonationMedium }
       : {}),
   };
@@ -107,6 +132,8 @@ export default async function AdminDonationsPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const prevPage = Math.max(1, page - 1);
   const nextPage = Math.min(totalPages, page + 1);
+  const thisPageAmount = donations.reduce((sum, donation) => sum + donation.amount, 0);
+  const mediumsUsedCount = new Set(donations.map((donation) => donation.medium)).size;
 
   const queryWithPage = (targetPage: number) => {
     const qp = new URLSearchParams();
@@ -119,29 +146,80 @@ export default async function AdminDonationsPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
-          {copy.title}
-        </h1>
-        <Button asChild>
-          <Link href="/admin/donations/new">{copy.addDonation}</Link>
-        </Button>
+      <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-white/10 dark:bg-[#111a23]">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
+              {copy.badge}
+            </p>
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
+              {copy.title}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
+              {copy.subtitle}
+            </p>
+          </div>
+          <Button
+            asChild
+            className="h-11 rounded-full bg-[#045e6f] px-5 text-white hover:bg-[#034c5a]"
+          >
+            <Link href="/admin/donations/new">
+              <Plus className="h-4 w-4" />
+              {copy.addDonation}
+            </Link>
+          </Button>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl bg-[#055763] p-4 text-white">
+            <p className="text-xs uppercase tracking-[0.16em] text-white/80">
+              {copy.totalDonations}
+            </p>
+            <p className="mt-1 text-3xl font-black sm:text-4xl">{totalCount}</p>
+            <p className="mt-1 text-xs text-white/80">{copy.inCurrentView}</p>
+          </div>
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-700/50 dark:bg-emerald-900/25">
+            <p className="text-xs uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-300">
+              {copy.thisPageAmount}
+            </p>
+            <p className="mt-1 text-3xl font-black text-emerald-700 dark:text-emerald-300 sm:text-4xl">
+              ৳ {thisPageAmount.toLocaleString()}
+            </p>
+            <p className="mt-1 text-xs text-emerald-700/80 dark:text-emerald-300/80">
+              {copy.onThisPage}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[#ffd1bf] bg-[#fff2ea] p-4 dark:border-[#9c4f2f]/40 dark:bg-[#2b1f1a]">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#9c4f2f] dark:text-[#ffc3a8]">
+              {copy.mediumsUsed}
+            </p>
+            <p className="mt-1 text-3xl font-black text-[#9c4f2f] dark:text-[#ffd1bf] sm:text-4xl">
+              {mediumsUsedCount}
+            </p>
+            <p className="mt-1 text-xs text-[#9c4f2f]/80 dark:text-[#ffc3a8]/80">
+              {copy.activeChannels}
+            </p>
+          </div>
+        </div>
       </div>
 
       <form
-        className="grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-2 md:grid-cols-[1fr_180px_180px_auto]"
+        className="grid gap-3 rounded-2xl border border-slate-200 bg-[#dbe8f1] p-3 sm:grid-cols-2 md:grid-cols-[1fr_180px_180px_auto] dark:border-white/10 dark:bg-[#13202a]"
         method="get"
       >
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder={copy.searchPlaceholder}
-          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
-        />
+        <label className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            name="q"
+            defaultValue={q}
+            placeholder={copy.searchPlaceholder}
+            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
+          />
+        </label>
         <select
           name="type"
           defaultValue={type}
-          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
+          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
         >
           <option value="">{copy.allTypes}</option>
           <option value="GENERAL">GENERAL</option>
@@ -154,32 +232,36 @@ export default async function AdminDonationsPage({
         <select
           name="medium"
           defaultValue={medium}
-          className="rounded-md border border-input bg-white px-3 py-2 text-slate-900 dark:border-white/15 dark:bg-slate-900 dark:text-slate-100"
+          className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1720] dark:text-slate-100"
         >
           <option value="">{copy.allMediums}</option>
           <option value="BKASH">BKASH</option>
           <option value="NAGAD">NAGAD</option>
           <option value="ROCKET">ROCKET</option>
+          <option value="EPS">EPS</option>
           <option value="BANK">BANK</option>
           <option value="OTHER">OTHER</option>
         </select>
-        <Button type="submit" className="w-full sm:w-auto">
+        <Button
+          type="submit"
+          className="h-11 w-full rounded-xl bg-[#045e6f] text-white hover:bg-[#034c5a] sm:w-auto"
+        >
           {copy.apply}
         </Button>
       </form>
 
       <form
         id="donations-bulk-actions"
-        className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3"
+        className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
       >
-        <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
           {copy.selectedActions}
         </span>
         <Button
           type="submit"
           formAction={bulkSoftDeleteDonations}
-          variant="destructive"
           size="sm"
+          className="rounded-lg bg-rose-600 text-white hover:bg-rose-700"
         >
           {copy.archiveSelected}
         </Button>
@@ -187,13 +269,36 @@ export default async function AdminDonationsPage({
 
       <div className="grid gap-4">
         {donations.map((donation) => (
-          <Card key={donation.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-3">
-                <CardTitle className="text-base text-slate-900 dark:text-slate-100">
-                  {donation.amount.toLocaleString()} BDT
-                </CardTitle>
-                <label className="inline-flex items-center gap-2 rounded-md border border-input px-2 py-1 text-xs text-muted-foreground">
+          <article
+            key={donation.id}
+            className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[#0b5e7a]/40 dark:border-white/10 dark:bg-[#111a23]"
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-2xl font-black text-[#0b4f6d] dark:text-[#7ed4e4]">
+                  ৳ {donation.amount.toLocaleString()}
+                </p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  <span className="font-semibold text-slate-800 dark:text-slate-100">
+                    {donation.type}
+                  </span>{" "}
+                  {copy.via} {donation.medium}
+                </p>
+                <div className="mt-2 space-y-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p>
+                    {copy.donor}: {donation.donorName || "-"}
+                  </p>
+                  <p>
+                    {copy.trxid}: {donation.trxid || "-"}
+                  </p>
+                  <p>
+                    {copy.date}: {donation.date.toISOString().slice(0, 10)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start gap-3 sm:items-end">
+                <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600 dark:border-white/15 dark:text-slate-300">
                   <input
                     type="checkbox"
                     name="ids"
@@ -203,50 +308,66 @@ export default async function AdminDonationsPage({
                   />
                   {copy.select}
                 </label>
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-wrap items-center justify-between gap-4 text-sm">
-              <p className="text-muted-foreground">
-                {donation.type} {copy.via} {donation.medium}
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/admin/donations/${donation.id}`}>
-                    {copy.edit}
-                  </Link>
-                </Button>
-                <form
-                  action={async () => {
-                    "use server";
-                    await duplicateDonation(donation.id);
-                  }}
-                >
-                  <Button variant="outline" size="sm" type="submit">
-                    {copy.duplicate}
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    className="rounded-lg border-[#0c5f72] text-[#0c5f72] hover:bg-[#0c5f72] hover:text-white dark:border-[#66bdd0] dark:text-[#8dd6e4]"
+                  >
+                    <Link href={`/admin/donations/${donation.id}`}>
+                      <Pencil className="h-3.5 w-3.5" />
+                      {copy.edit}
+                    </Link>
                   </Button>
-                </form>
-                <form
-                  action={async () => {
-                    "use server";
-                    await softDeleteDonation(donation.id);
-                  }}
-                >
-                  <Button variant="destructive" size="sm" type="submit">
-                    {copy.archive}
-                  </Button>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await duplicateDonation(donation.id);
+                    }}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      type="submit"
+                      className="rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-white/20 dark:text-slate-200 dark:hover:bg-white/10"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                      {copy.duplicate}
+                    </Button>
+                  </form>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await softDeleteDonation(donation.id);
+                    }}
+                  >
+                    <Button
+                      size="sm"
+                      type="submit"
+                      className="rounded-lg bg-rose-600 text-white hover:bg-rose-700"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {copy.archive}
+                    </Button>
                 </form>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            </div>
+          </article>
         ))}
       </div>
 
       <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-muted-foreground">
-          {copy.page} {page} {copy.of} {totalPages} ({totalCount} {copy.items})
-        </p>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline" size="sm" disabled={page <= 1}>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            className="rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-white/20 dark:text-slate-200 dark:hover:bg-white/10"
+          >
             <Link href={queryWithPage(prevPage)}>{copy.previous}</Link>
           </Button>
           <Button
@@ -254,6 +375,7 @@ export default async function AdminDonationsPage({
             variant="outline"
             size="sm"
             disabled={page >= totalPages}
+            className="rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-white/20 dark:text-slate-200 dark:hover:bg-white/10"
           >
             <Link href={queryWithPage(nextPage)}>{copy.next}</Link>
           </Button>

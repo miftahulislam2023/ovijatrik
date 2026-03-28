@@ -69,6 +69,7 @@ export default async function EditWeeklyDonationPage({
         | "BKASH"
         | "NAGAD"
         | "ROCKET"
+        | "EPS"
         | "BANK"
         | "OTHER",
       amount: Number(formData.get("amount") || donation.amount),
@@ -223,6 +224,7 @@ export default async function EditWeeklyDonationPage({
                   <option value="BKASH">BKASH</option>
                   <option value="NAGAD">NAGAD</option>
                   <option value="ROCKET">ROCKET</option>
+                  <option value="EPS">EPS</option>
                   <option value="BANK">BANK</option>
                   <option value="OTHER">OTHER</option>
                 </select>

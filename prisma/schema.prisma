@@ -169,6 +169,7 @@ enum DonationMedium {
   BKASH
   NAGAD
   ROCKET
+  EPS
   BANK
   OTHER
 }

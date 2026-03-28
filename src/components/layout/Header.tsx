@@ -131,6 +131,7 @@ export default function Header() {
       items: [
         { href: "/apply-for-donation", label: content.nav.apply },
         { href: "/join-us", label: content.nav.join },
+        { href: "/contact", label: content.nav.contact },
       ],
     },
     {
@@ -141,7 +142,6 @@ export default function Header() {
         { href: "/gallery", label: content.nav.gallery },
       ],
     },
-    { type: "link", href: "/contact", label: content.nav.contact },
   ];
 
   return (
