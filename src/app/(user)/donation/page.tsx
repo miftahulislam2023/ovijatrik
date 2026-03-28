@@ -28,6 +28,8 @@ export default async function DonationPage() {
       footer:
         "Every donation is recorded with 100% transparency and strictly utilized according to the designated project.",
       applyHelp: "Need support? Apply for donation help",
+      sponsor: "Want to sponsor a family or tubewell?",
+      sponsorCta: "Explore sponsorship",
     },
     bn: {
       title: "আজই অনুদান করুন",
@@ -44,6 +46,8 @@ export default async function DonationPage() {
       footer:
         "আপনার প্রতিটি অনুদান ১০০% স্বচ্ছতার সাথে রেকর্ড করা হয় এবং প্রজেক্ট ভিত্তিকভাবে ব্যবহার করা হয়।",
       applyHelp: "সহায়তা প্রয়োজন? অনুদানের জন্য আবেদন করুন",
+      sponsor: "একটি পরিবার বা টিউবওয়েল স্পন্সর করতে চান?",
+      sponsorCta: "স্পন্সরশিপ দেখুন",
     },
   } as const;
 
@@ -239,13 +243,24 @@ export default async function DonationPage() {
             {content.footer}
           </p>
           <div className="mt-5">
-            <Link
-              href="/apply-for-donation"
-              className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90"
-            >
-              {content.applyHelp}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/apply-for-donation"
+                className="group inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90"
+              >
+                {content.applyHelp}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
+                href="/sponsor"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
+              >
+                {content.sponsorCta}
+              </Link>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              {content.sponsor}
+            </p>
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getRequestLanguage } from "@/lib/language";
+import { prisma } from "@/lib/prisma";
 import { ArrowRight, HandCoins, Mail, Users } from "lucide-react";
 
 export default async function HomePage() {
@@ -88,6 +89,33 @@ export default async function HomePage() {
         donate: "Donate",
         join: "Join us",
       },
+      finance: {
+        title: "Transparent finance dashboard",
+        subtitle:
+          "A public snapshot of total contributions and active project funding.",
+        totalRaised: "Total raised",
+        generalDonations: "General donations",
+        campaignDonations: "Campaign donations",
+        uniqueDonors: "Unique donors",
+      },
+      campaigns: {
+        title: "Live campaign tracker",
+        subtitle: "Follow progress of active weekly campaigns in real time.",
+        raised: "Raised",
+        goal: "Goal",
+        viewAll: "View all campaigns",
+      },
+      sponsor: {
+        title: "Sponsor a family or tubewell",
+        body: "Support specific beneficiaries and local water projects with milestone updates from the field.",
+        cta: "Sponsor now",
+        featured: "Featured sponsorship areas",
+      },
+      account: {
+        title: "Donor account features",
+        body: "Track your donation history, use receipt references, and manage recurring support from one place.",
+        profileCta: "Open donor dashboard",
+      },
     },
     bn: {
       eyebrow: "হাসি মুখের খুঁজে অভিযাত্রা",
@@ -168,10 +196,92 @@ export default async function HomePage() {
         donate: "ডোনেট",
         join: "যোগ দিন",
       },
+      finance: {
+        title: "স্বচ্ছ অর্থায়ন ড্যাশবোর্ড",
+        subtitle:
+          "মোট অনুদান ও চলমান প্রজেক্ট ফান্ডের একটি উন্মুক্ত সারসংক্ষেপ।",
+        totalRaised: "মোট সংগ্রহ",
+        generalDonations: "সাধারণ অনুদান",
+        campaignDonations: "ক্যাম্পেইন অনুদান",
+        uniqueDonors: "স্বতন্ত্র দাতা",
+      },
+      campaigns: {
+        title: "লাইভ ক্যাম্পেইন ট্র্যাকার",
+        subtitle: "চলমান সাপ্তাহিক ক্যাম্পেইনের অগ্রগতি রিয়েল-টাইমে দেখুন।",
+        raised: "সংগৃহীত",
+        goal: "লক্ষ্য",
+        viewAll: "সব ক্যাম্পেইন দেখুন",
+      },
+      sponsor: {
+        title: "একটি পরিবার বা টিউবওয়েল স্পন্সর করুন",
+        body: "নির্দিষ্ট উপকারভোগী ও স্থানীয় পানি প্রজেক্টে সহায়তা করুন, মাঠের অগ্রগতি আপডেটসহ।",
+        cta: "এখনই স্পন্সর করুন",
+        featured: "নির্বাচিত স্পন্সরশিপ সেক্টর",
+      },
+      account: {
+        title: "ডোনার অ্যাকাউন্ট ফিচার",
+        body: "এক জায়গা থেকে অনুদান ইতিহাস, রিসিপ্ট রেফারেন্স এবং রিকারিং সহায়তা ম্যানেজ করুন।",
+        profileCta: "ডোনার ড্যাশবোর্ড খুলুন",
+      },
     },
   } as const;
 
+  const [
+    generalDonationSum,
+    campaignDonationSum,
+    donorNames,
+    campaignProjects,
+    sponsorProjects,
+  ] = await Promise.all([
+    prisma.donation.aggregate({
+      where: { deletedAt: null },
+      _sum: { amount: true },
+    }),
+    prisma.weeklyDonation.aggregate({
+      where: { deletedAt: null },
+      _sum: { amount: true },
+    }),
+    prisma.donation.findMany({
+      where: { deletedAt: null, donorName: { not: null } },
+      select: { donorName: true },
+    }),
+    prisma.weeklyProject.findMany({
+      where: { deletedAt: null, status: "PUBLISHED" },
+      select: {
+        id: true,
+        slug: true,
+        titleBn: true,
+        titleEn: true,
+        currentAmount: true,
+        targetAmount: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 4,
+    }),
+    prisma.tubewellProject.findMany({
+      where: { deletedAt: null },
+      select: {
+        id: true,
+        slug: true,
+        titleBn: true,
+        titleEn: true,
+        location: true,
+        year: true,
+      },
+      orderBy: { completionDate: "desc" },
+      take: 3,
+    }),
+  ]);
+
   const content = copy[language];
+  const generalTotal = generalDonationSum._sum.amount ?? 0;
+  const campaignTotal = campaignDonationSum._sum.amount ?? 0;
+  const totalRaised = generalTotal + campaignTotal;
+  const uniqueDonors = new Set(
+    donorNames
+      .map((row) => row.donorName?.trim())
+      .filter((name): name is string => Boolean(name)),
+  ).size;
 
   const helpItems = [
     {
@@ -383,6 +493,208 @@ export default async function HomePage() {
                   </p>
                 </Link>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-background">
+          <div className="mx-auto max-w-5xl px-4 py-14">
+            <h2 className="text-2xl font-bold tracking-tight">
+              {content.finance.title}
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+              {content.finance.subtitle}
+            </p>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {content.finance.totalRaised}
+                </p>
+                <p className="mt-2 text-2xl font-bold text-foreground">
+                  {totalRaised.toLocaleString()} BDT
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {content.finance.generalDonations}
+                </p>
+                <p className="mt-2 text-2xl font-bold text-foreground">
+                  {generalTotal.toLocaleString()} BDT
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {content.finance.campaignDonations}
+                </p>
+                <p className="mt-2 text-2xl font-bold text-foreground">
+                  {campaignTotal.toLocaleString()} BDT
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {content.finance.uniqueDonors}
+                </p>
+                <p className="mt-2 text-2xl font-bold text-foreground">
+                  {uniqueDonors.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-muted/20">
+          <div className="mx-auto max-w-5xl px-4 py-14">
+            <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {content.campaigns.title}
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {content.campaigns.subtitle}
+                </p>
+              </div>
+              <Link
+                href="/weekly-projects"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+              >
+                {content.campaigns.viewAll}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
+              {campaignProjects.map((project) => {
+                const title =
+                  language === "en"
+                    ? project.titleEn || project.titleBn
+                    : project.titleBn;
+                const progress =
+                  project.targetAmount > 0
+                    ? Math.min(
+                        100,
+                        Math.round(
+                          (project.currentAmount / project.targetAmount) * 100,
+                        ),
+                      )
+                    : 0;
+
+                return (
+                  <div
+                    key={project.id}
+                    className="rounded-2xl border border-border bg-background p-5 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-base font-semibold">{title}</h3>
+                      <span className="text-sm font-semibold text-primary">
+                        {progress}%
+                      </span>
+                    </div>
+
+                    <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${progress}%` }}
+                        aria-hidden="true"
+                      />
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      <p>
+                        {content.campaigns.raised}:{" "}
+                        {project.currentAmount.toLocaleString()} BDT
+                      </p>
+                      <p>
+                        {content.campaigns.goal}:{" "}
+                        {project.targetAmount.toLocaleString()} BDT
+                      </p>
+                    </div>
+
+                    <Link
+                      href={`/weekly-projects/${project.slug}`}
+                      className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+                    >
+                      {content.explore.items.weekly.cta}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-background">
+          <div className="mx-auto max-w-5xl px-4 py-14">
+            <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+              <div className="rounded-3xl border border-border bg-primary/10 p-8 shadow-sm md:p-10">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {content.sponsor.title}
+                </h2>
+                <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+                  {content.sponsor.body}
+                </p>
+                <Link
+                  href="/sponsor"
+                  className="mt-5 inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+                >
+                  {content.sponsor.cta}
+                </Link>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h3 className="text-base font-semibold">
+                  {content.sponsor.featured}
+                </h3>
+                <div className="mt-4 space-y-3">
+                  {sponsorProjects.map((project) => {
+                    const title =
+                      language === "en"
+                        ? project.titleEn || project.titleBn
+                        : project.titleBn;
+
+                    return (
+                      <Link
+                        key={project.id}
+                        href={`/tubewell-projects/${project.slug}`}
+                        className="block rounded-xl border border-border px-4 py-3 text-sm transition hover:border-primary/30 hover:bg-muted/30"
+                      >
+                        <p className="font-semibold text-foreground">{title}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {project.location} • {project.year}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-muted/30">
+          <div className="mx-auto max-w-5xl px-4 py-14">
+            <div className="rounded-2xl border border-border bg-background p-7 shadow-sm">
+              <h2 className="text-2xl font-bold tracking-tight">
+                {content.account.title}
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+                {content.account.body}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+                >
+                  {content.account.profileCta}
+                </Link>
+                <Link
+                  href="/donation"
+                  className="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  {content.cta.donate}
+                </Link>
+              </div>
             </div>
           </div>
         </section>

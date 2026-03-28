@@ -61,6 +61,7 @@ export default function Header() {
         projects: "Projects",
         weekly: "Weekly Projects",
         tubewell: "Tubewell Projects",
+        sponsor: "Sponsor",
         apply: "Apply for Donation",
         join: "Join Us",
         blog: "Blog",
@@ -92,6 +93,7 @@ export default function Header() {
         projects: "প্রজেক্টসমূহ",
         weekly: "সাপ্তাহিক প্রজেক্ট",
         tubewell: "টিউবওয়েল প্রজেক্ট",
+        sponsor: "স্পন্সর",
         apply: "অনুদানের জন্য আবেদন",
         join: "যোগ দিন",
         blog: "ব্লগ",
@@ -120,6 +122,7 @@ export default function Header() {
       items: [
         { href: "/projects", label: content.nav.projects },
         { href: "/tubewell-projects", label: content.nav.tubewell },
+        { href: "/sponsor", label: content.nav.sponsor },
       ],
     },
     {

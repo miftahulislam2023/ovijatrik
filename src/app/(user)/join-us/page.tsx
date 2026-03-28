@@ -1,32 +1,49 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { signIn } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getRequestLanguage } from "@/lib/language";
 import { VolunteerApplyForm } from "@/components/site/volunteer-apply-form";
 
 function resolveRedirectTarget(callbackUrl?: string) {
-  if (!callbackUrl) return "/admin/dashboard";
-  if (callbackUrl.startsWith("/admin")) return callbackUrl;
+  if (!callbackUrl) return "/profile";
+  if (callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")) {
+    return callbackUrl;
+  }
   try {
     const parsed = new URL(callbackUrl);
     const internalPath = `${parsed.pathname}${parsed.search}`;
-    if (internalPath.startsWith("/admin")) return internalPath;
+    if (internalPath.startsWith("/")) return internalPath;
   } catch {
-    return "/admin/dashboard";
+    return "/profile";
   }
-  return "/admin/dashboard";
+  return "/profile";
 }
+
+const signUpSchema = z
+  .object({
+    name: z.string().min(2),
+    email: z.string().email(),
+    password: z.string().min(6),
+    confirmPassword: z.string().min(6),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export default async function JoinUsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; error?: string; signup?: string }>;
 }) {
   const language = await getRequestLanguage();
-  const { callbackUrl, error } = await searchParams;
+  const { callbackUrl, error, signup } = await searchParams;
   const redirectTarget = resolveRedirectTarget(callbackUrl);
   
   const copy = {
@@ -37,11 +54,21 @@ export default async function JoinUsPage({
       volunteerHint:
         "Want to volunteer? Submit the volunteer form below. For donation support requests, use Apply for Donation.",
       donationApplyCta: "Need donation support? Apply here",
-      signInTitle: "Admin sign in",
-      emailPlaceholder: "Admin email",
+      signUpTitle: "Create donor account",
+      signUpNamePlaceholder: "Your full name",
+      signUpEmailPlaceholder: "Your email",
+      signUpPasswordPlaceholder: "Create password",
+      signUpConfirmPasswordPlaceholder: "Confirm password",
+      signUpSubmit: "Create account",
+      signUpSuccess: "Account created. You are now signed in.",
+      signUpInvalid: "Please check your signup details and try again.",
+      signUpEmailTaken: "This email is already registered. Please sign in.",
+      signInTitle: "Sign in",
+      emailPlaceholder: "Email",
       passwordPlaceholder: "Password",
       submit: "Sign in",
       invalidCredentials: "Invalid credentials. Please try again.",
+      adminHint: "Admins can sign in with their existing credentials.",
     },
     bn: {
       title: "আমাদের সাথে যুক্ত হোন",
@@ -50,11 +77,21 @@ export default async function JoinUsPage({
       volunteerHint:
         "স্বেচ্ছাসেবক হতে চাইলে নিচের স্বেচ্ছাসেবক ফর্ম পূরণ করুন। অনুদান সহায়তার আবেদনের জন্য Apply for Donation ব্যবহার করুন।",
       donationApplyCta: "অনুদান সহায়তার আবেদন করতে এখানে যান",
-      signInTitle: "অ্যাডমিন সাইন ইন",
-      emailPlaceholder: "অ্যাডমিন ইমেইল",
+      signUpTitle: "ডোনার অ্যাকাউন্ট তৈরি করুন",
+      signUpNamePlaceholder: "আপনার পূর্ণ নাম",
+      signUpEmailPlaceholder: "আপনার ইমেইল",
+      signUpPasswordPlaceholder: "পাসওয়ার্ড তৈরি করুন",
+      signUpConfirmPasswordPlaceholder: "পাসওয়ার্ড নিশ্চিত করুন",
+      signUpSubmit: "অ্যাকাউন্ট তৈরি করুন",
+      signUpSuccess: "অ্যাকাউন্ট তৈরি হয়েছে। আপনি এখন সাইন ইন অবস্থায় আছেন।",
+      signUpInvalid: "সাইনআপ তথ্য ঠিক করে আবার চেষ্টা করুন।",
+      signUpEmailTaken: "এই ইমেইল আগে থেকেই ব্যবহার করা হয়েছে। অনুগ্রহ করে সাইন ইন করুন।",
+      signInTitle: "সাইন ইন",
+      emailPlaceholder: "ইমেইল",
       passwordPlaceholder: "পাসওয়ার্ড",
       submit: "সাইন ইন",
       invalidCredentials: "ইমেইল বা পাসওয়ার্ড সঠিক নয়। আবার চেষ্টা করুন।",
+      adminHint: "অ্যাডমিনরাও তাদের বিদ্যমান ক্রেডেনশিয়াল দিয়ে সাইন ইন করতে পারবেন।",
     },
   } as const;
 
@@ -82,6 +119,66 @@ export default async function JoinUsPage({
         );
       }
       throw error;
+    }
+  }
+
+  async function signUpAction(formData: FormData) {
+    "use server";
+
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim().toLowerCase();
+    const password = String(formData.get("password") || "");
+    const confirmPassword = String(formData.get("confirmPassword") || "");
+    const redirectTo = resolveRedirectTarget(String(formData.get("redirectTo") || ""));
+
+    const parsed = signUpSchema.safeParse({
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
+
+    if (!parsed.success) {
+      redirect(
+        `/join-us?signup=invalid&callbackUrl=${encodeURIComponent(redirectTo)}`,
+      );
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (existingUser) {
+      redirect(
+        `/join-us?signup=email_taken&callbackUrl=${encodeURIComponent(redirectTo)}`,
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "user",
+      },
+    });
+
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        redirectTo,
+      });
+    } catch (signInError) {
+      if (signInError instanceof AuthError) {
+        redirect(
+          `/join-us?signup=success&callbackUrl=${encodeURIComponent(redirectTo)}`,
+        );
+      }
+      throw signInError;
     }
   }
 
@@ -115,13 +212,82 @@ export default async function JoinUsPage({
           </div>
         </div>
 
-        {/* Right Column: Admin Sign In */}
+        {/* Right Column: Sign Up + Sign In */}
         <div className="flex items-center justify-center">
           <Card className="w-full rounded-3xl border-[#bed4de]/50 bg-white/60 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#14202c]/60">
-            <CardHeader className="pb-4 pt-8 text-center">
+            <CardHeader className="pb-3 pt-8 text-center">
+              <CardTitle className="text-xl text-[#00535b] dark:text-[#9becf7]">
+                {content.signUpTitle}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-8 pb-3">
+              <form action={signUpAction} className="space-y-4">
+                {signup === "success" && (
+                  <p className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+                    {content.signUpSuccess}
+                  </p>
+                )}
+                {signup === "invalid" && (
+                  <p className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+                    {content.signUpInvalid}
+                  </p>
+                )}
+                {signup === "email_taken" && (
+                  <p className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+                    {content.signUpEmailTaken}
+                  </p>
+                )}
+
+                <input type="hidden" name="redirectTo" value={redirectTarget} />
+
+                <input
+                  name="name"
+                  type="text"
+                  placeholder={content.signUpNamePlaceholder}
+                  className="w-full rounded-xl border border-[#bec8ca] bg-white/80 px-4 py-3 text-sm text-[#0e1d25] outline-none transition-all placeholder:text-gray-400 focus:border-[#00535b] focus:ring-2 focus:ring-[#00535b]/20 dark:border-white/10 dark:bg-[#0c151e]/80 dark:text-slate-100 dark:focus:border-[#9becf7] dark:focus:ring-[#9becf7]/20"
+                  required
+                />
+
+                <input
+                  name="email"
+                  type="email"
+                  placeholder={content.signUpEmailPlaceholder}
+                  className="w-full rounded-xl border border-[#bec8ca] bg-white/80 px-4 py-3 text-sm text-[#0e1d25] outline-none transition-all placeholder:text-gray-400 focus:border-[#00535b] focus:ring-2 focus:ring-[#00535b]/20 dark:border-white/10 dark:bg-[#0c151e]/80 dark:text-slate-100 dark:focus:border-[#9becf7] dark:focus:ring-[#9becf7]/20"
+                  required
+                />
+
+                <input
+                  name="password"
+                  type="password"
+                  placeholder={content.signUpPasswordPlaceholder}
+                  className="w-full rounded-xl border border-[#bec8ca] bg-white/80 px-4 py-3 text-sm text-[#0e1d25] outline-none transition-all placeholder:text-gray-400 focus:border-[#00535b] focus:ring-2 focus:ring-[#00535b]/20 dark:border-white/10 dark:bg-[#0c151e]/80 dark:text-slate-100 dark:focus:border-[#9becf7] dark:focus:ring-[#9becf7]/20"
+                  required
+                />
+
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  placeholder={content.signUpConfirmPasswordPlaceholder}
+                  className="w-full rounded-xl border border-[#bec8ca] bg-white/80 px-4 py-3 text-sm text-[#0e1d25] outline-none transition-all placeholder:text-gray-400 focus:border-[#00535b] focus:ring-2 focus:ring-[#00535b]/20 dark:border-white/10 dark:bg-[#0c151e]/80 dark:text-slate-100 dark:focus:border-[#9becf7] dark:focus:ring-[#9becf7]/20"
+                  required
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full rounded-full bg-[#00535b] py-6 text-sm font-bold text-white hover:bg-[#006d77] dark:bg-[#9becf7] dark:text-[#00535b] dark:hover:bg-[#c8f0f7]"
+                >
+                  {content.signUpSubmit}
+                </Button>
+              </form>
+            </CardContent>
+
+            <div className="mx-8 my-3 h-px bg-border/60" />
+
+            <CardHeader className="pb-4 pt-2 text-center">
               <CardTitle className="text-xl text-[#00535b] dark:text-[#9becf7]">
                 {content.signInTitle}
               </CardTitle>
+              <p className="text-xs text-muted-foreground">{content.adminHint}</p>
             </CardHeader>
             <CardContent className="px-8 pb-8">
               <form action={signInAction} className="space-y-5">
