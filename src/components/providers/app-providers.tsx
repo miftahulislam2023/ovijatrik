@@ -1,15 +1,22 @@
-"use client"
+"use client";
 
-import { ThemeProvider } from "next-themes"
-import { SessionProvider } from "next-auth/react"
-import { LanguageProvider } from "@/components/providers/language-provider"
+import { ThemeProvider } from "next-themes";
+import type { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
+import { LanguageProvider } from "@/components/providers/language-provider";
 
-export function AppProviders({ children }: { children: React.ReactNode }) {
-    return (
-        <SessionProvider>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-                <LanguageProvider>{children}</LanguageProvider>
-            </ThemeProvider>
-        </SessionProvider>
-    )
+export function AppProviders({
+  children,
+  session,
+}: {
+  children: React.ReactNode;
+  session: Session | null;
+}) {
+  return (
+    <SessionProvider session={session}>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <LanguageProvider>{children}</LanguageProvider>
+      </ThemeProvider>
+    </SessionProvider>
+  );
 }

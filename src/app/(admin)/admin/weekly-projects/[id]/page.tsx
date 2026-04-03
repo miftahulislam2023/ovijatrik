@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
+import { MultiImageUploadField } from "@/components/admin/multi-image-upload-field";
 import {
   addWeeklyDonation,
   deleteWeeklyProjectPermanently,
@@ -13,7 +15,7 @@ import {
 import { uploadImage } from "@/lib/cloudinary";
 import { slugify } from "@/lib/slug";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Eye, Save, Upload } from "lucide-react";
+import { ArrowLeft, Eye, Save } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
 
 export default async function EditWeeklyProjectPage({
@@ -28,6 +30,7 @@ export default async function EditWeeklyProjectPage({
         title: "সাপ্তাহিক প্রকল্প ব্যবস্থাপনা",
         editing: "সম্পাদনা:",
         projectIdentity: "প্রকল্প পরিচিতি",
+        visualAssets: "ভিজ্যুয়াল সম্পদ",
         updateDonation: "চলতি অনুদান আপডেট",
         addDonation: "অনুদান যোগ করুন",
         publishingDetails: "প্রকাশনা বিবরণ",
@@ -42,6 +45,7 @@ export default async function EditWeeklyProjectPage({
         title: "Weekly Project Management",
         editing: "Editing project:",
         projectIdentity: "Project Identity",
+        visualAssets: "Visual Assets",
         updateDonation: "Update Current Donation",
         addDonation: "Add Donation",
         publishingDetails: "Publishing Details",
@@ -184,6 +188,44 @@ export default async function EditWeeklyProjectPage({
                 {copy.projectIdentity}
               </h2>
 
+              <div className="rounded-xl bg-[#e7f3fb] p-5 ring-1 ring-[#d5e5ef] dark:bg-[#182534] dark:ring-white/10">
+                <h3 className="mb-4 text-lg font-bold text-[#8c4e35]">
+                  {copy.visualAssets}
+                </h3>
+                <MultiImageUploadField
+                  name="photoFiles"
+                  label="Upload New Images"
+                  hint="Selected files will be added to the existing gallery"
+                  dropzoneClassName="group flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#bec8ca] bg-white px-4 py-8 text-center transition-colors hover:border-[#00535b] dark:bg-[#0f1620]"
+                  previewGridClassName="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"
+                />
+
+                {project.photos.length > 0 && (
+                  <div className="mt-5">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      Existing gallery ({project.photos.length})
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                      {project.photos.map((photo, index) => (
+                        <div
+                          key={`${photo}-${index}`}
+                          className="relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#0f1620]"
+                        >
+                          <Image
+                            src={photo}
+                            alt={`Existing project image ${index + 1}`}
+                            fill
+                            sizes="(max-width: 640px) 50vw, 33vw"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-600 dark:text-slate-300">
                   Project Title (Bangla)
@@ -312,23 +354,6 @@ export default async function EditWeeklyProjectPage({
                   className="w-full rounded-lg border-none bg-[#e7f3fb] px-4 py-3 focus:ring-2 focus:ring-[#00535b] dark:bg-[#0f1620]"
                 />
               </div>
-
-              <label className="group relative flex aspect-video cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-[#bec8ca] bg-[#e7f3fb] px-4 text-center transition-colors hover:border-[#00535b] dark:bg-[#182534]">
-                <Upload className="mb-2 h-8 w-8 text-[#00535b]" />
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Upload extra photos
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Recommended: 1920x1080 (PNG, JPG)
-                </p>
-                <input
-                  name="photoFiles"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="mt-4 w-full text-xs"
-                />
-              </label>
             </form>
           </section>
 

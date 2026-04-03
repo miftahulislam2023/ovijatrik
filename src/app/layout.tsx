@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hind_Siliguri, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { getRequestLanguage } from "@/lib/language";
+import { auth } from "@/lib/auth";
 import "./globals.css";
 
 const hind = Hind_Siliguri({
@@ -28,13 +29,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const language = await getRequestLanguage();
+  const session = await auth();
 
   return (
     <html lang={language} suppressHydrationWarning>
       <body
         className={`${hind.variable} ${inter.variable} bg-background text-foreground min-h-screen`}
       >
-        <AppProviders>{children}</AppProviders>
+        <AppProviders session={session}>{children}</AppProviders>
       </body>
     </html>
   );

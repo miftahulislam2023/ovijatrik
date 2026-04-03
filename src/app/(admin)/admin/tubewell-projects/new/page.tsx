@@ -41,13 +41,14 @@ export default async function NewTubewellProjectPage() {
     const titleEn = String(formData.get("titleEn") || "").trim();
     const slugInput = String(formData.get("slug") || "").trim();
     const location = String(formData.get("location") || "").trim();
-    const description = String(formData.get("description") || "").trim();
+    const descriptionBn = String(formData.get("descriptionBn") || "").trim();
+    const descriptionEn = String(formData.get("descriptionEn") || "").trim();
     const completionDateStr = String(
       formData.get("completionDate") || "",
     ).trim();
     const impactSummary = String(formData.get("impactSummary") || "").trim();
 
-    if (!titleBn || !location || !description || !completionDateStr) {
+    if (!titleBn || !location || !descriptionBn || !completionDateStr) {
       throw new Error("Required fields missing");
     }
 
@@ -69,8 +70,8 @@ export default async function NewTubewellProjectPage() {
       titleEn: titleEn || undefined,
       slug: slugify(slugInput || titleEn || titleBn),
       location,
-      descriptionBn: description,
-      descriptionEn: description,
+      descriptionBn,
+      descriptionEn: descriptionEn || undefined,
       photos: urls,
       completionDate,
       year: completionDate.getFullYear(),
@@ -212,16 +213,34 @@ export default async function NewTubewellProjectPage() {
             <div className="space-y-5">
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  {isBn ? "বিস্তারিত বিবরণ" : "Narrative Description"}
+                  {isBn
+                    ? "বিস্তারিত বিবরণ (বাংলা)"
+                    : "Narrative Description (Bangla)"}
                 </label>
                 <textarea
-                  name="description"
+                  name="descriptionBn"
                   rows={6}
                   required
                   placeholder={
                     isBn
                       ? "এই টিউবওয়েল কিভাবে কমিউনিটিতে প্রভাব ফেলবে লিখুন..."
                       : "Describe the local need, implementation, and expected impact..."
+                  }
+                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 leading-relaxed focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+                  {isBn
+                    ? "বিস্তারিত বিবরণ (ইংরেজি)"
+                    : "Narrative Description (English)"}
+                </label>
+                <textarea
+                  name="descriptionEn"
+                  rows={6}
+                  placeholder={
+                    isBn ? "ঐচ্ছিক ইংরেজি বিবরণ" : "Optional English narrative"
                   }
                   className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 leading-relaxed focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
                 />

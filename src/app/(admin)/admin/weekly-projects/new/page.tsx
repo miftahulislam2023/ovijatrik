@@ -103,6 +103,19 @@ export default async function NewWeeklyProjectPage() {
 
       <form action={createAction} className="grid gap-8 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
+          <section className="rounded-xl bg-[#e7f3fb] p-8 ring-1 ring-[#d5e5ef] dark:bg-[#182534] dark:ring-white/10">
+            <h2 className="mb-6 flex items-center gap-2 font-serif text-2xl font-bold text-[#8c4e35]">
+              {copy.visualAssets}
+            </h2>
+            <MultiImageUploadField
+              name="photoFiles"
+              label="Project Image Gallery"
+              hint="Recommended: 1920x1080"
+              dropzoneClassName="group flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#bec8ca] bg-white px-4 py-8 text-center transition-colors hover:border-[#00535b] dark:bg-[#0f1620]"
+              previewGridClassName="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"
+            />
+          </section>
+
           <section className="rounded-xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-[#121923] dark:ring-white/10">
             <h2 className="mb-6 flex items-center gap-2 font-serif text-2xl font-bold text-[#00535b]">
               {copy.projectIdentity}
@@ -232,19 +245,6 @@ export default async function NewWeeklyProjectPage() {
                 />
               </div>
             </div>
-          </section>
-
-          <section className="rounded-xl bg-[#e7f3fb] p-8 ring-1 ring-[#d5e5ef] dark:bg-[#182534] dark:ring-white/10">
-            <h2 className="mb-6 flex items-center gap-2 font-serif text-2xl font-bold text-[#8c4e35]">
-              {copy.visualAssets}
-            </h2>
-            <MultiImageUploadField
-              name="photoFiles"
-              label="Project Image Gallery"
-              hint="Recommended: 1920x1080"
-              dropzoneClassName="group flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#bec8ca] bg-white px-4 py-8 text-center transition-colors hover:border-[#00535b] dark:bg-[#0f1620]"
-              previewGridClassName="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"
-            />
           </section>
         </div>
 
