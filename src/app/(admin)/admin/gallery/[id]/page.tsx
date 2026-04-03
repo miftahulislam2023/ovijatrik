@@ -49,6 +49,7 @@ export default async function EditGalleryItemPage({
     "use server";
     const titleBn = String(formData.get("titleBn") || "").trim();
     const titleEn = String(formData.get("titleEn") || "").trim();
+    const details = String(formData.get("details") || "").trim();
     const sortOrder = Number(formData.get("sortOrder") || 0);
     const imageFile = formData.get("imageFile");
 
@@ -61,6 +62,7 @@ export default async function EditGalleryItemPage({
     await updateGalleryItem(id, {
       titleBn: titleBn || undefined,
       titleEn: titleEn || undefined,
+      details: details || undefined,
       imageUrl,
       sortOrder,
     });
@@ -154,6 +156,13 @@ export default async function EditGalleryItemPage({
             name="titleEn"
             defaultValue={item.titleEn ?? ""}
             className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1620] dark:text-slate-100"
+          />
+          <textarea
+            name="details"
+            rows={4}
+            defaultValue={item.details ?? ""}
+            placeholder={isBn ? "বিস্তারিত লিখুন" : "Write details"}
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-white/15 dark:bg-[#0f1620] dark:text-slate-100"
           />
           <input
             name="imageFile"

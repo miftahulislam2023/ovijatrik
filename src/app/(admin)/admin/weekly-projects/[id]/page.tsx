@@ -86,8 +86,14 @@ export default async function EditWeeklyProjectPage({
       | "ARCHIVED";
     const startDateStr = String(formData.get("startDate") || "").trim();
     const endDateStr = String(formData.get("endDate") || "").trim();
+    const removedPhotos = new Set(
+      formData
+        .getAll("removeExistingPhotos")
+        .map((value) => String(value || "").trim())
+        .filter(Boolean),
+    );
 
-    const urls = [...project.photos];
+    const urls = project.photos.filter((photo) => !removedPhotos.has(photo));
 
     const photoFiles = formData
       .getAll("photoFiles")
@@ -207,19 +213,31 @@ export default async function EditWeeklyProjectPage({
                     </p>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                       {project.photos.map((photo, index) => (
-                        <div
+                        <label
                           key={`${photo}-${index}`}
-                          className="relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#0f1620]"
+                          className="relative block cursor-pointer"
                         >
-                          <Image
-                            src={photo}
-                            alt={`Existing project image ${index + 1}`}
-                            fill
-                            sizes="(max-width: 640px) 50vw, 33vw"
-                            className="object-cover"
-                            unoptimized
+                          <div className="relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#0f1620]">
+                            <Image
+                              src={photo}
+                              alt={`Existing project image ${index + 1}`}
+                              fill
+                              sizes="(max-width: 640px) 50vw, 33vw"
+                              className="object-cover"
+                              unoptimized
+                            />
+                          </div>
+                          <span className="pointer-events-none absolute inset-x-2 bottom-2 rounded-md bg-black/60 px-2 py-1 text-center text-[11px] font-semibold text-white">
+                            Check to remove
+                          </span>
+                          <input
+                            type="checkbox"
+                            name="removeExistingPhotos"
+                            value={photo}
+                            className="absolute right-2 top-2 h-5 w-5 rounded border-white/60 bg-white/90 text-red-600"
+                            aria-label={`Remove existing image ${index + 1}`}
                           />
-                        </div>
+                        </label>
                       ))}
                     </div>
                   </div>
