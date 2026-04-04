@@ -8,6 +8,7 @@ import {
 } from "@/actions/donations";
 import { DonationMedium, DonationType } from "@/generated/prisma/enums";
 import { getRequestLanguage } from "@/lib/language";
+import { BulkSelectionCount } from "@/components/admin/bulk-selection-count";
 import { Copy, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 export default async function AdminDonationsPage({
@@ -132,8 +133,12 @@ export default async function AdminDonationsPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const prevPage = Math.max(1, page - 1);
   const nextPage = Math.min(totalPages, page + 1);
-  const thisPageAmount = donations.reduce((sum, donation) => sum + donation.amount, 0);
-  const mediumsUsedCount = new Set(donations.map((donation) => donation.medium)).size;
+  const thisPageAmount = donations.reduce(
+    (sum, donation) => sum + donation.amount,
+    0,
+  );
+  const mediumsUsedCount = new Set(donations.map((donation) => donation.medium))
+    .size;
 
   const queryWithPage = (targetPage: number) => {
     const qp = new URLSearchParams();
@@ -254,9 +259,12 @@ export default async function AdminDonationsPage({
         id="donations-bulk-actions"
         className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
       >
-        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
-          {copy.selectedActions}
-        </span>
+        <BulkSelectionCount
+          formId="donations-bulk-actions"
+          emptyLabel={copy.selectedActions}
+          selectedLabelTemplate="{count} selected"
+          className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300"
+        />
         <Button
           type="submit"
           formAction={bulkSoftDeleteDonations}
@@ -351,9 +359,9 @@ export default async function AdminDonationsPage({
                       <Trash2 className="h-3.5 w-3.5" />
                       {copy.archive}
                     </Button>
-                </form>
+                  </form>
+                </div>
               </div>
-            </div>
             </div>
           </article>
         ))}

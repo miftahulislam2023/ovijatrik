@@ -10,6 +10,7 @@ import {
 } from "@/actions/blog";
 import { Eye, Pencil, Plus, Search } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
+import { BulkSelectionCount } from "@/components/admin/bulk-selection-count";
 
 export default async function AdminBlogPage({
   searchParams,
@@ -250,9 +251,12 @@ export default async function AdminBlogPage({
         id="blog-bulk-actions"
         className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
       >
-        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
-          {copy.selectedActions}
-        </span>
+        <BulkSelectionCount
+          formId="blog-bulk-actions"
+          emptyLabel={copy.selectedActions}
+          selectedLabelTemplate="{count} selected"
+          className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300"
+        />
         <Button
           type="submit"
           formAction={bulkSoftDeleteBlogPosts}
@@ -275,7 +279,11 @@ export default async function AdminBlogPage({
         {posts.map((post) => (
           <article
             key={post.id}
-            className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm transition hover:border-[#0b5e7a]/40 dark:border-white/10 dark:bg-[#111a23] md:grid-cols-[220px_1fr_auto] md:items-center"
+            className={`grid gap-4 rounded-3xl border p-4 text-sm shadow-sm transition md:grid-cols-[220px_1fr_auto] md:items-center ${
+              post.featured
+                ? "border-amber-300 bg-amber-50/50 hover:border-amber-400 dark:border-amber-500/40 dark:bg-amber-500/10"
+                : "border-slate-200 bg-white hover:border-[#0b5e7a]/40 dark:border-white/10 dark:bg-[#111a23]"
+            }`}
           >
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-white/5">
               {post.coverImage ? (

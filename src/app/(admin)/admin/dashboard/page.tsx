@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Table,
@@ -13,7 +12,6 @@ import { prisma } from "@/lib/prisma";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  Download,
   Droplets,
   FolderKanban,
   HandCoins,
@@ -21,6 +19,7 @@ import {
   Users,
 } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
+import { DashboardExportMenu } from "@/components/admin/dashboard-export-menu";
 
 function monthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -294,6 +293,15 @@ export default async function AdminDashboardPage() {
     .slice(0, 8);
 
   const latestDonation = donationRows[0];
+
+  const exportRows = donationRows.map((row) => ({
+    donor: row.donor,
+    amount: row.amount,
+    medium: row.medium,
+    source: row.source,
+    status: row.status,
+    dateIso: row.date.toISOString(),
+  }));
 
   const recentActivity = [
     ...(latestTubewellProjects[0]
@@ -601,14 +609,10 @@ export default async function AdminDashboardPage() {
                 Unified stream from global and weekly donation schemas
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl text-xs sm:text-sm"
-            >
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
+            <DashboardExportMenu
+              rows={exportRows}
+              fileBaseName="recent-donations"
+            />
           </div>
 
           <div className="overflow-x-auto">

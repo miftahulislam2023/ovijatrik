@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { BulkSelectionCount } from "@/components/admin/bulk-selection-count";
 import { getRequestLanguage } from "@/lib/language";
 import {
   bulkDeleteWeeklyProjectsPermanently,
@@ -39,8 +40,8 @@ export default async function WeeklyProjectsAdminPage({
         subtitle:
           "পুনরাবৃত্ত কমিউনিটি উদ্যোগ পরিচালনা করুন এবং অনুদানের অবস্থা স্বচ্ছ রাখুন।",
         addNewProject: "নতুন প্রকল্প যোগ করুন",
-        totalActiveFunding: "মোট সক্রিয় তহবিল",
-        acrossProjects: "এই পাতার সব প্রকল্প মিলিয়ে",
+        totalActiveFunding: "মোট তহবিল",
+        acrossProjects: "সব সাপ্তাহিক প্রকল্প মিলিয়ে",
         liveProjects: "চলমান প্রকল্প",
         currentlyPublished: "বর্তমানে প্রকাশিত",
         archived: "আর্কাইভ",
@@ -79,8 +80,8 @@ export default async function WeeklyProjectsAdminPage({
         subtitle:
           "Manage recurring community initiatives and keep donation status transparent.",
         addNewProject: "Add New Project",
-        totalActiveFunding: "Total Active Funding",
-        acrossProjects: "Across projects on this page",
+        totalActiveFunding: "Total Fund",
+        acrossProjects: "Across all weekly projects",
         liveProjects: "Live Projects",
         currentlyPublished: "Currently published",
         archived: "Archived",
@@ -120,23 +121,38 @@ export default async function WeeklyProjectsAdminPage({
   const page = Math.max(1, Number(params.page || "1") || 1);
   const pageSize = 10;
 
-  const where = {
-    deletedAt: null,
-    ...(q
+  const searchFilter = q
+    ? {
+        OR: [
+          { titleBn: { contains: q, mode: "insensitive" as const } },
+          { titleEn: { contains: q, mode: "insensitive" as const } },
+          { slug: { contains: q, mode: "insensitive" as const } },
+        ],
+      }
+    : {};
+
+  const where =
+    status === "ARCHIVED"
       ? {
-          OR: [
-            { titleBn: { contains: q, mode: "insensitive" as const } },
-            { titleEn: { contains: q, mode: "insensitive" as const } },
-            { slug: { contains: q, mode: "insensitive" as const } },
+          AND: [
+            {
+              OR: [
+                { status: "ARCHIVED" as ProjectStatus },
+                { deletedAt: { not: null as Date | null } },
+              ],
+            },
+            searchFilter,
           ],
         }
-      : {}),
-    ...(status && ["DRAFT", "PUBLISHED", "ARCHIVED"].includes(status)
-      ? { status: status as ProjectStatus }
-      : {}),
-  };
+      : {
+          deletedAt: null,
+          ...searchFilter,
+          ...(status && ["DRAFT", "PUBLISHED"].includes(status)
+            ? { status: status as ProjectStatus }
+            : {}),
+        };
 
-  const [projects, totalCount] = await Promise.all([
+  const [projects, totalCount, totalTargetAggregate] = await Promise.all([
     prisma.weeklyProject.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -150,15 +166,16 @@ export default async function WeeklyProjectsAdminPage({
       take: pageSize,
     }),
     prisma.weeklyProject.count({ where }),
+    prisma.weeklyProject.aggregate({
+      where: { deletedAt: null },
+      _sum: { targetAmount: true },
+    }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const prevPage = Math.max(1, page - 1);
   const nextPage = Math.min(totalPages, page + 1);
-  const totalTarget = projects.reduce(
-    (sum, project) => sum + project.targetAmount,
-    0,
-  );
+  const totalTarget = totalTargetAggregate._sum.targetAmount ?? 0;
   const publishedCount = projects.filter(
     (project) => project.status === "PUBLISHED",
   ).length;
@@ -276,9 +293,12 @@ export default async function WeeklyProjectsAdminPage({
         id="weekly-projects-bulk-actions"
         className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
       >
-        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
-          {copy.selectedActions}
-        </span>
+        <BulkSelectionCount
+          formId="weekly-projects-bulk-actions"
+          emptyLabel={copy.selectedActions}
+          selectedLabelTemplate="{count} selected"
+          className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300"
+        />
         <Button
           type="submit"
           formAction={bulkSoftDeleteWeeklyProjects}

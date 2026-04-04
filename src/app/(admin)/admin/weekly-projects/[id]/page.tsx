@@ -4,12 +4,14 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { MultiImageUploadField } from "@/components/admin/multi-image-upload-field";
+import { RichTextEditorField } from "@/components/admin/rich-text-editor-field";
 import {
   addWeeklyDonation,
   deleteWeeklyProjectPermanently,
   duplicateWeeklyProject,
   softDeleteWeeklyDonation,
   softDeleteWeeklyProject,
+  uploadWeeklyInlineImage,
   updateWeeklyProject,
 } from "@/actions/weekly-project";
 import { uploadImage } from "@/lib/cloudinary";
@@ -166,7 +168,7 @@ export default async function EditWeeklyProjectPage({
         <div className="mb-2 flex items-center gap-4">
           <Link
             href="/admin/weekly-projects"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#00535b] transition-colors hover:bg-[#00535b]/10"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#00535b] transition-colors hover:bg-[#00535b]/10 dark:text-[#77d6de] dark:hover:bg-[#77d6de]/20"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -349,27 +351,20 @@ export default async function EditWeeklyProjectPage({
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600 dark:text-slate-300">
-                  Detailed Description (Bangla)
-                </label>
-                <textarea
+                <RichTextEditorField
                   name="descriptionBn"
-                  rows={8}
-                  defaultValue={project.descriptionBn}
-                  required
-                  className="w-full rounded-lg border-none bg-[#e7f3fb] px-4 py-3 focus:ring-2 focus:ring-[#00535b] dark:bg-[#0f1620]"
+                  label="Detailed Description (Bangla)"
+                  initialValue={project.descriptionBn}
+                  uploadInlineImage={uploadWeeklyInlineImage}
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600 dark:text-slate-300">
-                  Detailed Description (English)
-                </label>
-                <textarea
+                <RichTextEditorField
                   name="descriptionEn"
-                  rows={8}
-                  defaultValue={project.descriptionEn ?? ""}
-                  className="w-full rounded-lg border-none bg-[#e7f3fb] px-4 py-3 focus:ring-2 focus:ring-[#00535b] dark:bg-[#0f1620]"
+                  label="Detailed Description (English)"
+                  initialValue={project.descriptionEn ?? ""}
+                  uploadInlineImage={uploadWeeklyInlineImage}
                 />
               </div>
             </form>

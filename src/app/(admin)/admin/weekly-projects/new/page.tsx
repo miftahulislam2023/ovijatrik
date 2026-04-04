@@ -2,11 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MultiImageUploadField } from "@/components/admin/multi-image-upload-field";
-import { createWeeklyProject } from "@/actions/weekly-project";
+import { RichTextEditorField } from "@/components/admin/rich-text-editor-field";
+import { uploadWeeklyInlineImage } from "@/actions/weekly-project";
 import { uploadImage } from "@/lib/cloudinary";
 import { slugify } from "@/lib/slug";
-import { ArrowLeft, Eye, Save } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { getRequestLanguage } from "@/lib/language";
+import { prisma } from "@/lib/prisma";
+import { requireAdminAction } from "@/lib/authorization";
 
 export default async function NewWeeklyProjectPage() {
   const language = await getRequestLanguage();
@@ -35,6 +38,8 @@ export default async function NewWeeklyProjectPage() {
 
   async function createAction(formData: FormData) {
     "use server";
+
+    await requireAdminAction();
 
     const titleBn = String(formData.get("titleBn") || "").trim();
     const titleEn = String(formData.get("titleEn") || "").trim();
@@ -66,20 +71,111 @@ export default async function NewWeeklyProjectPage() {
       urls.push(uploaded.url);
     }
 
-    await createWeeklyProject({
+    const slug = slugify(slugInput || titleEn || titleBn);
+
+    const existing = await prisma.weeklyProject.findUnique({
+      where: { slug },
+      select: { id: true, status: true },
+    });
+
+    if (existing && existing.status !== "DRAFT") {
+      throw new Error("A published or archived project already uses this slug");
+    }
+
+    await prisma.weeklyProject.upsert({
+      where: { slug },
+      update: {
+        titleBn,
+        titleEn: titleEn || null,
+        descriptionBn,
+        descriptionEn: descriptionEn || null,
+        targetAmount,
+        photos: urls,
+        status,
+        startDate: startDateStr ? new Date(startDateStr) : null,
+        endDate: endDateStr ? new Date(endDateStr) : null,
+      },
+      create: {
       titleBn,
-      titleEn: titleEn || undefined,
-      slug: slugify(slugInput || titleEn || titleBn),
+      titleEn: titleEn || null,
+      slug,
       descriptionBn,
-      descriptionEn: descriptionEn || undefined,
+      descriptionEn: descriptionEn || null,
       targetAmount,
       photos: urls,
       status,
-      startDate: startDateStr ? new Date(startDateStr) : undefined,
-      endDate: endDateStr ? new Date(endDateStr) : undefined,
+      startDate: startDateStr ? new Date(startDateStr) : null,
+      endDate: endDateStr ? new Date(endDateStr) : null,
+      },
     });
 
     redirect("/admin/weekly-projects");
+  }
+
+  async function previewAction(formData: FormData) {
+    "use server";
+
+    await requireAdminAction();
+
+    const titleBn = String(formData.get("titleBn") || "").trim();
+    const titleEn = String(formData.get("titleEn") || "").trim();
+    const slugInput = String(formData.get("slug") || "").trim();
+    const descriptionBn = String(formData.get("descriptionBn") || "").trim();
+    const descriptionEn = String(formData.get("descriptionEn") || "").trim();
+    const targetAmount = Number(formData.get("targetAmount") || 0);
+    const startDateStr = String(formData.get("startDate") || "").trim();
+    const endDateStr = String(formData.get("endDate") || "").trim();
+
+    let slug = slugify(slugInput || titleEn || titleBn || "preview");
+    const existing = await prisma.weeklyProject.findUnique({
+      where: { slug },
+      select: { status: true },
+    });
+
+    if (existing && existing.status !== "DRAFT") {
+      slug = `${slug}-preview`;
+    }
+
+    const urls: string[] = [];
+    const photoFiles = formData
+      .getAll("photoFiles")
+      .filter(
+        (value): value is File => value instanceof File && value.size > 0,
+      );
+
+    for (const file of photoFiles) {
+      const uploaded = await uploadImage(file, "ovijatrik/weekly-projects");
+      urls.push(uploaded.url);
+    }
+
+    await prisma.weeklyProject.upsert({
+      where: { slug },
+      update: {
+        titleBn: titleBn || "Untitled preview",
+        titleEn: titleEn || null,
+        descriptionBn: descriptionBn || "Preview content",
+        descriptionEn: descriptionEn || null,
+        targetAmount,
+        photos: urls,
+        status: "DRAFT",
+        startDate: startDateStr ? new Date(startDateStr) : null,
+        endDate: endDateStr ? new Date(endDateStr) : null,
+      },
+      create: {
+        titleBn: titleBn || "Untitled preview",
+        titleEn: titleEn || null,
+        slug,
+        descriptionBn: descriptionBn || "Preview content",
+        descriptionEn: descriptionEn || null,
+        targetAmount,
+        photos: urls,
+        status: "DRAFT",
+        startDate: startDateStr ? new Date(startDateStr) : null,
+        endDate: endDateStr ? new Date(endDateStr) : null,
+      },
+    });
+
+    redirect(`/admin/weekly-projects/new/preview/${slug}`);
   }
 
   return (
@@ -88,7 +184,7 @@ export default async function NewWeeklyProjectPage() {
         <div className="mb-2 flex items-center gap-4">
           <Link
             href="/admin/weekly-projects"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#00535b] transition-colors hover:bg-[#00535b]/10"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#00535b] transition-colors hover:bg-[#00535b]/10 dark:text-[#77d6de] dark:hover:bg-[#77d6de]/20"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -217,31 +313,28 @@ export default async function NewWeeklyProjectPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600 dark:text-slate-300">
-                  {isBn
-                    ? "বিস্তারিত বিবরণ (বাংলা)"
-                    : "Detailed Description (Bangla)"}
-                </label>
-                <textarea
+                <RichTextEditorField
                   name="descriptionBn"
-                  rows={8}
-                  required
+                  label={
+                    isBn
+                      ? "বিস্তারিত বিবরণ (বাংলা)"
+                      : "Detailed Description (Bangla)"
+                  }
                   placeholder="Narrate the story, the need, and the expected outcome..."
-                  className="w-full rounded-lg border-none bg-[#e7f3fb] px-4 py-3 focus:ring-2 focus:ring-[#00535b] dark:bg-[#0f1620]"
+                  uploadInlineImage={uploadWeeklyInlineImage}
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-600 dark:text-slate-300">
-                  {isBn
-                    ? "বিস্তারিত বিবরণ (ইংরেজি)"
-                    : "Detailed Description (English)"}
-                </label>
-                <textarea
+                <RichTextEditorField
                   name="descriptionEn"
-                  rows={8}
+                  label={
+                    isBn
+                      ? "বিস্তারিত বিবরণ (ইংরেজি)"
+                      : "Detailed Description (English)"
+                  }
                   placeholder="Optional English narrative"
-                  className="w-full rounded-lg border-none bg-[#e7f3fb] px-4 py-3 focus:ring-2 focus:ring-[#00535b] dark:bg-[#0f1620]"
+                  uploadInlineImage={uploadWeeklyInlineImage}
                 />
               </div>
             </div>
@@ -280,14 +373,12 @@ export default async function NewWeeklyProjectPage() {
           </Button>
 
           <Button
-            asChild
+            type="submit"
+            formAction={previewAction}
             variant="outline"
             className="w-full rounded-full border-2 border-[#bec8ca] py-6 text-slate-700 hover:bg-slate-50 dark:text-slate-200"
           >
-            <Link href="/admin/weekly-projects">
-              <Eye className="h-4 w-4" />
-              {copy.preview}
-            </Link>
+            {copy.preview}
           </Button>
         </aside>
       </form>

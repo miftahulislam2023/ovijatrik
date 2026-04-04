@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getWeeklyProjects } from "@/actions/weekly-project";
 import { getRequestLanguage } from "@/lib/language";
 import { ArrowUpRight, Target } from "lucide-react";
+import { stripHtmlToText } from "@/lib/rich-text";
 
 export default async function WeeklyProjectsPage({
   searchParams,
@@ -21,8 +22,10 @@ export default async function WeeklyProjectsPage({
     return (
       project.titleBn.toLowerCase().includes(normalizedQuery) ||
       (project.titleEn || "").toLowerCase().includes(normalizedQuery) ||
-      project.descriptionBn.toLowerCase().includes(normalizedQuery) ||
-      (project.descriptionEn || "").toLowerCase().includes(normalizedQuery) ||
+      stripHtmlToText(project.descriptionBn).toLowerCase().includes(normalizedQuery) ||
+      stripHtmlToText(project.descriptionEn || "")
+        .toLowerCase()
+        .includes(normalizedQuery) ||
       project.slug.toLowerCase().includes(normalizedQuery)
     );
   });
@@ -127,6 +130,7 @@ export default async function WeeklyProjectsPage({
               language === "en"
                 ? project.descriptionEn || project.descriptionBn
                 : project.descriptionBn;
+            const summary = stripHtmlToText(description);
             const coverPhoto = project.photos[0];
 
             return (
@@ -161,7 +165,7 @@ export default async function WeeklyProjectsPage({
                   </h2>
 
                   <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">
-                    {description}
+                    {summary}
                   </p>
 
                   <div className="flex items-center justify-between gap-4 pt-1">

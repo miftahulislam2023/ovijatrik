@@ -28,6 +28,7 @@ const navItems = [
   { key: "blog", href: "/admin/blog", icon: Newspaper },
   { key: "gallery", href: "/admin/gallery", icon: FileImage },
   { key: "donations", href: "/admin/donations", icon: HandCoins },
+  { key: "donors", href: "/admin/donors", icon: HeartHandshake },
   { key: "donorSegments", href: "/admin/donor-segments", icon: HeartHandshake },
   { key: "applications", href: "/admin/applications", icon: ScrollText },
   { key: "volunteers", href: "/admin/volunteers", icon: Users },
@@ -46,6 +47,7 @@ const textCopy = {
       blog: "Blog",
       gallery: "Gallery",
       donations: "Global Donations",
+      donors: "Donors",
       donorSegments: "Donor Segments",
       applications: "Applications",
       volunteers: "Volunteers",
@@ -63,6 +65,7 @@ const textCopy = {
       blog: "ব্লগ",
       gallery: "গ্যালারি",
       donations: "সাধারণ অনুদান",
+      donors: "ডোনার",
       donorSegments: "ডোনার সেগমেন্টস",
       applications: "আবেদনসমূহ",
       volunteers: "স্বেচ্ছাসেবক",
@@ -79,7 +82,7 @@ export function AdminSidebar({ language }: { language: AdminLanguage }) {
     <aside className="hidden w-64 shrink-0 flex-col border-r border-black/10 bg-white/50 px-5 py-6 lg:flex dark:border-white/10 dark:bg-[#0b1012]/50">
       <Link
         href="/admin/dashboard"
-        className="mb-8 flex items-center gap-3 rounded-2xl border border-transparent p-2 transition-all hover:bg-black/5 dark:hover:bg-white/5"
+        className="mb-8 flex items-center gap-3 rounded-2xl border border-transparent p-2 transition-all hover:bg-black/5 dark:hover:bg-white/10"
       >
         <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-white/5">
           <Image
@@ -113,7 +116,7 @@ export function AdminSidebar({ language }: { language: AdminLanguage }) {
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200 ${
                 isActive
                   ? "bg-black/5 font-semibold text-slate-900 shadow-sm dark:bg-white/10 dark:text-white"
-                  : "font-medium text-slate-500 hover:bg-black/5 hover:text-slate-900 dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                  : "font-medium text-slate-500 hover:bg-black/5 hover:text-slate-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
               }`}
             >
               <Icon
@@ -211,7 +214,7 @@ export function AdminHeader({
                   className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors ${
                     isActive
                       ? "bg-black/5 font-semibold text-slate-900 dark:bg-white/10 dark:text-white"
-                      : "font-medium text-slate-600 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/5"
+                      : "font-medium text-slate-600 hover:bg-black/5 dark:text-white/75 dark:hover:bg-white/10 dark:hover:text-white"
                   }`}
                 >
                   <Icon

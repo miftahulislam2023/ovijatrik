@@ -2,10 +2,12 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { MultiImageUploadField } from "@/components/admin/multi-image-upload-field";
+import { RichTextEditorField } from "@/components/admin/rich-text-editor-field";
 import {
   deleteTubewellProjectPermanently,
   duplicateTubewellProject,
   softDeleteTubewellProject,
+  uploadTubewellInlineImage,
   updateTubewellProject,
 } from "@/actions/tubewell-project";
 import { uploadImage } from "@/lib/cloudinary";
@@ -72,6 +74,10 @@ export default async function EditTubewellProjectPage({
     const completionDateStr = String(
       formData.get("completionDate") || "",
     ).trim();
+    const publicationStatus =
+      String(formData.get("publicationStatus") || "PUBLISHED") === "ARCHIVED"
+        ? "ARCHIVED"
+        : "PUBLISHED";
     const impactSummary = String(formData.get("impactSummary") || "").trim();
     const removedPhotos = new Set(
       formData
@@ -107,6 +113,7 @@ export default async function EditTubewellProjectPage({
       completionDate,
       year: completionDate.getFullYear(),
       impactSummary: impactSummary || undefined,
+      publicationStatus,
     });
 
     redirect("/admin/tubewell-projects");
@@ -140,7 +147,7 @@ export default async function EditTubewellProjectPage({
           <div className="flex items-start gap-3">
             <Link
               href="/admin/tubewell-projects"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#bed4de] bg-white text-[#00535b] transition-colors hover:bg-[#e7f6ff] dark:border-white/15 dark:bg-[#101b26]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#bed4de] bg-white text-[#00535b] transition-colors hover:bg-[#e7f6ff] dark:border-white/15 dark:bg-[#101b26] dark:text-[#79dce3] dark:hover:bg-[#79dce3]/20"
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -262,34 +269,33 @@ export default async function EditTubewellProjectPage({
 
             <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  {isBn
-                    ? "বিস্তারিত বিবরণ (বাংলা)"
-                    : "Narrative Description (Bangla)"}
-                </label>
-                <textarea
+                <RichTextEditorField
                   name="descriptionBn"
-                  rows={6}
-                  required
-                  defaultValue={project.descriptionBn}
-                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 leading-relaxed focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                  label={
+                    isBn
+                      ? "বিস্তারিত বিবরণ (বাংলা)"
+                      : "Narrative Description (Bangla)"
+                  }
+                  initialValue={project.descriptionBn}
+                  minHeight={260}
+                  uploadInlineImage={uploadTubewellInlineImage}
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  {isBn
-                    ? "বিস্তারিত বিবরণ (ইংরেজি)"
-                    : "Narrative Description (English)"}
-                </label>
-                <textarea
+                <RichTextEditorField
                   name="descriptionEn"
-                  rows={6}
-                  defaultValue={project.descriptionEn ?? ""}
+                  label={
+                    isBn
+                      ? "বিস্তারিত বিবরণ (ইংরেজি)"
+                      : "Narrative Description (English)"
+                  }
+                  initialValue={project.descriptionEn ?? ""}
                   placeholder={
                     isBn ? "ঐচ্ছিক ইংরেজি বিবরণ" : "Optional English narrative"
                   }
-                  className="w-full rounded-lg border-none bg-[#e7f6ff] px-4 py-3 leading-relaxed focus:ring-2 focus:ring-[#006d77]/25 dark:bg-[#0f1620]"
+                  minHeight={260}
+                  uploadInlineImage={uploadTubewellInlineImage}
                 />
               </div>
 
@@ -368,14 +374,23 @@ export default async function EditTubewellProjectPage({
             <p className="font-semibold uppercase tracking-[0.12em] text-slate-500">
               {isBn ? "প্রকাশনা অবস্থা" : "Publishing Status"}
             </p>
-            <div className="mt-3 flex items-center justify-between rounded-xl bg-[#f4faff] px-4 py-3 dark:bg-[#0f1620]">
-              <span className="text-slate-600 dark:text-slate-300">
-                {isBn ? "আপডেট" : "Last Updated"}
-              </span>
-              <span className="text-xs font-semibold text-[#793f27]">
-                {project.updatedAt.toLocaleDateString()}
-              </span>
-            </div>
+            <label className="mt-3 block text-xs font-semibold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-300">
+              {isBn ? "স্ট্যাটাস" : "Status"}
+            </label>
+            <select
+              name="publicationStatus"
+              defaultValue={project.deletedAt ? "ARCHIVED" : "PUBLISHED"}
+              className="mt-2 w-full rounded-xl border border-slate-200 bg-[#f4faff] px-4 py-3 text-sm text-slate-800 dark:border-white/10 dark:bg-[#0f1620] dark:text-slate-100"
+            >
+              <option value="PUBLISHED">
+                {isBn ? "প্রকাশিত" : "Published"}
+              </option>
+              <option value="ARCHIVED">{isBn ? "আর্কাইভ" : "Archived"}</option>
+            </select>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-300">
+              {isBn ? "শেষ আপডেট" : "Last updated"}:{" "}
+              {project.updatedAt.toLocaleDateString()}
+            </p>
           </section>
 
           <form action={duplicateAction}>

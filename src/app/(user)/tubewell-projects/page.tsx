@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getTubewellProjects } from "@/actions/tubewell-project";
 import { getRequestLanguage } from "@/lib/language";
+import { stripHtmlToText } from "@/lib/rich-text";
 
 export default async function TubewellProjectsPage({
   searchParams,
@@ -79,8 +80,12 @@ export default async function TubewellProjectsPage({
       project.titleBn.toLowerCase().includes(normalizedQuery) ||
       (project.titleEn || "").toLowerCase().includes(normalizedQuery) ||
       project.location.toLowerCase().includes(normalizedQuery) ||
-      (project.descriptionBn || "").toLowerCase().includes(normalizedQuery) ||
-      (project.descriptionEn || "").toLowerCase().includes(normalizedQuery);
+      stripHtmlToText(project.descriptionBn || "")
+        .toLowerCase()
+        .includes(normalizedQuery) ||
+      stripHtmlToText(project.descriptionEn || "")
+        .toLowerCase()
+        .includes(normalizedQuery);
 
     const matchesDistrict = district.length === 0 || project.location === district;
     const matchesYear = !Number.isFinite(year) || year <= 0 || project.year === year;
@@ -294,9 +299,11 @@ export default async function TubewellProjectsPage({
                   </p>
 
                   <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-                    {language === "en"
-                      ? project.descriptionEn || project.descriptionBn
-                      : project.descriptionBn}
+                    {stripHtmlToText(
+                      language === "en"
+                        ? project.descriptionEn || project.descriptionBn
+                        : project.descriptionBn,
+                    )}
                   </p>
 
                   <div className="h-1.5 w-14 rounded-full bg-primary/20 transition-all duration-300 group-hover:w-full group-hover:bg-primary" />

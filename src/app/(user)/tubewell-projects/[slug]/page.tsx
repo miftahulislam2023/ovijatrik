@@ -4,6 +4,7 @@ import { getTubewellProjectBySlug } from "@/actions/tubewell-project";
 import { getRequestLanguage } from "@/lib/language";
 import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
+import { isLikelyHtml, sanitizeRichText } from "@/lib/rich-text";
 
 export default async function TubewellProjectDetailPage({
   params,
@@ -80,6 +81,8 @@ export default async function TubewellProjectDetailPage({
     language === "en"
       ? project.descriptionEn || project.descriptionBn
       : project.descriptionBn;
+  const safeDescriptionHtml = sanitizeRichText(description);
+  const shouldRenderDescriptionHtml = isLikelyHtml(description);
 
   const primaryPhoto = project.photos[0] || null;
   const secondaryPhoto = project.photos[1] || primaryPhoto;
@@ -201,9 +204,16 @@ export default async function TubewellProjectDetailPage({
             <h2 className="text-3xl font-semibold text-foreground">
               {content.mission}
             </h2>
-            <p className="mt-4 text-base leading-8 text-slate-700">
-              {description}
-            </p>
+            {shouldRenderDescriptionHtml ? (
+              <div
+                className="prose prose-slate mt-4 max-w-none dark:prose-invert"
+                dangerouslySetInnerHTML={{ __html: safeDescriptionHtml }}
+              />
+            ) : (
+              <p className="mt-4 text-base leading-8 text-slate-700">
+                {description}
+              </p>
+            )}
 
             {project.impactSummary && (
               <blockquote className="mt-6 border-l-2 border-primary pl-4 text-2xl font-medium italic leading-relaxed text-primary">

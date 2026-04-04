@@ -3,10 +3,13 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import {
+  bulkDeleteGalleryItemsPermanently,
   bulkSoftDeleteGalleryItems,
+  deleteGalleryItemPermanently,
   duplicateGalleryItem,
   softDeleteGalleryItem,
 } from "@/actions/gallery";
+import { BulkSelectionCount } from "@/components/admin/bulk-selection-count";
 import { getRequestLanguage } from "@/lib/language";
 import { Copy, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
@@ -29,8 +32,10 @@ export default async function AdminGalleryPage({
         edit: "এডিট",
         duplicate: "ডুপ্লিকেট",
         archive: "আর্কাইভ",
+        delete: "স্থায়ী ডিলিট",
         selectedActions: "নির্বাচিত আইটেমের অ্যাকশন",
         archiveSelected: "নির্বাচিত আর্কাইভ",
+        deleteSelected: "নির্বাচিত স্থায়ী ডিলিট",
         select: "নির্বাচন",
         noData: "কোনো গ্যালারি আইটেম পাওয়া যায়নি।",
         page: "পৃষ্ঠা",
@@ -50,8 +55,10 @@ export default async function AdminGalleryPage({
         edit: "Edit",
         duplicate: "Duplicate",
         archive: "Archive",
+        delete: "Delete",
         selectedActions: "Actions for selected items",
         archiveSelected: "Archive Selected",
+        deleteSelected: "Delete Selected",
         select: "Select",
         noData: "No gallery items found.",
         page: "Page",
@@ -178,9 +185,12 @@ export default async function AdminGalleryPage({
         id="gallery-bulk-actions"
         className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#111a23]"
       >
-        <span className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300">
-          {copy.selectedActions}
-        </span>
+        <BulkSelectionCount
+          formId="gallery-bulk-actions"
+          emptyLabel={copy.selectedActions}
+          selectedLabelTemplate="{count} selected"
+          className="text-xs font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-300"
+        />
         <Button
           type="submit"
           formAction={bulkSoftDeleteGalleryItems}
@@ -189,9 +199,17 @@ export default async function AdminGalleryPage({
         >
           {copy.archiveSelected}
         </Button>
+        <Button
+          type="submit"
+          formAction={bulkDeleteGalleryItemsPermanently}
+          variant="destructive"
+          size="sm"
+        >
+          {copy.deleteSelected}
+        </Button>
       </form>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
           <article
             key={item.id}
@@ -221,7 +239,7 @@ export default async function AdminGalleryPage({
                 alt={item.titleEn || item.titleBn || copy.itemAlt}
                 width={900}
                 height={600}
-                className="h-44 w-full rounded-xl object-cover"
+                className="h-32 w-full rounded-xl object-cover"
                 unoptimized
               />
               <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
@@ -269,6 +287,17 @@ export default async function AdminGalleryPage({
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       {copy.archive}
+                    </Button>
+                  </form>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await deleteGalleryItemPermanently(item.id);
+                    }}
+                  >
+                    <Button variant="destructive" size="sm" type="submit">
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {copy.delete}
                     </Button>
                   </form>
                 </div>

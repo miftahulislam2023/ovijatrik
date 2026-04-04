@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getRequestLanguage } from "@/lib/language";
+import { uploadImage } from "@/lib/cloudinary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -46,6 +47,7 @@ export default async function ProfilePage({
       name: "Name",
       email: "Email",
       image: "Image URL",
+      imageUpload: "Upload image",
       role: "Role",
       update: "Update Profile",
       deleteTitle: "Danger Zone",
@@ -83,6 +85,7 @@ export default async function ProfilePage({
       name: "নাম",
       email: "ইমেইল",
       image: "ছবির URL",
+      imageUpload: "ছবি আপলোড",
       role: "ভূমিকা",
       update: "প্রোফাইল আপডেট করুন",
       deleteTitle: "সতর্কতা",
@@ -222,6 +225,13 @@ export default async function ProfilePage({
       .trim()
       .toLowerCase();
     const image = String(formData.get("image") || "").trim() || null;
+    const imageFile = formData.get("imageFile");
+
+    let finalImage = image;
+    if (imageFile instanceof File && imageFile.size > 0) {
+      const uploaded = await uploadImage(imageFile, "ovijatrik/donors");
+      finalImage = uploaded.url;
+    }
 
     if (!emailRaw) {
       throw new Error("Email is required");
@@ -232,7 +242,7 @@ export default async function ProfilePage({
       data: {
         name,
         email: emailRaw,
-        image,
+        image: finalImage,
       },
     });
 
@@ -370,6 +380,19 @@ export default async function ProfilePage({
                 defaultValue={user.image ?? ""}
                 className="w-full rounded-md border border-input px-3 py-2"
                 placeholder="https://example.com/photo.jpg"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="imageFile" className="text-sm font-medium">
+                {content.imageUpload}
+              </label>
+              <input
+                id="imageFile"
+                name="imageFile"
+                type="file"
+                accept="image/*"
+                className="block w-full text-sm"
               />
             </div>
 

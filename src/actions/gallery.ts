@@ -76,6 +76,19 @@ export async function softDeleteGalleryItem(id: string) {
   return item;
 }
 
+export async function deleteGalleryItemPermanently(id: string) {
+  await requireAdminAction();
+
+  const item = await prisma.galleryItem.findUnique({ where: { id } });
+  if (!item) return null;
+
+  await prisma.galleryItem.delete({ where: { id } });
+
+  revalidatePath("/admin/gallery");
+  revalidatePath("/gallery");
+  return item;
+}
+
 export async function duplicateGalleryItem(id: string) {
   await requireAdminAction();
 
@@ -115,6 +128,20 @@ export async function bulkSoftDeleteGalleryItems(formData: FormData) {
       deletedAt: null,
     },
     data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/admin/gallery");
+  revalidatePath("/gallery");
+}
+
+export async function bulkDeleteGalleryItemsPermanently(formData: FormData) {
+  await requireAdminAction();
+
+  const ids = getIdsFromFormData(formData);
+  if (ids.length === 0) return;
+
+  await prisma.galleryItem.deleteMany({
+    where: { id: { in: ids } },
   });
 
   revalidatePath("/admin/gallery");

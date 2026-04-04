@@ -3,6 +3,28 @@
 import {prisma }from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdminAction } from "@/lib/authorization";
+import { uploadImage } from "@/lib/cloudinary";
+
+const MAX_INLINE_IMAGE_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+export async function uploadTubewellInlineImage(file: File) {
+  await requireAdminAction();
+
+  if (!(file instanceof File)) {
+    throw new Error("Image file is required");
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image uploads are allowed");
+  }
+
+  if (file.size <= 0 || file.size > MAX_INLINE_IMAGE_UPLOAD_BYTES) {
+    throw new Error("Image must be between 1 byte and 10 MB");
+  }
+
+  const uploaded = await uploadImage(file, "ovijatrik/tubewell-projects/inline");
+  return uploaded.url;
+}
 
 export async function getTubewellProjects() {
   return prisma.tubewellProject.findMany({
@@ -34,6 +56,7 @@ export async function createTubewellProject(data: {
   completionDate: Date;
   year: number;
   impactSummary?: string;
+  publicationStatus?: "PUBLISHED" | "ARCHIVED";
 }) {
   await requireAdminAction();
 
@@ -49,6 +72,7 @@ export async function createTubewellProject(data: {
       completionDate: data.completionDate,
       year: data.year,
       impactSummary: data.impactSummary,
+      deletedAt: data.publicationStatus === "ARCHIVED" ? new Date() : null,
     },
   });
 
@@ -70,13 +94,23 @@ export async function updateTubewellProject(
     completionDate: Date;
     year: number;
     impactSummary?: string;
+    publicationStatus: "PUBLISHED" | "ARCHIVED";
   }>
 ) {
   await requireAdminAction();
 
+  const publicationStatus = data.publicationStatus;
+  const rest = { ...data };
+  delete rest.publicationStatus;
+
   const project = await prisma.tubewellProject.update({
     where: { id },
-    data,
+    data: {
+      ...rest,
+      ...(publicationStatus
+        ? { deletedAt: publicationStatus === "ARCHIVED" ? new Date() : null }
+        : {}),
+    },
   });
 
   revalidatePath("/admin/tubewell-projects");
